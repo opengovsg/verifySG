@@ -21,3 +21,5 @@ $ npm install
 # Start development client and server 
 $ npm run dev
 ```
+## Others
+Code taken from healthsync https://github.com/datagovsg/healthsync
