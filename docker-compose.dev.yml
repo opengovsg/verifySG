@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+    postgres:
+        image: postgres:10.5
+        container_name: verifysg-postgres
+        restart: always
+        ports: 
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: verifysg_dev
+        # persist postgres data even after teardown of image
+        volumes:
+            - postgres_data:/var/lib/postgres/
+
+    pgadmin:
+        image: dpage/pgadmin4:6
+        container_name: verifysg-pg_admin
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+            PGADMIN_LISTEN_PORT: 5050
+        ports:
+            - "5050:5050"
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+            target: dev
+        environment:
+            DB_NAME: verifysg_dev
+            DB_HOST: postgres
+            DB_USERNAME: root
+            DB_PASSWORD: root
+        depends_on:
+            - postgres
+        ports:
+            - "8080:8080"
+        container_name: verifysg-backend
+        command: npm run dev
+        # used to set up hot-reloading in docker
+        volumes:
+            - ./backend/:/src/
+            - ./backend/node_modules:/src/node_modules
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        container_name: verifysg-frontend
+        command: npm run dev
+        # used to set up hot-reloading in docker
+        volumes: 
+            - ./frontend/:/src/
+# persist postgres data even after teardown of image
+volumes:
+  postgres_data:

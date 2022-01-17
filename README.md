@@ -1,25 +1,13 @@
 # VerifySG
 
-## Getting started
-Ensure that you have access to a PostgreSQL instance running in your development environment. You have two options if you
-do not have PostgreSQL already set up:
-
-1. Install using Homebrew: `brew install postgresql@13`
-2. Run PostgreSQL using Docker
-
-After setting up PostgreSQL, run the following to start up the development environment.
-```sh
-# Create development database
-$ createdb verifysg_dev
-
-# Copy .env files and replace values within it
-$ cp backend/sample.env backend/.env
-
-# Install dependencies
-$ npm install
-
-# Start development client and server 
-$ npm run dev
-```
-## Others
-Template code taken from healthsync https://github.com/datagovsg/healthsync
+## Getting started with your dev environment
+1. Install docker runtime for your OS [here](https://docs.docker.com/engine/install/)
+2. Run 
+    ```
+    $ docker-compose -f docker-compose.dev.yml up
+    ``` 
+3. You should have the following services running:
+    - frontend react app on port ```8080```
+    - backend nestjs app on port ```3000```
+    - postgres database app on port ```5432```
+    - pgadmin service on port ```5050```
