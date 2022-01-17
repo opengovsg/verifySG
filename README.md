@@ -22,4 +22,4 @@ $ npm install
 $ npm run dev
 ```
 ## Others
-Code taken from healthsync https://github.com/datagovsg/healthsync
+Template code taken from healthsync https://github.com/datagovsg/healthsync
