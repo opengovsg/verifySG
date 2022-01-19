@@ -45,7 +45,7 @@ services:
         # used to set up hot-reloading in docker
         volumes:
             - ./backend/:/src/
-            - ./backend/node_modules:/src/node_modules
+            - /src/node_modules
 
     frontend:
         build:
@@ -58,6 +58,7 @@ services:
         # used to set up hot-reloading in docker
         volumes: 
             - ./frontend/:/src/
+            - /src/node_modules
 # persist postgres data even after teardown of image
 volumes:
   postgres_data:
