@@ -1,11 +1,11 @@
 FROM node:16.11.1-alpine3.14
 
-WORKDIR /src
+WORKDIR /usr/src
 
-COPY package.json /src
-COPY package-lock.json /src
+COPY package.json .
+COPY package-lock.json .
 
 RUN npm install
-COPY . /src
+COPY . .
 
 RUN npm run build

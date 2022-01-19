@@ -44,8 +44,8 @@ services:
         command: npm run dev
         # used to set up hot-reloading in docker
         volumes:
-            - ./backend/:/src/
-            - /src/node_modules
+            - ./backend/:/usr/src/
+            - ./usr/src/node_modules
 
     frontend:
         build:
@@ -57,8 +57,8 @@ services:
         command: npm run dev
         # used to set up hot-reloading in docker
         volumes: 
-            - ./frontend/:/src/
-            - /src/node_modules
+            - ./frontend/:/usr/src/
+            - ./usr/src/node_modules
 # persist postgres data even after teardown of image
 volumes:
   postgres_data:
