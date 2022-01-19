@@ -2,9 +2,10 @@ import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, ButtonGroup, Flex } from '@chakra-ui/react'
 
-import { LOGGED_IN_KEY, useLocalStorage } from '~features/localStorage'
+import { LOGGED_IN_KEY } from 'constants/localStorage'
+import { useLocalStorage } from 'hooks/localStorage'
 
-const DashboardPage = (): JSX.Element => {
+export const DashboardPage = (): JSX.Element => {
   const [, setIsAuthenticated] = useLocalStorage<boolean>(LOGGED_IN_KEY)
 
   const logout = useCallback(() => {
@@ -26,6 +27,3 @@ const DashboardPage = (): JSX.Element => {
     </Flex>
   )
 }
-
-// Required to be default due to using dynamic import for lazy loading.
-export default DashboardPage
