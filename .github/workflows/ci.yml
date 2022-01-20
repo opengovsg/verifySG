@@ -36,7 +36,8 @@ jobs:
 
       - name: Lint lockfiles
         run: |
-          npx lockfile-lint --type npm --path frontend/package-lock.json --validate-https --allowed-hosts npm
+          npx lockfile-lint --type npm --path frontend-govt/package-lock.json --validate-https --allowed-hosts npm
+          npx lockfile-lint --type npm --path frontend-public/package-lock.json --validate-https --allowed-hosts npm
           npx lockfile-lint --type npm --path backend/package-lock.json --validate-https --allowed-hosts npm
 
       - name: Install dependencies
@@ -63,8 +64,10 @@ jobs:
           name: deployment-files
           path: |
             package*.json
-            frontend/package*.json
-            frontend/build
+            frontend-public/package*.json
+            frontend-public/build
+            frontend-govt/package*.json
+            frontend-govt/build
             backend/package*.json
             backend/build
             .nvmrc
