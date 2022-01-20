@@ -47,17 +47,30 @@ services:
             - ./backend/:/usr/src/
             - /usr/src/node_modules
 
-    frontend:
+    frontend-public:
         build:
-            context: ./frontend
+            context: ./frontend-public
             dockerfile: Dockerfile
         ports:
             - "3000:3000"
-        container_name: verifysg-frontend
+        container_name: verifysg-frontend-public
         command: npm run dev
         # used to set up hot-reloading in docker
         volumes: 
-            - ./frontend/:/usr/src/
+            - ./frontend-public/:/usr/src/
+            - /usr/src/node_modules
+
+    frontend-govt:
+        build:
+            context: ./frontend-govt
+            dockerfile: Dockerfile
+        ports:
+            - "3001:3000"
+        container_name: verifysg-frontend-govt
+        command: npm run dev
+        # used to set up hot-reloading in docker
+        volumes: 
+            - ./frontend-govt/:/usr/src/
             - /usr/src/node_modules
 # persist postgres data even after teardown of image
 volumes:

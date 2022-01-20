@@ -1,5 +1,5 @@
 {
-  "name": "verifysg-frontend",
+  "name": "verifysg-frontend-govt",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:8080/",
