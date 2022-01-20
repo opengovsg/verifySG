@@ -57,7 +57,7 @@ services:
         command: npm run dev
         # used to set up hot-reloading in docker
         volumes: 
-            - ./frontend-public/:/usr/src/
+            - ./frontend-public:/usr/src
             - /usr/src/node_modules
 
     frontend-govt:
@@ -70,7 +70,7 @@ services:
         command: npm run dev
         # used to set up hot-reloading in docker
         volumes: 
-            - ./frontend-govt/:/usr/src/
+            - ./frontend-govt:/usr/src
             - /usr/src/node_modules
 # persist postgres data even after teardown of image
 volumes:
