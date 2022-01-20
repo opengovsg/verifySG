@@ -20,8 +20,10 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.37.0",
+    "@nestjs/cli": "^8.1.2",
     "@nestjs/common": "8.1.1",
     "@nestjs/core": "8.1.1",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "8.1.1",
     "@nestjs/sequelize": "8.0.0",
     "@nestjs/serve-static": "2.2.2",
@@ -36,13 +38,13 @@
     "helmet": "4.6.0",
     "morgan": "1.10.0",
     "nodemailer": "6.7.0",
+    "openid-client": "^5.1.2",
     "pg": "8.7.1",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.4.0",
     "typeorm": "0.2.38",
     "typeorm-naming-strategies": "2.0.0",
-    "winston": "3.3.3",
-    "@nestjs/cli": "^8.1.2"
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.1.2",
