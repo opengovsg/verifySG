@@ -5,17 +5,14 @@ import {
   Box,
   VStack,
   FormControl,
-  FormLabel,
   FormHelperText,
   Button,
   HStack,
   PinInputField,
   PinInput,
 } from '@chakra-ui/react'
-import { PhoneIcon } from '@chakra-ui/icons'
 
-import { Formik } from 'formik'
-import { ChangeEvent, useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthProvider'
 
 interface loginState {
@@ -31,7 +28,7 @@ const LoginWizard = () => {
   }
 
   return (
-    <VStack>
+    <Box>
       {loginSection == 1 && (
         <EmailSection
           loginSection={loginSection}
@@ -43,7 +40,7 @@ const LoginWizard = () => {
         <OTPSection
         />
       )}
-    </VStack>
+    </Box>
   )
 }
 
@@ -66,9 +63,9 @@ const EmailSection = ({
   )
 
   return (
-    <VStack align="left" padding={10}>
+    <VStack align="left">
       <Box>
-        <Heading>Log In</Heading>
+        <Heading size='xl'>Log in</Heading>
       </Box>
 
       <Box>
@@ -90,7 +87,7 @@ const EmailSection = ({
           </FormHelperText>
 
           <Box paddingTop={2}>
-            <Button colorScheme={'teal'} onClick={handleLoginSection}>
+            <Button colorScheme={'brand'} onClick={handleLoginSection}>
               Get OTP
             </Button>
           </Box>
@@ -105,12 +102,9 @@ const OTPSection = () => {
   const [otpPin, setOtpPin] = useState('')
   const {setAuthState} = useContext(AuthContext);
 
-  const handleOnComplete = () => {
-    setIsDisabled(false)
-  }
-
   const handlePinChange = (pin: string) => {
     setOtpPin(pin)
+    setIsDisabled(pin.length !== 6);
   }
 
   const handleSubmitOtp = () => {
@@ -122,16 +116,10 @@ const OTPSection = () => {
     })
   }
 
-  useEffect(() => {
-    if (otpPin.length < 6) {
-      setIsDisabled(true)
-    }
-  }, [otpPin])
-
   return (
     <VStack align="left" padding={10}>
       <Box>
-        <Heading>Verification Code</Heading>
+        <Heading size='xl'>Verification Code</Heading>
       </Box>
 
       <Box>
@@ -139,7 +127,7 @@ const OTPSection = () => {
       </Box>
 
       <HStack>
-        <PinInput otp onComplete={handleOnComplete} onChange={handlePinChange}>
+        <PinInput otp onChange={handlePinChange}>
           <PinInputField />
           <PinInputField />
           <PinInputField />
@@ -149,7 +137,7 @@ const OTPSection = () => {
         </PinInput>
       </HStack>
 
-      <Button isDisabled={isDisabled} colorScheme='teal' onClick={handleSubmitOtp}>
+      <Button isDisabled={isDisabled} colorScheme='brand' onClick={handleSubmitOtp}>
         Submit
       </Button>
     </VStack>
