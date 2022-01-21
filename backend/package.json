@@ -16,10 +16,15 @@
     "test:cov": "jest --coverage && sed -i.bak 's/SF:src/SF:backend\\/src/g' coverage/lcov.info",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -f ./src/database/ormconfig.ts",
+    "migration:run": "npm run typeorm migration:run",
+    "migration:gen": "npm run typeorm -- migration:generate",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.37.0",
+    "@nestjs/cli": "^8.1.2",
     "@nestjs/common": "8.1.1",
     "@nestjs/core": "8.1.1",
     "@nestjs/platform-express": "8.1.1",
@@ -41,8 +46,7 @@
     "rxjs": "7.4.0",
     "typeorm": "0.2.38",
     "typeorm-naming-strategies": "2.0.0",
-    "winston": "3.3.3",
-    "@nestjs/cli": "^8.1.2"
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.1.2",
@@ -62,6 +66,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "jest": "^27.3.0",
     "lint-staged": "^11.2.3",
     "prettier": "^2.4.1",
@@ -77,6 +82,7 @@
     "**/*.(js|jsx|ts|tsx)": [
       "prettier --write",
       "eslint --fix"
-    ]
+    ],
+    "*.{ts,tsx,js,jsx}": "eslint --cache --fix"
   }
 }
