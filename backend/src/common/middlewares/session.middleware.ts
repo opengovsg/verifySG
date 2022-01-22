@@ -20,8 +20,9 @@ export class SessionMiddleware implements NestMiddleware {
 
     this.middleware = session({
       resave: false,
-      saveUninitialized: false, // do not save new sessions that have not been modified
+      saveUninitialized: true, // set to true to deterministically generate state for oauth
       secret: this.config.get('session.secret'),
+      name: this.config.get('session.name'),
       cookie: {
         httpOnly: true,
         sameSite: 'strict',

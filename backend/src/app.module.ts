@@ -1,5 +1,10 @@
-import { APP_FILTER } from '@nestjs/core'
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { APP_FILTER, APP_PIPE } from '@nestjs/core'
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  ValidationPipe,
+} from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
@@ -13,6 +18,8 @@ import { HealthModule } from 'health/health.module'
 import { CoreModule } from 'core/core.module'
 
 import { DatabaseConfigService } from 'database/db-config.service'
+import { AuthMopModule } from './auth-mop/auth-mop.module'
+import { MopsModule } from './mops/mops.module'
 
 @Module({
   imports: [
@@ -24,11 +31,19 @@ import { DatabaseConfigService } from 'database/db-config.service'
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigService,
     }),
+    AuthMopModule,
+    MopsModule,
   ],
   providers: [
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+      }),
     },
   ],
 })
