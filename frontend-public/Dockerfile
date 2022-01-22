@@ -4,8 +4,10 @@ WORKDIR /usr/src
 
 COPY package.json .
 COPY package-lock.json .
+COPY . .
+RUN rm -rf node_modules
 
 RUN npm install
-COPY . .
+RUN ls node_modules
 
 RUN npm run build

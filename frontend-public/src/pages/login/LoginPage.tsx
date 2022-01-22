@@ -1,29 +1,29 @@
-import { useCallback } from 'react'
-import { Link } from 'react-router-dom'
-import { Button, ButtonGroup, Flex, Heading } from '@chakra-ui/react'
+import { Button, Container, Flex, Image, Text } from '@chakra-ui/react'
 
-import { LOGGED_IN_KEY } from 'constants/localStorage'
-import { useLocalStorage } from 'hooks/localStorage'
+import { AuthService } from 'services'
 
 export const LoginPage = (): JSX.Element => {
-  const [, setIsAuthenticated] = useLocalStorage<boolean>(LOGGED_IN_KEY)
-
-  const login = useCallback(() => {
-    setIsAuthenticated(true)
-  }, [setIsAuthenticated])
+  const login = async () => {
+    const { authUrl } = await AuthService.getAuthEndpoint()
+    window.location.href = authUrl
+  }
 
   return (
-    <Flex flexDir="column">
-      <Heading>This is a mock login page</Heading>
-      <ButtonGroup>
-        <Button onClick={login}>Log in</Button>
-
-        <Button>
-          <Link to="/">
-            Attempt to go to restricted route (and see nothing happen)
-          </Link>
-        </Button>
-      </ButtonGroup>
-    </Flex>
+    <Container>
+      <Flex flexDir="column" alignItems="center">
+        <Text textStyle="display1" color="primary.700">
+          Welcome to
+        </Text>
+        <Text textStyle="display2" color="primary.700">
+          Hi
+        </Text>
+        <Text textStyle="subhead1" color="primary.500" mt={2}>
+          Health records in your pocket
+        </Text>
+      </Flex>
+      <Button mt={6} onClick={login}>
+        Login via Singpass
+      </Button>
+    </Container>
   )
 }

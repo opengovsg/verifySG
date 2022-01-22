@@ -56,6 +56,7 @@
             "^(utils)(/.*|$)",
             "^(services)(/.*|$)",
             "^(components)(/.*|$)",
+            "^(types)(/.*|$)",
             "^(templates)(/.*|$)"
           ],
           ["^(pages)(/.*|$)", "^(features)(/.*|$)"],
