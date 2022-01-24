@@ -16,6 +16,12 @@ export class MopsService {
     return this.mopRepository.findOne(id)
   }
 
+  async getByNric(nric: string): Promise<Mop | undefined> {
+    return this.mopRepository.findOne({
+      where: { nric },
+    })
+  }
+
   async findOrInsert(mop: MopDto): Promise<Mop> {
     return this.connection.transaction(async (manager: EntityManager) => {
       const foundUser = await manager.getRepository(Mop).findOne({
