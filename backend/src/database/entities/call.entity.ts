@@ -30,5 +30,5 @@ export class Call {
   createdAt!: Date
 
   @DeleteDateColumn()
-  expiredAt!: Date
+  deletedAt!: Date
 }
