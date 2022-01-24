@@ -22,9 +22,10 @@ export class CallsController {
   ) {}
 
   /**
-   * Get calls for all user
+   * Get latest call for user
    */
-  @Get()
+  @UseGuards(AuthMopGuard)
+  @Get('latest')
   async getLatestCallForMop(@MopId() userId: number): Promise<GetCallDto> {
     const call = await this.callsService.getLatestCallForMop(userId)
     if (!call) {
@@ -37,9 +38,18 @@ export class CallsController {
   }
 
   /**
-   * Create new call
+   * Get all calls for user
    */
   @UseGuards(AuthMopGuard)
+  @Get()
+  async getCallsForMop(@MopId() userId: number): Promise<GetCallDto[]> {
+    const calls = await this.callsService.getCallsForMop(userId)
+    return calls.map(this.callsService.mapToDto)
+  }
+
+  /**
+   * Create new call
+   */
   @Post()
   async createNewCall(
     @MopId() officerId: number,

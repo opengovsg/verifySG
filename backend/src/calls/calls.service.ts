@@ -27,6 +27,18 @@ export class CallsService {
     })
   }
 
+  async getCallsForMop(mopId: number): Promise<Call[]> {
+    return this.callRepository.find({
+      where: {
+        user: {
+          id: mopId,
+        },
+      },
+      order: { id: 'DESC' },
+      relations: ['mop'],
+    })
+  }
+
   async createCall({
     mopId,
     officerId,
