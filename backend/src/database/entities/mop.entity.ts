@@ -3,7 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm'
+
+import { Call } from './call.entity'
 
 @Entity({ name: 'mop' })
 export class Mop {
@@ -15,4 +18,7 @@ export class Mop {
 
   @CreateDateColumn()
   createdAt!: Date
+
+  @OneToMany(() => Call, (call) => call.mop)
+  calls!: Call[]
 }
