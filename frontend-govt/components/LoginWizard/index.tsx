@@ -12,7 +12,7 @@ import {
   PinInput,
 } from '@chakra-ui/react'
 
-import { useCallback, useContext, useState } from 'react'
+import { ChangeEventHandler, useCallback, useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthProvider'
 
 interface loginState {
@@ -55,12 +55,8 @@ const EmailSection = ({
 }: EmailSectionProps) => {
   const [email, setEmail] = useState('')
 
-  const handleEmailChange = useCallback(
-    (e) => {
-      setEmail(e.target.value)
-    },
-    [email],
-  )
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)
+    
 
   return (
     <VStack align="left">

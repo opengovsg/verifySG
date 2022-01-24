@@ -10,15 +10,23 @@ import {
   HStack,
   Alert,
   Spacer,
+  FormControl,
+  FormErrorMessage,
 } from '@chakra-ui/react'
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
+import { default as nricValidator } from 'nric'
 
 export const CallerWizard = () => {
   const [section, setSection] = useState(0)
   const [nric, setNric] = useState('')
   const components = [
-    <FirstSection setSection={setSection} nric={nric} setNric={setNric} />,
-    <SecondSection nric={nric} setSection={setSection} />,
+    <FirstSection
+      setSection={setSection}
+      nric={nric}
+      setNric={setNric}
+      key={'firstSection'}
+    />,
+    <SecondSection nric={nric} setSection={setSection} key="secondSection" />,
   ]
   return <VStack align="left">{components[section]}</VStack>
 }
@@ -30,12 +38,22 @@ interface SectionProps {
 }
 
 const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
-  const handleNricChange = useCallback(
-    (e) => {
-      setNric(e.target.value)
-    },
-    [nric],
-  )
+  // TODO (Austin): Clean this up, should be a form validator in the final working product
+  const [nricInvalid, setNricInvalid] = useState(false)
+  const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNric(e.target.value)
+  }
+
+  const handleButtonClick = () => {
+    const isValid = nricValidator.validate(nric)
+
+    if (isValid) {
+      setNric(nric)
+      setSection((section) => section + 1)
+    } else {
+      setNricInvalid(true)
+    }
+  }
 
   return (
     <Box>
@@ -44,12 +62,17 @@ const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
 
         <Text>Please enter the NRIC of the person to call</Text>
 
-        <Input placeholder="NRIC" value={nric} onChange={handleNricChange} />
+        <FormControl isInvalid={nricInvalid}>
+          <Input
+            placeholder="NRIC"
+            value={nric}
+            onChange={handleNricChange}
+            isInvalid={nricInvalid}
+          />
+          {nricInvalid && <FormErrorMessage>NRIC is invalid!</FormErrorMessage>}
+        </FormControl>
 
-        <Button
-          colorScheme="brand"
-          onClick={() => setSection((section) => section + 1)}
-        >
+        <Button colorScheme="brand" onClick={handleButtonClick}>
           Next
         </Button>
 
@@ -86,8 +109,13 @@ const SecondSection = ({
 
       <Spacer />
       <Spacer />
-      <HStack align='left' backgroundColor='green.200' borderRadius='4px' padding='16px'>
-        <InfoIcon color='brand.green' boxSize={'20px'}/>
+      <HStack
+        align="left"
+        backgroundColor="green.200"
+        borderRadius="4px"
+        padding="16px"
+      >
+        <InfoIcon color="brand.green" boxSize={'20px'} />
         <Text>
           To help the recipient identify this as an official call, ask them to
           visit whodis.gov.sg on their phone or desktop browser
