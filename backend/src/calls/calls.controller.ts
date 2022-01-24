@@ -63,6 +63,8 @@ export class CallsController {
         HttpStatus.NOT_FOUND,
       )
     }
+
+    // TODO: add default expiration time for calls
     const inserted = await this.callsService.createCall({
       mopId: mop.id,
       officerId,

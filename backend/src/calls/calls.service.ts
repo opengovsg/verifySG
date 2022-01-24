@@ -36,6 +36,7 @@ export class CallsService {
       },
       order: { id: 'DESC' },
       relations: ['mop'],
+      withDeleted: true,
     })
   }
 
