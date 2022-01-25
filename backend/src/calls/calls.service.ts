@@ -30,7 +30,7 @@ export class CallsService {
   async getCallsForMop(mopId: number): Promise<Call[]> {
     return this.callRepository.find({
       where: {
-        user: {
+        mop: {
           id: mopId,
         },
       },

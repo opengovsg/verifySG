@@ -26,8 +26,8 @@ export class CallsController {
    */
   @UseGuards(AuthMopGuard)
   @Get('latest')
-  async getLatestCallForMop(@MopId() userId: number): Promise<GetCallDto> {
-    const call = await this.callsService.getLatestCallForMop(userId)
+  async getLatestCallForMop(@MopId() mopId: number): Promise<GetCallDto> {
+    const call = await this.callsService.getLatestCallForMop(mopId)
     if (!call) {
       throw new HttpException(
         'No call found for given id',
@@ -42,8 +42,8 @@ export class CallsController {
    */
   @UseGuards(AuthMopGuard)
   @Get()
-  async getCallsForMop(@MopId() userId: number): Promise<GetCallDto[]> {
-    const calls = await this.callsService.getCallsForMop(userId)
+  async getCallsForMop(@MopId() mopId: number): Promise<GetCallDto[]> {
+    const calls = await this.callsService.getCallsForMop(mopId)
     return calls.map(this.callsService.mapToDto)
   }
 
