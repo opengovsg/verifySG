@@ -4,4 +4,5 @@ export class CreateCallDto {
   @IsString()
   @IsNotEmpty()
   mopNric!: string
+  officerId!: number
 }

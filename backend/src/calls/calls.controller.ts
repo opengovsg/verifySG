@@ -51,11 +51,8 @@ export class CallsController {
    * Create new call
    */
   @Post()
-  async createNewCall(
-    @MopId() officerId: number,
-    @Body() body: CreateCallDto,
-  ): Promise<GetCallDto> {
-    const { mopNric } = body
+  async createNewCall(@Body() body: CreateCallDto): Promise<GetCallDto> {
+    const { officerId, mopNric } = body
     const mop = await this.mopsService.getByNric(mopNric)
     if (!mop) {
       throw new HttpException(
