@@ -75,7 +75,9 @@ const RedirectSection = ({ loginCallback }: RedirectSectionProps) => {
     <>
       <Spinner color="teal" />
       <h2>Please wait...</h2>
-      <div>You're being redirected to Singpass. It may take a few seconds.</div>
+      <div>
+        You&apos;re being redirected to Singpass. It may take a few seconds.
+      </div>
       <div>Please do not refresh or exit this page.</div>
     </>
   )

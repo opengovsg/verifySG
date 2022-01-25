@@ -19,7 +19,7 @@ const VerifyWizard = () => {
   return (
     <>
       <VStack align="left" padding={10}>
-        <Heading>Who's calling</Heading>
+        <Heading>Who&apos;s calling</Heading>
         {caller.name ? (
           <CallerHeader caller={caller} />
         ) : (

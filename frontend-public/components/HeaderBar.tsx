@@ -1,20 +1,32 @@
-import { Box, Flex, Heading } from '@chakra-ui/layout'
-import { Spacer } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack } from '@chakra-ui/layout'
+import { Select, Spacer } from '@chakra-ui/react'
 import React from 'react'
 import LanguageDropdown from './LanguageDropdown'
 
-const HeaderBar = () => {
+const NavBar = () => {
+  //   <Flex>
+  //     <Box p="4">
+  //       <div>WhoDis.gov.sg</div>
+  //     </Box>
+  //     <Spacer></Spacer>
+  //     <Box p="4">
+  // ;<LanguageDropdown />
+  //     </Box>
+  //   </Flex>
   return (
-    <Flex>
-      <Box p="4">
-        <div>WhoDis.gov.sg</div>
-      </Box>
-      <Spacer></Spacer>
-      <Box p="4">
-        <LanguageDropdown />
-      </Box>
-    </Flex>
+    // Copied fron frontend-govt
+    <HStack spacing={8}>
+      <HStack spacing={0}>
+        <Heading color={'brand.green'} size={'lg'}>
+          WhoDis
+        </Heading>
+        <Heading size={'lg'}>.gov.sg</Heading>
+      </HStack>
+      <Select>
+        <option value="English">English</option>
+      </Select>
+    </HStack>
   )
 }
 
-export default HeaderBar
+export default NavBar
