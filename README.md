@@ -7,26 +7,15 @@
 - Make a copy of `/backend/sample.env` and name it `/backend/.env`
 
 
-- Install and audit node dependencies
-
-  ```
-  npm install
-
-  npm run audit-dep
-  ```
-
-### Set up Docker
-
-- Install docker runtime for your OS [here](https://docs.docker.com/engine/install/)
-- Run
+- Install and audit node dependencies (run from root)
     ```
-    docker-compose -f docker-compose.dev.yml up
-    ``` 
-- You should have the following services running:
-    - frontend react app on port `3000`
-    - backend nestjs app on port `8080`
-    - postgres database app on port `5432`
-    - pgadmin service on port `5050`
+    npm run postinstall
+    ```
+
+- Start up dev env (run from root)
+    ```
+    npm run dev
+    ```
 
 ### Database migrations
 
