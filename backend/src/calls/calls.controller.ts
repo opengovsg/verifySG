@@ -48,19 +48,14 @@ export class CallsController {
   }
 
   /**
-   * Create new call
+   * Creates new call given an officerId and mopNric
+   * @param body: CreateCallDto
+   * @returns GetCallDto
    */
   @Post()
   async createNewCall(@Body() body: CreateCallDto): Promise<GetCallDto> {
     const { officerId, mopNric } = body
-    const mop = await this.mopsService.getByNric(mopNric)
-    if (!mop) {
-      throw new HttpException(
-        'No mop not found for given id',
-        HttpStatus.NOT_FOUND,
-      )
-    }
-
+    const mop = await this.mopsService.findOrInsert({ nric: mopNric })
     // TODO: add default expiration time for calls
     const inserted = await this.callsService.createCall({
       mopId: mop.id,
