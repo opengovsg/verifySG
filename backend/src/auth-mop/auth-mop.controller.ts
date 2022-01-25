@@ -5,8 +5,7 @@ import {
   Get,
   Post,
   Body,
-  HttpException,
-  HttpStatus,
+  UnauthorizedException,
   Req,
   Res,
   UseGuards,
@@ -19,6 +18,7 @@ import { SgidService } from './sgid.service'
 import { MopsService } from 'mops/mops.service'
 import { ConfigService } from 'core/providers'
 import { AuthMopGuard } from './guards/auth-mop.guard'
+import { SgidAuthUrl } from './dto'
 
 @Controller('auth')
 export class AuthController {
@@ -29,10 +29,8 @@ export class AuthController {
   ) {}
 
   @Get('login')
-  getAuthorizationUrl(@Req() req: Request): {
-    authUrl: string
-  } {
-    const authUrl = this.sgidService.createAuthorizationUrl(req.session.id)
+  getAuthorizationUrl(): SgidAuthUrl {
+    const { authUrl } = this.sgidService.createAuthorizationUrl()
     return { authUrl }
   }
 
@@ -45,18 +43,14 @@ export class AuthController {
     @Body() body: SgidAuthCode,
     @Req() req: Request,
   ): Promise<void> {
-    const { code, state } = body
     try {
-      const mopData = await this.sgidService.handleCallback(
-        code,
-        state,
-        req.session.id,
-      )
-      const { id } = await this.mopsService.findOrInsert(mopData)
+      const mop = await this.sgidService.handleCallback(body)
+      const { id } = await this.mopsService.findOrInsert(mop)
       req.session.mopId = id
+      console.log('req.session', req.session)
     } catch (e: unknown) {
       if (e instanceof Error) {
-        throw new HttpException(e.message, HttpStatus.UNAUTHORIZED)
+        throw new UnauthorizedException(e.message)
       }
       throw e
     }
@@ -64,7 +58,8 @@ export class AuthController {
 
   @UseGuards(AuthMopGuard)
   @Get('whoami')
-  getMopInfo(@Res({ passthrough: true }) res: Response): MopDto {
+  getUserInfo(@Res({ passthrough: true }) res: Response): MopDto {
+    console.log('whoami success')
     const { nric } = res.locals.mop
     return { nric }
   }

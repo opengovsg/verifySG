@@ -7,6 +7,7 @@ import { importPKCS8, importJWK, compactDecrypt } from 'jose'
 import { ConfigService } from 'core/providers'
 import { ConfigSchema } from 'core/config.schema'
 import { MopDto } from 'mops/dto'
+import { SgidAuthCode, SgidAuthUrl } from './dto'
 
 @Injectable()
 export class SgidService {
@@ -50,31 +51,23 @@ export class SgidService {
    * @param sessionId cookie sid
    * @returns auth url
    */
-  createAuthorizationUrl(sessionId: string): string {
-    return this.client.authorizationUrl({
+  createAuthorizationUrl(): SgidAuthUrl {
+    const authUrl = this.client.authorizationUrl({
       scope: this.config.scopes.join(' '),
-      state: this.generateSHA256Hash(sessionId),
     })
+    return {
+      authUrl,
+    }
   }
 
-  async handleCallback(
-    code: string,
-    state: string,
-    sessionId: string,
-  ): Promise<MopDto> {
+  async handleCallback({ code }: SgidAuthCode): Promise<MopDto> {
     /**
-     * This validates the state,
-     * exchange auth code for access token
+     * This exchanges auth code for access token
      * and verify id_token with jwk
      */
-    const tokenSet = await this.client.callback(
-      this.config.callbackUrl,
-      { code, state },
-      {
-        // Checks sessionId hash against state
-        state: this.generateSHA256Hash(sessionId),
-      },
-    )
+    const tokenSet = await this.client.callback(this.config.callbackUrl, {
+      code,
+    })
 
     /**
      * Fetch userinfo with access token in as bearer header
@@ -89,7 +82,9 @@ export class SgidService {
 
     const { data, key } = userInfo
     const decrypted = await this.decryptPayload(key, data)
-    return { nric: decrypted['myinfo.nric_number'] }
+    return {
+      nric: decrypted['myinfo.nric_number'],
+    }
   }
 
   async decryptPayload(
