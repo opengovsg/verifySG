@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pre-commit": "lint-staged",
+    "pre-commit": "",
     "prepare": "husky install"
   },
   "dependencies": {
