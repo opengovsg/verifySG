@@ -14,11 +14,14 @@ export class Officer {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column({ unique: true, nullable: false })
-  name!: string
-
   @Column({ unique: true, nullable: false, length: 255 })
   email!: string
+
+  @Column({ nullable: false })
+  name!: string
+
+  @Column()
+  position!: string
 
   @Column('text')
   agency!: string
