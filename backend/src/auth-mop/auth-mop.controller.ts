@@ -47,7 +47,6 @@ export class AuthController {
       const mop = await this.sgidService.handleCallback(body)
       const { id } = await this.mopsService.findOrInsert(mop)
       req.session.mopId = id
-      console.log('req.session', req.session)
     } catch (e: unknown) {
       if (e instanceof Error) {
         throw new UnauthorizedException(e.message)
@@ -59,7 +58,6 @@ export class AuthController {
   @UseGuards(AuthMopGuard)
   @Get('whoami')
   getUserInfo(@Res({ passthrough: true }) res: Response): MopDto {
-    console.log('whoami success')
     const { nric } = res.locals.mop
     return { nric }
   }

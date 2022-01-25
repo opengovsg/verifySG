@@ -49,12 +49,25 @@ services:
             - ./backend/:/usr/src
             - /usr/src/node_modules
 
+    frontend-public-dummy:
+        build:
+            context: ./frontend-public-dummy
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        container_name: verifysg-frontend-public-dummy
+        command: npm run dev
+        # used to set up hot-reloading in docker
+        volumes: 
+            - ./frontend-public-dummy:/usr/src
+            - /usr/src/node_modules
+
     frontend-public:
         build:
             context: ./frontend-public
             dockerfile: Dockerfile
         ports:
-            - "3000:3000"
+            - "3002:3000"
         container_name: verifysg-frontend-public
         command: npm run dev
         # used to set up hot-reloading in docker
