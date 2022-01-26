@@ -1,10 +1,17 @@
 import { Spinner, VStack } from '@chakra-ui/react'
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthProvider'
+import { AuthService } from '../../services'
 import SingpassLoginButton from '../SingpassLoginButton'
 
 const LoginWizard = () => {
   const { setAuthState } = useContext(AuthContext)
+
+  const login = async () => {
+    const { authUrl } = await AuthService.getAuthEndpoint()
+    console.log('redirecting!')
+    window.location.href = authUrl
+  }
 
   const [loginSection, setLoginSection] = useState(1)
   const handleLoginSection = () => {
@@ -16,19 +23,7 @@ const LoginWizard = () => {
         <PreLoginSection handleLoginSection={handleLoginSection} />
       )}
 
-      {loginSection == 2 && (
-        <RedirectSection
-          loginCallback={() => {
-            setAuthState({
-              isAuthenticated: true,
-              email: 'example@gmail.com',
-              name: 'John Doe',
-              _id: '15151511515151',
-            })
-            console.log('redirected!')
-          }}
-        />
-      )}
+      {loginSection == 2 && <RedirectSection loginCallback={login} />}
     </VStack>
   )
 }
@@ -70,7 +65,7 @@ interface RedirectSectionProps {
   loginCallback: () => void
 }
 const RedirectSection = ({ loginCallback }: RedirectSectionProps) => {
-  setTimeout(loginCallback, 2000)
+  setTimeout(loginCallback, 1000)
   return (
     <>
       <Spinner color="teal" />
