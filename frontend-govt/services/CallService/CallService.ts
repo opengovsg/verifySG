@@ -1,0 +1,16 @@
+import { ApiService } from '../ApiService'
+import { CreateCallDto, CreateCallResponse } from './dto/CreateCallDto'
+
+export const createCall = async ({
+  officerId,
+  mopNric,
+}: CreateCallDto): Promise<CreateCallResponse> => {
+  try {
+    return await ApiService.post('/calls', {
+      officerId,
+      mopNric,
+    })
+  } catch (e) {
+    throw e
+  }
+}

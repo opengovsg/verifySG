@@ -15,6 +15,8 @@ import {
 } from '@chakra-ui/react'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { default as nricValidator } from 'nric'
+import { ApiService } from '../../services/ApiService'
+import { createCall } from '../../services/CallService/CallService'
 
 export const CallerWizard = () => {
   const [section, setSection] = useState(0)
@@ -50,6 +52,8 @@ const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
     if (isValid) {
       setNric(nric)
       setSection((section) => section + 1)
+      // TODO(Austin): hardcoded officer id to 1 for now
+      createCall({ officerId: 1, mopNric: nric})
     } else {
       setNricInvalid(true)
     }
