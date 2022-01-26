@@ -51,7 +51,7 @@ export class CallsService {
       mop: { id: mopId },
       officer: { id: officerId },
     })
-    return this.callRepository.save(callToAdd)
+    return await this.callRepository.save(callToAdd)
   }
 
   mapToDto(call: Call): GetCallDto {

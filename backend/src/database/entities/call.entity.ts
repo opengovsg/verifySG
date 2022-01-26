@@ -14,13 +14,13 @@ export class Call {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @ManyToOne(() => Mop, (mop) => mop.calls, {
+  @ManyToOne(() => Officer, (officer) => officer.calls, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   officer!: Officer
 
-  @ManyToOne(() => Officer, (officer) => officer.calls, {
+  @ManyToOne(() => Mop, (mop) => mop.calls, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
