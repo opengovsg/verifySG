@@ -23,6 +23,14 @@ export class CallGateway {
   async listenForMessages(@MessageBody() createCallDto: CreateCallDto) {
     console.log('>> listening for calls', createCallDto)
     const call = await this.callService.createCall(createCallDto)
-    this.server.sockets.emit('call_created', call)
+    const latestCall = await this.callService.getLatestCallForMop(call.mop.id)
+
+    if (latestCall) {
+      console.log('>> latestCall', latestCall)
+      this.server.sockets.emit(
+        `call_created${latestCall.mop.nric}`,
+        this.callService.mapToDto(latestCall),
+      )
+    }
   }
 }

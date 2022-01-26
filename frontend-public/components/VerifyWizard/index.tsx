@@ -1,90 +1,101 @@
 import { StarIcon } from '@chakra-ui/icons'
-import { Badge, Box, Heading, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Text, Badge, Box, Heading, VStack } from '@chakra-ui/react'
+import React, { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../../contexts/AuthProvider'
+import { CallerService } from '../../services'
+import { socket } from '../../services/SocketService'
+import CallerCard, { Caller } from '../CallerCard'
+import { PastVerifiedCalls } from './PastVerifiedCalls'
 
-type Caller = {
-  name?: string
-  role?: string
-  organization?: string
-}
 const VerifyWizard = () => {
-  const [caller, setCaller] = useState(
-    //   {} as Caller
-    {
-      name: 'Benjamin Tan',
-      role: 'Manager',
-      organization: 'Ministry of Health',
-    },
+  const {
+    authState: { nric },
+  } = useContext(AuthContext)
+  const [caller, setCaller] = useState<Caller & { createdAt: string }>(
+    { name: '', position: '', agency: '', createdAt: '' },
+    // {
+    //   name: 'Benjamin Tan',
+    //   position: 'Manager',
+    //   agency: 'Ministry of Health',
+    // },
   )
+  const isLatestCall = () => {
+    if (!caller.createdAt) {
+      return false
+    }
+    const date = new Date(caller.createdAt)
+    const today = new Date()
+    return date.getDay() === today.getDay()
+  }
+  useEffect(() => {
+    CallerService.getLatestCallForMop()
+      .then(({ createdAt, officer: { name, agency, position } }) => {
+        if (name && agency) {
+          setCaller({
+            name,
+            position,
+            agency,
+            createdAt,
+          })
+        }
+      })
+      .catch((e) => console.log(e))
+    // TODO: Updat this function to be within CallService and also to filter for mopId === current authenticated user
+    socket.on(
+      `call_created${nric}`,
+      ({ createdAt, officer: { name, agency, position } }) => {
+        setCaller({
+          name,
+          position,
+          agency,
+          createdAt,
+        })
+      },
+    )
+  }, [nric])
+
+  const [hasRefreshed, setHasRefreshed] = useState(false)
   return (
     <>
-      <VStack align="left" padding={10}>
-        <Heading>Who&apos;s calling</Heading>
-        {caller.name ? (
-          <CallerHeader caller={caller} />
-        ) : (
-          <CallerHeader caller={caller} />
-        )}
+      <VStack align="left" padding={10} spacing={5}>
+        <VStack spacing={2} align="left">
+          <Heading size={'md'}>Who&apos;s calling</Heading>
+          {caller.name ? (
+            <CallerSection caller={caller} />
+          ) : (
+            <NoCallerSection />
+          )}
+        </VStack>
+
+        <PastVerifiedCalls />
       </VStack>
     </>
   )
 }
 
-interface CallerHeaderProps {
+interface CallerSectionProps {
   caller: Caller
 }
-const CallerHeader = ({ caller }: CallerHeaderProps) => {
+const CallerSection = ({ caller }: CallerSectionProps) => {
   return (
     <>
-      <div>Official call found</div>
-      <div>Please verify that the person calling you is:</div>
-      <Box mt={10} background={'lightgrey'}>
-        <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="teal">
-            {caller.organization}
-          </Badge>
-        </Box>
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
-          {caller.name}
-        </Box>
-
-        <Box>{caller.role}</Box>
-      </Box>
+      <Text color="brand.green" fontWeight="bold">
+        Official call found
+      </Text>
+      <Text>
+        Ask the caller for their name and agency, and{' '}
+        <b>make sure it matches these details:</b>
+      </Text>
+      <CallerCard caller={caller} />
     </>
   )
 }
 
-const NoCallerHeader = ({ caller }: CallerHeaderProps) => {
+interface NoCallerSectionProps {}
+const NoCallerSection = ({}: NoCallerSectionProps) => {
   return (
     <>
-      <div>No official call found</div>
-      <div>
-        <b>Do not</b> disclose any personal information
-      </div>
-      <Box mt={10} background={'lightgrey'}>
-        <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="teal">
-            {caller.organization}
-          </Badge>
-        </Box>
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
-          {caller.name}
-        </Box>
-
-        <Box>{caller.role}</Box>
-      </Box>
+      <div>No active calls found</div>
     </>
   )
 }

@@ -36,10 +36,7 @@ const LoginWizard = () => {
         />
       )}
 
-      {loginSection == 2 && (
-        <OTPSection
-        />
-      )}
+      {loginSection == 2 && <OTPSection />}
     </Box>
   )
 }
@@ -55,13 +52,13 @@ const EmailSection = ({
 }: EmailSectionProps) => {
   const [email, setEmail] = useState('')
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)
-    
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setEmail(e.target.value)
 
   return (
     <VStack align="left">
       <Box>
-        <Heading size='xl'>Log in</Heading>
+        <Heading size="xl">Log in</Heading>
       </Box>
 
       <Box>
@@ -76,7 +73,7 @@ const EmailSection = ({
             value={email}
             onChange={handleEmailChange}
             isRequired
-            placeholder='Email'
+            placeholder="Email"
           />
           <FormHelperText>
             Please input your government associated email
@@ -96,26 +93,27 @@ const EmailSection = ({
 const OTPSection = () => {
   const [isDisabled, setIsDisabled] = useState(true)
   const [otpPin, setOtpPin] = useState('')
-  const {setAuthState} = useContext(AuthContext);
+  const { setAuthState } = useContext(AuthContext)
 
   const handlePinChange = (pin: string) => {
     setOtpPin(pin)
-    setIsDisabled(pin.length !== 6);
+    setIsDisabled(pin.length !== 6)
   }
 
   const handleSubmitOtp = () => {
+    // TODO (AUSTIN): UPDATE THIS TO NOT BE HARDCODED TO 1
     setAuthState({
       isAuthenticated: true,
-      email: "example@gmail.com",
-      name: "Austin Woon",
-      _id: "12390812390812309"
+      email: 'example@gmail.com',
+      name: 'Austin Woon',
+      _id: '1',
     })
   }
 
   return (
     <VStack align="left" padding={10}>
       <Box>
-        <Heading size='xl'>Verification Code</Heading>
+        <Heading size="xl">Verification Code</Heading>
       </Box>
 
       <Box>
@@ -133,7 +131,11 @@ const OTPSection = () => {
         </PinInput>
       </HStack>
 
-      <Button isDisabled={isDisabled} colorScheme='brand' onClick={handleSubmitOtp}>
+      <Button
+        isDisabled={isDisabled}
+        colorScheme="brand"
+        onClick={handleSubmitOtp}
+      >
         Submit
       </Button>
     </VStack>

@@ -4,15 +4,6 @@ import React from 'react'
 import LanguageDropdown from './LanguageDropdown'
 
 const NavBar = () => {
-  //   <Flex>
-  //     <Box p="4">
-  //       <div>WhoDis.gov.sg</div>
-  //     </Box>
-  //     <Spacer></Spacer>
-  //     <Box p="4">
-  // ;<LanguageDropdown />
-  //     </Box>
-  //   </Flex>
   return (
     // Copied fron frontend-govt
     <HStack spacing={8}>
