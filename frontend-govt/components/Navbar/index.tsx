@@ -5,7 +5,7 @@ const Navbar = () => {
     <HStack spacing={8}>
       <HStack spacing={0}>
         <Heading color={'brand.green'} size={'lg'}>
-          WhoDis
+          WhoThis
         </Heading>
 
         <Heading size={'lg'}>.gov.sg</Heading>

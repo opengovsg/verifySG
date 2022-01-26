@@ -1,9 +1,10 @@
-import { Badge, Box } from '@chakra-ui/react'
+import { CheckCircleIcon } from '@chakra-ui/icons'
+import { Badge, Box, HStack, Icon, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
 
 export type Caller = {
   name: string
-  role?: string
+  position: string
   agency: string
 }
 interface CallerSectionProps {
@@ -11,17 +12,29 @@ interface CallerSectionProps {
 }
 const CallerCard = ({ caller }: CallerSectionProps) => {
   return (
-    <Box mt={10} background={'lightgrey'}>
-      <Box display="flex" alignItems="baseline">
-        <Badge borderRadius="full" px="2" colorScheme="teal">
-          {caller.agency}
-        </Badge>
-      </Box>
-      <Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
-        {caller.name}
-      </Box>
-
-      <Box>{caller.role}</Box>
+    <Box background={'#EDF6F4'} p={5} borderRadius={'4px'}>
+      <HStack spacing={5}>
+        <Box>
+          <Icon as={CheckCircleIcon} color={'#357867'} boxSize={45} />
+        </Box>
+        <VStack align="left" spacing={1}>
+          <Box isTruncated>
+            <Text fontWeight="bold" fontSize="20px">
+              {caller.name}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="#357867" fontWeight="bold" fontSize="16px">
+              {caller.agency}
+            </Text>
+          </Box>
+          <Box>
+            <Badge borderRadius="full" px="3" bgColor={'#89898959'}>
+              <Text textTransform="capitalize">{caller.position}</Text>
+            </Badge>
+          </Box>
+        </VStack>
+      </HStack>
     </Box>
   )
 }

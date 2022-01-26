@@ -1,42 +1,73 @@
 import { StarIcon } from '@chakra-ui/icons'
-import { Badge, Box, Heading, VStack } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { Text, Badge, Box, Heading, VStack } from '@chakra-ui/react'
+import React, { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../../contexts/AuthProvider'
 import { CallerService } from '../../services'
+import { socket } from '../../services/SocketService'
 import CallerCard, { Caller } from '../CallerCard'
-
-const fetchCallers = async (setCaller) => {
-  const caller = await CallerService.getLatestCallForMop()
-  setCaller({})
-}
+import { PastVerifiedCalls } from './PastVerifiedCalls'
 
 const VerifyWizard = () => {
-  const [caller, setCaller] = useState(
-    {} as Caller,
+  const {
+    authState: { nric },
+  } = useContext(AuthContext)
+  const [caller, setCaller] = useState<Caller & { createdAt: string }>(
+    { name: '', position: '', agency: '', createdAt: '' },
     // {
     //   name: 'Benjamin Tan',
-    //   role: 'Manager',
+    //   position: 'Manager',
     //   agency: 'Ministry of Health',
     // },
   )
+  const isLatestCall = () => {
+    if (!caller.createdAt) {
+      return false
+    }
+    const date = new Date(caller.createdAt)
+    const today = new Date()
+    return date.getDay() === today.getDay()
+  }
   useEffect(() => {
-    CallerService.getLatestCallForMop().then((caller) => {
-      if (caller) {
-        console.log(caller)
+    CallerService.getLatestCallForMop()
+      .then(({ createdAt, officer: { name, agency, position } }) => {
+        if (name && agency) {
+          setCaller({
+            name,
+            position,
+            agency,
+            createdAt,
+          })
+        }
+      })
+      .catch((e) => console.log(e))
+    // TODO: Updat this function to be within CallService and also to filter for mopId === current authenticated user
+    socket.on(
+      `call_created${nric}`,
+      ({ createdAt, officer: { name, agency, position } }) => {
         setCaller({
-          name: caller.name,
-          role: '',
-          agency: caller.agency,
+          name,
+          position,
+          agency,
+          createdAt,
         })
-      }
-    })
-  }, [])
+      },
+    )
+  }, [nric])
 
   const [hasRefreshed, setHasRefreshed] = useState(false)
   return (
     <>
-      <VStack align="left" padding={10}>
-        <Heading>Who&apos;s calling</Heading>
-        {caller.name ? <CallerSection caller={caller} /> : <NoCallerSection />}
+      <VStack align="left" padding={10} spacing={5}>
+        <VStack spacing={2} align="left">
+          <Heading size={'md'}>Who&apos;s calling</Heading>
+          {caller.name ? (
+            <CallerSection caller={caller} />
+          ) : (
+            <NoCallerSection />
+          )}
+        </VStack>
+
+        <PastVerifiedCalls />
       </VStack>
     </>
   )
@@ -48,11 +79,13 @@ interface CallerSectionProps {
 const CallerSection = ({ caller }: CallerSectionProps) => {
   return (
     <>
-      <div>Official call found</div>
-      <div>
+      <Text color="brand.green" fontWeight="bold">
+        Official call found
+      </Text>
+      <Text>
         Ask the caller for their name and agency, and{' '}
         <b>make sure it matches these details:</b>
-      </div>
+      </Text>
       <CallerCard caller={caller} />
     </>
   )

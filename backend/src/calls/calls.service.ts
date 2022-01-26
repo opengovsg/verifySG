@@ -37,7 +37,7 @@ export class CallsService {
         },
       },
       order: { id: 'DESC' },
-      relations: ['mop'],
+      relations: ['mop', 'officer'],
       withDeleted: true,
     })
   }
@@ -59,14 +59,17 @@ export class CallsService {
   }
 
   mapToDto(call: Call): GetCallDto {
-    const { id, officer } = call
+    console.log('call: ' + JSON.stringify(call))
+    const { id, officer, createdAt } = call
     return {
       id,
+      createdAt,
       officer: {
         id: officer.id,
         name: officer.name,
         email: officer.email,
         agency: officer.agency,
+        position: officer.position,
       },
     }
   }
