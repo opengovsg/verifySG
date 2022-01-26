@@ -22,6 +22,7 @@ import { AuthMopModule } from './auth-mop/auth-mop.module'
 import { MopsModule } from './mops/mops.module'
 import { CallsModule } from './calls/calls.module'
 import { OfficersModule } from './officers/officers.module'
+import { AuthOfficerModule } from './auth-officer/auth-officer.module'
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OfficersModule } from './officers/officers.module'
     MopsModule,
     CallsModule,
     OfficersModule,
+    AuthOfficerModule,
   ],
   providers: [
     {
