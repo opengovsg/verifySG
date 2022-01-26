@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   OneToMany,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm'
 
 import { Call } from './call.entity'
@@ -35,6 +36,6 @@ export class Officer {
   @UpdateDateColumn()
   updatedAt!: Date
 
-  @UpdateDateColumn()
+  @DeleteDateColumn()
   deletedAt!: Date
 }

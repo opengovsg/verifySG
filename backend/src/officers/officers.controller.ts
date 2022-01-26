@@ -6,7 +6,7 @@ import { Officer } from '../database/entities'
 @Controller('officers')
 export class OfficersController {
   constructor(private officersService: OfficersService) {}
-  @Post('')
+  @Post()
   async createOfficer(
     @Body() createOfficerDto: CreateOfficerDto,
   ): Promise<Officer> {
