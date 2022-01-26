@@ -1,20 +1,30 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
-import { CreateOfficerDto } from './dto/create-officer.dto'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common'
+import { UpdateOfficerDto } from './dto/officer.dto'
 import { OfficersService } from './officers.service'
-import { Officer } from '../database/entities'
+import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
+import { OfficerId } from 'common/decorators'
 
 @Controller('officers')
 export class OfficersController {
   constructor(private officersService: OfficersService) {}
-  @Post()
-  async createOfficer(
-    @Body() createOfficerDto: CreateOfficerDto,
-  ): Promise<Officer> {
+
+  @Post('update')
+  @UseGuards(AuthOfficerGuard)
+  async updateOfficer(
+    @OfficerId() officerId: number,
+    @Body() officerDetails: UpdateOfficerDto,
+  ): Promise<void> {
     try {
-      return await this.officersService.findOrInsert(createOfficerDto)
+      await this.officersService.updateDetails(officerId, officerDetails)
     } catch (err) {
       throw new BadRequestException(
-        err instanceof Error ? err.message : 'Failed to create officer',
+        err instanceof Error ? err.message : 'Failed to update officer details',
       )
     }
   }

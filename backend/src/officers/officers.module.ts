@@ -8,5 +8,6 @@ import { Officer } from '../database/entities'
   imports: [TypeOrmModule.forFeature([Officer])],
   providers: [OfficersService],
   controllers: [OfficersController],
+  exports: [OfficersService],
 })
 export class OfficersModule {}

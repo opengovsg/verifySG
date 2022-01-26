@@ -2,28 +2,43 @@ import { Injectable } from '@nestjs/common'
 import { Connection, Repository } from 'typeorm'
 import { Officer } from '../database/entities'
 import { InjectRepository } from '@nestjs/typeorm'
-import { CreateOfficerDto } from './dto/create-officer.dto'
+import { OfficerDto, UpdateOfficerDto } from './dto/officer.dto'
 
 @Injectable()
 export class OfficersService {
   constructor(
-    @InjectRepository(Officer) private repo: Repository<Officer>,
+    @InjectRepository(Officer) private officerRepository: Repository<Officer>,
     private connection: Connection,
   ) {}
 
-  async findOrInsert(createOfficerDto: CreateOfficerDto): Promise<Officer> {
+  async findOrInsert(officer: OfficerDto): Promise<Officer> {
     return this.connection.transaction(async (manager) => {
       const foundOfficer = await manager.getRepository(Officer).findOne({
         where: {
-          email: createOfficerDto.email,
+          email: officer.email,
         },
       })
 
       if (foundOfficer) {
         return foundOfficer
       }
-      const officer = this.repo.create(createOfficerDto)
-      return manager.save(officer)
+      const officerToAdd = this.officerRepository.create(officer)
+      return manager.save(officerToAdd)
     })
+  }
+
+  async getById(id: number): Promise<Officer | undefined> {
+    return this.officerRepository.findOne(id)
+  }
+
+  async updateDetails(
+    id: number,
+    officerDetails: UpdateOfficerDto,
+  ): Promise<void> {
+    const officerToUpdate = await this.officerRepository.findOne(id)
+    if (!officerToUpdate) {
+      throw new Error(`Officer ${id} not found`)
+    }
+    await this.officerRepository.update({ id }, officerDetails)
   }
 }
