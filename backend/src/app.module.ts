@@ -21,6 +21,7 @@ import { DatabaseConfigService } from 'database/db-config.service'
 import { AuthMopModule } from './auth-mop/auth-mop.module'
 import { MopsModule } from './mops/mops.module'
 import { CallsModule } from './calls/calls.module'
+import { OfficersModule } from './officers/officers.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CallsModule } from './calls/calls.module'
     AuthMopModule,
     MopsModule,
     CallsModule,
+    OfficersModule,
   ],
   providers: [
     {
