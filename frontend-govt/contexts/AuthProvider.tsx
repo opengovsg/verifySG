@@ -1,10 +1,7 @@
 import React, {
   createContext,
-  Dispatch,
   ReactChild,
   ReactChildren,
-  SetStateAction,
-  useContext,
   useState,
 } from 'react'
 
@@ -16,7 +13,7 @@ interface AuthState {
   isAuthenticated: boolean
   email: string
   name: string
-  _id: string
+  _id: number
 }
 
 interface AuthContext {
@@ -29,7 +26,7 @@ export const AuthContext = createContext<AuthContext>({
     isAuthenticated: false,
     email: '',
     name: '',
-    _id: '',
+    _id: 1,
   },
   setAuthState: (authState) => {},
 })
@@ -39,7 +36,7 @@ const AuthProvider = ({ children }: AuthProps) => {
     isAuthenticated: false,
     email: '',
     name: '',
-    _id: '',
+    _id: 1,
   })
   return (
     <AuthContext.Provider value={{ authState, setAuthState }}>

@@ -4,12 +4,14 @@ import { Repository } from 'typeorm'
 
 import { Call } from 'database/entities'
 import { GetCallDto } from 'calls/dto'
+import { MopsService } from 'mops/mops.service'
 
 @Injectable()
 export class CallsService {
   constructor(
     @InjectRepository(Call)
     private callRepository: Repository<Call>,
+    private readonly mopsService: MopsService,
   ) {}
 
   async getLatestCallForMop(mopId: number): Promise<Call | undefined> {
@@ -41,14 +43,16 @@ export class CallsService {
   }
 
   async createCall({
-    mopId,
+    mopNric,
     officerId,
   }: {
-    mopId: number
+    mopNric: string
     officerId: number
   }): Promise<Call> {
+    const mop = await this.mopsService.findOrInsert({ nric: mopNric })
+
     const callToAdd = this.callRepository.create({
-      mop: { id: mopId },
+      mop: { id: mop.id },
       officer: { id: officerId },
     })
     return await this.callRepository.save(callToAdd)

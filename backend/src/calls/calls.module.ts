@@ -5,10 +5,11 @@ import { Call } from 'database/entities'
 import { CallsService } from './calls.service'
 import { CallsController } from './calls.controller'
 import { MopsModule } from 'mops/mops.module'
+import { CallGateway } from './call.gateway'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Call]), MopsModule],
   controllers: [CallsController],
-  providers: [CallsService],
+  providers: [CallsService, CallGateway],
 })
 export class CallsModule {}
