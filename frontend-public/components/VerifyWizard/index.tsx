@@ -1,90 +1,57 @@
 import { StarIcon } from '@chakra-ui/icons'
 import { Badge, Box, Heading, VStack } from '@chakra-ui/react'
 import React, { useState } from 'react'
+import { CallerService } from '../../services'
+import CallerCard, { Caller } from '../CallerCard'
 
-type Caller = {
-  name?: string
-  role?: string
-  organization?: string
+const fetchCallers = async () => {
+  const caller = await CallerService.getLatestCallForMop()
+  console.log(caller)
 }
+
 const VerifyWizard = () => {
   const [caller, setCaller] = useState(
-    //   {} as Caller
+    // {} as Caller,
     {
       name: 'Benjamin Tan',
       role: 'Manager',
-      organization: 'Ministry of Health',
+      agency: 'Ministry of Health',
     },
   )
+  setTimeout(fetchCallers, 2000)
+
+  const [hasRefreshed, setHasRefreshed] = useState(false)
   return (
     <>
       <VStack align="left" padding={10}>
         <Heading>Who&apos;s calling</Heading>
-        {caller.name ? (
-          <CallerHeader caller={caller} />
-        ) : (
-          <CallerHeader caller={caller} />
-        )}
+        {caller.name ? <CallerSection caller={caller} /> : <NoCallerSection />}
       </VStack>
     </>
   )
 }
 
-interface CallerHeaderProps {
+interface CallerSectionProps {
   caller: Caller
 }
-const CallerHeader = ({ caller }: CallerHeaderProps) => {
+const CallerSection = ({ caller }: CallerSectionProps) => {
   return (
     <>
       <div>Official call found</div>
-      <div>Please verify that the person calling you is:</div>
-      <Box mt={10} background={'lightgrey'}>
-        <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="teal">
-            {caller.organization}
-          </Badge>
-        </Box>
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
-          {caller.name}
-        </Box>
-
-        <Box>{caller.role}</Box>
-      </Box>
+      <div>
+        Ask the caller for their name and agency, and{' '}
+        <b>make sure it matches these details:</b>
+      </div>
+      <CallerCard caller={caller} />
     </>
   )
 }
 
-const NoCallerHeader = ({ caller }: CallerHeaderProps) => {
+interface NoCallerSectionProps {}
+const NoCallerSection = ({}: NoCallerSectionProps) => {
   return (
     <>
-      <div>No official call found</div>
-      <div>
-        <b>Do not</b> disclose any personal information
-      </div>
-      <Box mt={10} background={'lightgrey'}>
-        <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="teal">
-            {caller.organization}
-          </Badge>
-        </Box>
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
-          {caller.name}
-        </Box>
-
-        <Box>{caller.role}</Box>
-      </Box>
+      <div>No active calls found</div>
     </>
   )
 }
