@@ -53,12 +53,12 @@ export class CallsController {
    * @returns GetCallDto
    */
   @Post()
-  async createNewCall(@Body() body: CreateCallDto): Promise<GetCallDto> {
-    const { officerId, mopNric } = body
-    const mop = await this.mopsService.findOrInsert({ nric: mopNric })
+  async createNewCall(
+    @Body() { officerId, mopNric }: CreateCallDto,
+  ): Promise<GetCallDto> {
     // TODO: add default expiration time for calls
     const inserted = await this.callsService.createCall({
-      mopId: mop.id,
+      mopNric,
       officerId,
     })
     return this.callsService.mapToDto(inserted)

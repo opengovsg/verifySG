@@ -1,6 +1,10 @@
 import { Schema, addFormats } from 'convict'
 
 export interface ConfigSchema {
+  frontend_urls: {
+    frontend_govt_base: string
+    frontend_public_base: string
+  }
   port: number
   environment: 'development' | 'staging' | 'production' | 'test'
   awsRegion: string
@@ -50,6 +54,20 @@ addFormats({
 })
 
 export const schema: Schema<ConfigSchema> = {
+  frontend_urls: {
+    frontend_govt_base: {
+      doc: 'The frontend government base url',
+      env: 'FRONTEND_GOVT',
+      format: String,
+      default: 'http://localhost:3001',
+    },
+    frontend_public_base: {
+      doc: 'The frontend public base url',
+      env: 'FRONTEND_PUBLIC',
+      format: String,
+      default: 'http://localhost:3000',
+    },
+  },
   port: {
     doc: 'The port that the service listens on',
     env: 'PORT',

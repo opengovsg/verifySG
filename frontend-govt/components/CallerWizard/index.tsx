@@ -13,10 +13,12 @@ import {
   FormControl,
   FormErrorMessage,
 } from '@chakra-ui/react'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { default as nricValidator } from 'nric'
 import { ApiService } from '../../services/ApiService'
-import { createCall } from '../../services/CallService/CallService'
+import { createCall, socketCallCreate } from '../../services/CallService/CallService'
+import { socket } from '../../services/SocketService'
+import { AuthContext } from '../../contexts/AuthProvider'
 
 export const CallerWizard = () => {
   const [section, setSection] = useState(0)
@@ -42,6 +44,8 @@ interface SectionProps {
 const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
   // TODO (Austin): Clean this up, should be a form validator in the final working product
   const [nricInvalid, setNricInvalid] = useState(false)
+  const {authState: {_id: officerId}} = useContext(AuthContext);
+  
   const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNric(e.target.value)
   }
@@ -53,7 +57,7 @@ const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
       setNric(nric)
       setSection((section) => section + 1)
       // TODO(Austin): hardcoded officer id to 1 for now
-      createCall({ officerId: 1, mopNric: nric})
+      socketCallCreate({ officerId: officerId, mopNric: nric })
     } else {
       setNricInvalid(true)
     }
