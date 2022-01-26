@@ -1,24 +1,35 @@
 import { StarIcon } from '@chakra-ui/icons'
 import { Badge, Box, Heading, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CallerService } from '../../services'
 import CallerCard, { Caller } from '../CallerCard'
 
-const fetchCallers = async () => {
+const fetchCallers = async (setCaller) => {
   const caller = await CallerService.getLatestCallForMop()
-  console.log(caller)
+  setCaller({})
 }
 
 const VerifyWizard = () => {
   const [caller, setCaller] = useState(
-    // {} as Caller,
-    {
-      name: 'Benjamin Tan',
-      role: 'Manager',
-      agency: 'Ministry of Health',
-    },
+    {} as Caller,
+    // {
+    //   name: 'Benjamin Tan',
+    //   role: 'Manager',
+    //   agency: 'Ministry of Health',
+    // },
   )
-  setTimeout(fetchCallers, 2000)
+  useEffect(() => {
+    CallerService.getLatestCallForMop().then((caller) => {
+      if (caller) {
+        console.log(caller)
+        setCaller({
+          name: caller.name,
+          role: '',
+          agency: caller.agency,
+        })
+      }
+    })
+  }, [])
 
   const [hasRefreshed, setHasRefreshed] = useState(false)
   return (

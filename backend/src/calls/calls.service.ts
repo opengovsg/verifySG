@@ -25,7 +25,7 @@ export class CallsService {
         },
       },
       order: { id: 'DESC' },
-      relations: ['mop'],
+      relations: ['mop', 'officer'],
     })
   }
 
