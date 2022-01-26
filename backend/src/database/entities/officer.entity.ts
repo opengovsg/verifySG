@@ -21,10 +21,10 @@ export class Officer {
   @Column({ nullable: false })
   name!: string
 
-  @Column()
+  @Column('varchar', { length: 255 })
   position!: string
 
-  @Column('text')
+  @Column('varchar', { length: 255 })
   agency!: string
 
   @OneToMany(() => Call, (call) => call.officer)
