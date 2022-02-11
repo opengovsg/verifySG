@@ -42,7 +42,7 @@ export class AuthOfficerController {
       req.session.officerId = officer.id
     } else {
       this.logger?.warn(`Incorrect OTP given for ${email}`)
-      throw new UnauthorizedException()
+      throw new UnauthorizedException(`Incorrect OTP given`)
     }
   }
 
