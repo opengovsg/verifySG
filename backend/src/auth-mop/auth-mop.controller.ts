@@ -8,7 +8,6 @@ import {
   UnauthorizedException,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
@@ -17,7 +16,7 @@ import { MopDto } from 'mops/dto'
 import { SgidService } from './sgid.service'
 import { MopsService } from 'mops/mops.service'
 import { ConfigService } from 'core/providers'
-import { AuthMopGuard } from './guards/auth-mop.guard'
+import { MopId } from 'common/decorators'
 import { SgidAuthUrl } from './dto'
 
 @Controller('auth')
@@ -55,11 +54,16 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthMopGuard)
   @Get('whoami')
-  getUserInfo(@Res({ passthrough: true }) res: Response): MopDto {
-    const { nric } = res.locals.mop
-    return { nric }
+  async whoami(@MopId() mopId: number): Promise<MopDto | undefined> {
+    if (mopId) {
+      const mop = await this.mopsService.getById(mopId)
+      if (mop) {
+        const { nric } = mop
+        return { nric }
+      }
+    }
+    return
   }
 
   /**

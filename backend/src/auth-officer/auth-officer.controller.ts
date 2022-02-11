@@ -6,7 +6,6 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  UseGuards,
 } from '@nestjs/common'
 import { OfficerDto } from 'officers/dto'
 import { AuthOfficerService } from './auth-officer.service'
@@ -14,8 +13,9 @@ import { ConfigService } from 'core/providers'
 import { Logger } from 'core/providers'
 import { Request, Response } from 'express'
 
-import { AuthOfficerGuard } from './guards/auth-officer.guard'
 import { OtpAuthVerify } from './dto/otp-auth-verify'
+import { OfficerId } from 'common/decorators'
+import { OfficersService } from 'officers/officers.service'
 
 @Controller('auth-officers')
 export class AuthOfficerController {
@@ -23,6 +23,7 @@ export class AuthOfficerController {
     private readonly authOfficerService: AuthOfficerService,
     private logger: Logger,
     private config: ConfigService,
+    private officersService: OfficersService,
   ) {}
 
   @Post()
@@ -46,11 +47,18 @@ export class AuthOfficerController {
     }
   }
 
-  @UseGuards(AuthOfficerGuard)
   @Get('whoami')
-  async whoami(@Res({ passthrough: true }) res: Response): Promise<OfficerDto> {
-    const { email } = res.locals.officer
-    return { email }
+  async whoami(
+    @OfficerId() officerId: number,
+  ): Promise<OfficerDto | undefined> {
+    if (officerId) {
+      const officer = await this.officersService.getById(officerId)
+      if (officer) {
+        const { email } = officer
+        return { email }
+      }
+    }
+    return
   }
 
   @Post('logout')
