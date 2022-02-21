@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common'
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -7,6 +8,8 @@ import {
 import { Server } from 'socket.io'
 import { CallsService } from './calls.service'
 import { CreateCallDto } from './dto'
+import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
+import { OfficerId } from 'common/decorators'
 
 @WebSocketGateway({
   cors: {
@@ -19,10 +22,15 @@ export class CallGateway {
 
   constructor(private readonly callService: CallsService) {}
 
+  @UseGuards(AuthOfficerGuard)
   @SubscribeMessage('create_call')
-  async listenForMessages(@MessageBody() createCallDto: CreateCallDto) {
-    console.log('>> listening for calls', createCallDto)
-    const call = await this.callService.createCall(createCallDto)
+  async listenForMessages(
+    @OfficerId() officerId: number,
+    @MessageBody() body: CreateCallDto,
+  ) {
+    const { mopNric } = body
+    console.log('>> listening for calls', body)
+    const call = await this.callService.createCall({ officerId, mopNric })
     const latestCall = await this.callService.getLatestCallForMop(call.mop.id)
 
     if (latestCall) {

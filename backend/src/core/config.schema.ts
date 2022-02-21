@@ -27,6 +27,12 @@ export interface ConfigSchema {
     privateKey: string
     callbackUrl: string
   }
+  totp: {
+    expiry: number
+    numValidPastWindows: number
+    numValidFutureWindows: number
+    secret: string
+  }
 }
 
 addFormats({
@@ -186,6 +192,32 @@ export const schema: Schema<ConfigSchema> = {
       env: 'SGID_CALLBACK_URL',
       default: 'http://localhost:3000/callback',
       format: 'required-string',
+    },
+  },
+  totp: {
+    expiry: {
+      doc: 'Time step (seconds)',
+      env: 'OTP_EXPIRY_IN_SECONDS',
+      default: 60 * 15,
+      format: Number,
+    },
+    numValidPastWindows: {
+      doc: 'Tokens in the previous x-windows that should be considered valid',
+      env: 'OTP_PAST_WINDOWS',
+      default: 1,
+      format: Number,
+    },
+    numValidFutureWindows: {
+      doc: 'Tokens in the future x-windows that should be considered valid',
+      env: 'OTP_FUTURE_WINDOWS',
+      default: 0,
+      format: Number,
+    },
+    secret: {
+      doc: 'Secret for otp govt auth',
+      env: 'OTP_SECRET',
+      default: 'secretsecret',
+      format: String,
     },
   },
 }

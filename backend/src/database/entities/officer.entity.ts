@@ -18,13 +18,13 @@ export class Officer {
   @Column({ unique: true, nullable: false, length: 255 })
   email!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   name!: string
 
-  @Column('varchar', { length: 255 })
+  @Column('varchar', { length: 255, nullable: true })
   position!: string
 
-  @Column('varchar', { length: 255 })
+  @Column('varchar', { length: 255, nullable: true })
   agency!: string
 
   @OneToMany(() => Call, (call) => call.officer)
