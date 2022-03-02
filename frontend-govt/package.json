@@ -1,5 +1,5 @@
 {
-  "name": "gov-frontend",
+  "name": "frontend-govt",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
