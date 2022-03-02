@@ -1,4 +1,4 @@
-# VerifySG
+# CheckWho
 
 ## Getting started with your dev environment
 

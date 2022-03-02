@@ -130,7 +130,7 @@ export const schema: Schema<ConfigSchema> = {
     name: {
       doc: 'Name of session ID cookie to set in response',
       env: 'SESSION_NAME',
-      default: 'verifysg.sid',
+      default: 'checkwho.sid',
       format: String,
     },
     secret: {

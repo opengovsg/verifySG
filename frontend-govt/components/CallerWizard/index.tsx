@@ -124,6 +124,7 @@ const SecondSection = ({
         padding="16px"
       >
         <InfoIcon color="brand.green" boxSize={'20px'} />
+        {/* TODO: update copy */}
         <Text>
           To help the recipient identify this as an official call, ask them to
           visit whodis.gov.sg on their phone or desktop browser
