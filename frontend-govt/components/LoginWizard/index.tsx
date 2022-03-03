@@ -12,13 +12,8 @@ import {
   PinInput,
 } from '@chakra-ui/react'
 
-import { ChangeEventHandler, useCallback, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthProvider'
-
-interface loginState {
-  email: string
-  otp: number
-}
 
 const LoginWizard = () => {
   // login section is used to tell LoginWizard which part of the login to render
@@ -46,10 +41,7 @@ interface EmailSectionProps {
   handleLoginSection: () => void
 }
 
-const EmailSection = ({
-  loginSection,
-  handleLoginSection,
-}: EmailSectionProps) => {
+const EmailSection = ({ handleLoginSection }: EmailSectionProps) => {
   const [email, setEmail] = useState('')
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>

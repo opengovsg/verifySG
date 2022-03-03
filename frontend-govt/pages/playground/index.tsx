@@ -1,8 +1,7 @@
-import { CallerWizard } from "../../components/CallerWizard";
-import LoginWizard from "../../components/LoginWizard"
+import { CallerWizard } from '../../components/CallerWizard'
 
 const PlayGround = () => {
   return <CallerWizard />
 }
 
-export default PlayGround;
+export default PlayGround

@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, MenuList, Select, Text } from '@chakra-ui/react'
+import { Heading, HStack, Select } from '@chakra-ui/react'
 
 const Navbar = () => {
   return (
