@@ -44,7 +44,6 @@ export class CallsController {
   @UseGuards(AuthMopGuard)
   @Get()
   async getCallsForMop(@MopId() mopId: number): Promise<GetCallDto[]> {
-    console.log('>> calling get all calls', mopId)
     const calls = await this.callsService.getCallsForMop(mopId)
     return calls.map(this.callsService.mapToDto)
   }

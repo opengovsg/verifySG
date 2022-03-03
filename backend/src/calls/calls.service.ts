@@ -59,7 +59,6 @@ export class CallsService {
   }
 
   mapToDto(call: Call): GetCallDto {
-    console.log('call: ' + JSON.stringify(call))
     const { id, officer, createdAt } = call
     return {
       id,
