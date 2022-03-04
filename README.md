@@ -32,13 +32,6 @@ $ createdb checkwho_dev
     npm run dev
     ```
 
-### Database migrations
-
-- Run database migrations:
-    ```
-    npm run on-backend -- migration:run
-    ```
-
 ## Migrations
 
 ### Auto-generate migrations
