@@ -8,16 +8,13 @@ import {
   Button,
   Spinner,
   HStack,
-  Alert,
   Spacer,
   FormControl,
   FormErrorMessage,
 } from '@chakra-ui/react'
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react'
 import { default as nricValidator } from 'nric'
-import { ApiService } from '../../services/ApiService'
-import { createCall, socketCallCreate } from '../../services/CallService/CallService'
-import { socket } from '../../services/SocketService'
+import { socketCallCreate } from '../../services/CallService/CallService'
 import { AuthContext } from '../../contexts/AuthProvider'
 
 export const CallerWizard = () => {
@@ -44,8 +41,10 @@ interface SectionProps {
 const FirstSection = ({ setSection, nric, setNric }: SectionProps) => {
   // TODO (Austin): Clean this up, should be a form validator in the final working product
   const [nricInvalid, setNricInvalid] = useState(false)
-  const {authState: {_id: officerId}} = useContext(AuthContext);
-  
+  const {
+    authState: { _id: officerId },
+  } = useContext(AuthContext)
+
   const handleNricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNric(e.target.value)
   }
@@ -124,6 +123,7 @@ const SecondSection = ({
         padding="16px"
       >
         <InfoIcon color="brand.green" boxSize={'20px'} />
+        {/* TODO: update copy */}
         <Text>
           To help the recipient identify this as an official call, ask them to
           visit whodis.gov.sg on their phone or desktop browser

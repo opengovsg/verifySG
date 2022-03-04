@@ -3,14 +3,14 @@ version: '3.8'
 services:
     postgres:
         image: postgres:10.5
-        container_name: verifysg-postgres
+        container_name: checkwho-postgres
         restart: always
         ports: 
             - "5432:5432"
         environment:
             POSTGRES_USER: root
             POSTGRES_PASSWORD: root
-            POSTGRES_DB: verifysg_dev
+            POSTGRES_DB: checkwho_dev
         # persist postgres data even after teardown of image
         volumes:
             - postgres_data:/var/lib/postgres/

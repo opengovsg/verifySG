@@ -25,8 +25,8 @@ export class AuthOfficerService {
 
     const mail = {
       to: email,
-      from: 'WhoDis.gov.sg <donotreply@mail.open.gov.sg>',
-      subject: 'One-Time Password (OTP) for WhoThis',
+      from: 'CheckWho.gov.sg <donotreply@mail.open.gov.sg>',
+      subject: 'One-Time Password (OTP) for CheckWho',
       html,
     }
 

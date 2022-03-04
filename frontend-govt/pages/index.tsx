@@ -1,4 +1,4 @@
-import { Box, Center, Flex, HStack, Spacer, VStack } from '@chakra-ui/react'
+import { Box, Flex, Spacer, VStack } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import React, { useContext } from 'react'
 import { CallerWizard } from '../components/CallerWizard'
@@ -20,11 +20,11 @@ const Home: NextPage = () => {
         <Box paddingBottom={5}>
           <Navbar />
         </Box>
-        <Spacer/>
+        <Spacer />
         <VStack>
           {!authState.isAuthenticated ? <LoginWizard /> : <CallerWizard />}
         </VStack>
-        <Spacer/>
+        <Spacer />
       </Flex>
     </Box>
   )
