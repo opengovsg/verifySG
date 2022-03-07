@@ -166,7 +166,7 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'Client secret for sgid oauth',
       env: 'SGID_SECRET',
       default: '',
-      format: 'required-string',
+      format: String,
     },
     scopes: {
       doc: 'Scopes for sgid (space separated)',
@@ -178,7 +178,7 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'RSA 2048 private key for sgid oauth (in PKCS8 pem format)',
       env: 'SGID_PRIVATE_KEY',
       default: '',
-      format: 'required-string',
+      format: String,
     },
     callbackUrl: {
       doc: 'Callback url for sgid oauth',
