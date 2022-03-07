@@ -18,14 +18,6 @@ export interface ConfigSchema {
     maxPool: number
   }
   session: { name: string; secret: string; cookie: { maxAge: number } }
-  sgid: {
-    hostname: string
-    clientId: string
-    secret: string
-    scopes: string[]
-    privateKey: string
-    callbackUrl: string
-  }
   totp: {
     expiry: number
     numValidPastWindows: number
@@ -40,20 +32,6 @@ addFormats({
       if (val == undefined || val === '') {
         throw new Error('Required value cannot be empty')
       }
-    },
-  },
-  'sgid-scopes': {
-    validate: (scopes: string[]): void => {
-      // must be array of strings which include openid
-      if (!scopes.length || !scopes.includes('openid')) {
-        throw new Error('Invalid scopes')
-      }
-    },
-    coerce: (val: string): string[] => {
-      if (val) {
-        return val.toLowerCase().split(' ')
-      }
-      return []
     },
   },
 })
@@ -147,44 +125,6 @@ export const schema: Schema<ConfigSchema> = {
         format: 'int',
         default: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
-    },
-  },
-  sgid: {
-    hostname: {
-      doc: 'Hostname for SGID',
-      env: 'SGID_HOSTNAME',
-      default: 'https://api.id.gov.sg',
-      format: String,
-    },
-    clientId: {
-      doc: 'Client ID for sgid oauth',
-      env: 'SGID_CLIENT_ID',
-      default: '',
-      format: 'required-string',
-    },
-    secret: {
-      doc: 'Client secret for sgid oauth',
-      env: 'SGID_SECRET',
-      default: '',
-      format: 'required-string',
-    },
-    scopes: {
-      doc: 'Scopes for sgid (space separated)',
-      env: 'SGID_SCOPES',
-      default: ['openid', 'myinfo.nric'],
-      format: 'sgid-scopes',
-    },
-    privateKey: {
-      doc: 'RSA 2048 private key for sgid oauth (in PKCS8 pem format)',
-      env: 'SGID_PRIVATE_KEY',
-      default: '',
-      format: 'required-string',
-    },
-    callbackUrl: {
-      doc: 'Callback url for sgid oauth',
-      env: 'SGID_CALLBACK_URL',
-      default: 'http://localhost:3000/callback',
-      format: 'required-string',
     },
   },
   totp: {
