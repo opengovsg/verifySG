@@ -1,12 +1,20 @@
-## Context
+## Problem
 
-_Why does this PR exist? What problem are you trying to solve? What issue does this close?_
+<!-- What problem are you trying to solve? What issue does this close? -->
 
 Closes [insert issue #]
 
-## Approach
+## Solution
 
-_How did you solve the problem?_
+<!-- How did you solve the problem? -->
+
+**Breaking Changes**
+
+<!-- Does this PR contain any backward incompatible changes? If so, what are they and should there be special considerations for release? -->
+
+- [ ] Yes - this PR contains breaking changes
+  - Details ...
+- [ ] No - this PR is backwards compatible
 
 **Features**:
 
@@ -23,19 +31,21 @@ _How did you solve the problem?_
 ## Before & After Screenshots
 
 **BEFORE**:
-[insert screenshot here]
+
+<!-- [insert screenshot here] -->
 
 **AFTER**:
-[insert screenshot here]
+
+<!-- [insert screenshot here] -->
 
 ## Tests
 
-_What tests should be run to confirm functionality?_
+<!-- What tests should be run to confirm functionality? -->
 
 ## Deploy Notes
 
-_Notes regarding deployment of the contained body of work. These should note any
-new dependencies, new scripts, etc._
+<!-- Notes regarding deployment of the contained body of work.  -->
+<!-- These should note any new dependencies, new scripts, etc. -->
 
 **New environment variables**:
 
@@ -52,7 +62,3 @@ new dependencies, new scripts, etc._
 **New dev dependencies**:
 
 - `dependency` : dependency details
-
-## Risks
-
-_Describes potential risks with this PR. Consider carefully what could possibly happen in a worse case scenario. If possible, try to define risks as 2 items: **Impact** and **Likelihood** and use your best judgment._
