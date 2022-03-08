@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  DeleteDateColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
@@ -15,13 +14,13 @@ export class Officer {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column({ unique: true, nullable: false, length: 255 })
+  @Column('varchar', { unique: true, nullable: false, length: 255 })
   email!: string
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true, length: 255 })
   name!: string
 
-  @Column('varchar', { length: 255, nullable: true })
+  @Column('varchar', { nullable: true, length: 255 })
   position!: string
 
   @Column('varchar', { length: 255, nullable: true })
@@ -35,7 +34,4 @@ export class Officer {
 
   @UpdateDateColumn()
   updatedAt!: Date
-
-  @DeleteDateColumn({ nullable: true })
-  deletedAt!: Date
 }
