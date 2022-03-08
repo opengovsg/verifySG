@@ -36,10 +36,10 @@ $ createdb checkwho_dev
 
 ### Auto-generate migrations
 ```
-npm run on-backend -- migration:gen -- -n <migration-name>
+npm run on-backend migration:gen <migration-name>
 ```
 ### Run migrations
 
 ```
-npm run on-backend -- migration:run
+npm run on-backend migration:run
 ```
