@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  ManyToOne,
   UpdateDateColumn,
 } from 'typeorm'
 
 import { Call } from './call.entity'
+import { Agency } from './agency.entity'
 
 @Entity({ name: 'officer' })
 export class Officer {
@@ -23,8 +25,11 @@ export class Officer {
   @Column('varchar', { nullable: true, length: 255 })
   position!: string
 
-  @Column('varchar', { length: 255, nullable: true })
-  agency!: string
+  @ManyToOne(() => Agency, (agency) => agency.officers, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  agency!: Agency
 
   @OneToMany(() => Call, (call) => call.officer)
   calls!: Call[]
