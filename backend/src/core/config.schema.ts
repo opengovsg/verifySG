@@ -161,8 +161,7 @@ export const schema: Schema<ConfigSchema> = {
     apiUrl: {
       doc: 'API endpoint for Postman.gov.sg',
       env: 'POSTMAN_API_URL',
-      default:
-        'https://api.postman.gov.sg/v1https://api.postman.gov.sg/v1/transactional/email/send',
+      default: 'https://api.postman.gov.sg/v1/transactional/email/send',
       format: String,
     },
     apiKey: {
