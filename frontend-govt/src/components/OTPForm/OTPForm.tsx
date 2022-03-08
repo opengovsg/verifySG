@@ -101,7 +101,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
           <Button size="lg" colorScheme="primary" type="submit">
-            Login
+            Log in
           </Button>
           <Button
             variant="link"
@@ -109,7 +109,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
             //TODO: add otp resend logic and call otp resend function on logic completion
             onClick={resendOTP}
           >
-            {canResend ? 'Resend' : `Resend in ${resendTimer}s`}
+            {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
           </Button>
         </HStack>
       </VStack>
