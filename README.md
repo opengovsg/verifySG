@@ -4,7 +4,7 @@
 
 ### Initialization
 
-- Make a copy of `/backend/sample.env` and name it `/backend/.env`
+- Make a copy of `/backend/.env.example` and name it `/backend/.env`
 
 
 - Install and audit node dependencies (run from root)
