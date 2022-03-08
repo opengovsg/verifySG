@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   OneToMany,
 } from 'typeorm'
 
@@ -16,8 +17,14 @@ export class Mop {
   @Column('varchar', { unique: true, nullable: false, length: 255 })
   nric!: string
 
+  @Column('varchar', { nullable: true, length: 255 })
+  phoneNumber!: string
+
   @CreateDateColumn()
   createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
 
   @OneToMany(() => Call, (call) => call.mop)
   calls!: Call[]
