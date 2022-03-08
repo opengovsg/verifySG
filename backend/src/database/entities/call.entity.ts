@@ -1,5 +1,6 @@
 import {
   Entity,
+  Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
@@ -25,6 +26,9 @@ export class Call {
     onUpdate: 'CASCADE',
   })
   mop!: Mop
+
+  @Column('text', { nullable: true, default: null })
+  callScope!: string
 
   @CreateDateColumn()
   createdAt!: Date
