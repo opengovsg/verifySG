@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 
-import { ROOT_ROUTE, LOGIN_ROUTE } from '../constants/routes'
+import { LOGIN_ROUTE, DASHBOARD_ROUTE, ROOT_ROUTE } from '../constants/routes'
 
 import { PrivateRoute } from './PrivateRoute'
 import { PublicRoute } from './PublicRoute'
@@ -13,12 +13,17 @@ export const AppRouter = (): JSX.Element => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Switch>
+        {/* TODO: add root page */}
+        <PublicRoute exact path={ROOT_ROUTE}>
+          <Redirect to={LOGIN_ROUTE} />
+        </PublicRoute>
         <PublicRoute exact path={LOGIN_ROUTE}>
           <LoginPage />
         </PublicRoute>
-        <PrivateRoute exact path={ROOT_ROUTE}>
+        <PrivateRoute exact path={DASHBOARD_ROUTE}>
           <DashboardPage />
         </PrivateRoute>
+        {/* TODO: add 404 page */}
         <Route path="*">404</Route>
       </Switch>
     </Suspense>

@@ -1,12 +1,12 @@
 import { Redirect, Route, RouteProps } from 'react-router-dom'
 import { LOGIN_ROUTE } from '../constants/routes'
-import { useAuth } from '../services/auth'
+import useAuth from '../contexts/AuthProvider/useAuth'
 
 export const PrivateRoute = ({
   children,
   ...rest
 }: Omit<RouteProps, 'render'>): JSX.Element => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth().authState
 
   return (
     <Route

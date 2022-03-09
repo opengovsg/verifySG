@@ -5,12 +5,15 @@ import '@opengovsg/design-system-react/build/fonts/inter.css'
 import { ThemeProvider } from '@opengovsg/design-system-react'
 import { BrowserRouter } from 'react-router-dom'
 import { AppRouter } from './AppRouter'
+import AuthProvider from '../contexts/AuthProvider/AuthProvider'
 
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <AppRouter />
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
   )

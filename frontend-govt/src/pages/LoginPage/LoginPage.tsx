@@ -8,13 +8,14 @@ import { useHistory } from 'react-router-dom'
 // import assets
 import SignInSplash from '../../assets/SignInSplash.svg'
 import Logo from '../../assets/CheckWhoLogo.svg'
+import { DASHBOARD_ROUTE } from '../../constants/routes'
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const history = useHistory()
 
   // login redirect handler
-  const loginRedirect = () => history.push('/dashboard')
+  const loginRedirect = () => history.push(DASHBOARD_ROUTE)
 
   return (
     <Flex direction="column" h="100vh" align="stretch">

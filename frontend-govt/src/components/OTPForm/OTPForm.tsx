@@ -7,6 +7,7 @@ import {
   Input,
 } from '@opengovsg/design-system-react'
 import { useForm } from 'react-hook-form'
+import useAuth from '../../contexts/AuthProvider/useAuth'
 
 interface OTPFormProps {
   email: string
@@ -23,6 +24,9 @@ const RESEND_WAIT_TIME = 30000 // 30 seconds
 export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
   const [canResend, setCanResend] = useState(false)
   const [resendTimer, setResendTimer] = useState(RESEND_WAIT_TIME / 1000)
+
+  // import auth context
+  const { authState, setAuthState } = useAuth()
 
   // otp resend timer side-effect
   useEffect(() => {
@@ -67,7 +71,8 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
     const { token } = data
     //TODO: use token in auth login flow
 
-    // trigger onSuccess for now
+    // trigger onSuccess for now, instant login
+    setAuthState({ ...authState, isAuthenticated: true, email: email })
     onLogin()
   }
 

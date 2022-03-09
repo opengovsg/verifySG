@@ -1,7 +1,7 @@
 import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom'
 import { Location } from 'history'
-import { ROOT_ROUTE } from '../constants/routes'
-import { useAuth } from '../services/auth'
+import { DASHBOARD_ROUTE } from '../constants/routes'
+import useAuth from '../contexts/AuthProvider/useAuth'
 
 export interface PublicRouteProps extends Omit<RouteProps, 'render'> {
   // If `strict` is true, only non-authed users can access the route.
@@ -17,7 +17,7 @@ export const PublicRoute = ({
   strict = true,
   ...rest
 }: PublicRouteProps): JSX.Element => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth().authState
   const { state } = useLocation<{ from: Location | undefined }>()
 
   return (
@@ -27,7 +27,7 @@ export const PublicRoute = ({
         !!isAuthenticated && strict ? (
           <Redirect
             to={{
-              pathname: state?.from?.pathname ?? ROOT_ROUTE,
+              pathname: state?.from?.pathname ?? DASHBOARD_ROUTE,
               state: { from: location },
             }}
           />
