@@ -1,30 +1,41 @@
 import { Injectable } from '@nestjs/common'
 import { Logger } from 'core/providers'
-import nodemailer, { SendMailOptions, Transporter } from 'nodemailer'
-import aws from '@aws-sdk/client-ses'
+import { ConfigSchema } from 'core/config.schema'
+
+import axios from 'axios'
 
 import { ConfigService } from 'core/providers'
 
 @Injectable()
 export class MailerService {
-  constructor(private config: ConfigService, private logger: Logger) {}
+  private config: ConfigSchema['postman']
 
-  private mailer: Pick<Transporter, 'sendMail'> =
-    this.config.get('environment') === 'development'
-      ? {
-          sendMail: (options: SendMailOptions) => {
-            this.logger.log(JSON.stringify(options, null, 2))
-            return Promise.resolve(options)
-          },
-        }
-      : nodemailer.createTransport({
-          SES: new aws.SES({
-            region: this.config.get('awsRegion'),
-            apiVersion: '2010-12-01',
-          }),
-        })
+  constructor(private configService: ConfigService, private logger: Logger) {
+    this.config = this.configService.get('postman')
+  }
 
-  sendMail = async (mailOptions: SendMailOptions): Promise<void> => {
-    return this.mailer.sendMail(mailOptions)
+  sendMail = async (body: string, recipient: string): Promise<void> => {
+    if (this.configService.get('environment') === 'development')
+      return this.logger.log(JSON.stringify(body, null, 2))
+
+    const mail = {
+      recipient,
+      from: 'CheckWho.gov.sg <donotreply@mail.postman.gov.sg>',
+      subject: 'One-Time Password (OTP) for CheckWho',
+      body,
+    }
+
+    try {
+      await axios.post(this.config.apiUrl, mail, {
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+        },
+      })
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        this.logger.error(e.message)
+      }
+      throw e
+    }
   }
 }

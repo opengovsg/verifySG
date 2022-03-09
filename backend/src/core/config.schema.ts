@@ -24,6 +24,10 @@ export interface ConfigSchema {
     numValidFutureWindows: number
     secret: string
   }
+  postman: {
+    apiUrl: string
+    apiKey: string
+  }
 }
 
 addFormats({
@@ -151,6 +155,20 @@ export const schema: Schema<ConfigSchema> = {
       env: 'OTP_SECRET',
       default: 'secretsecret',
       format: String,
+    },
+  },
+  postman: {
+    apiUrl: {
+      doc: 'API endpoint for Postman.gov.sg',
+      env: 'POSTMAN_API_URL',
+      default: 'https://api.postman.gov.sg/v1/transactional/email/send',
+      format: String,
+    },
+    apiKey: {
+      doc: 'API key for Postman.gov.sg',
+      env: 'POSTMAN_API_KEY',
+      default: '',
+      format: 'required-string',
     },
   },
 }

@@ -19,19 +19,12 @@ export class AuthOfficerService {
 
   async sendOTP(email: string): Promise<void> {
     const { token, timeLeft } = this.otpService.generateOtp(email)
-    const html = `Your OTP is <b>${token}</b>. It will expire in ${timeLeft} minutes.
+    const htmlBody = `Your OTP is <b>${token}</b>. It will expire in ${timeLeft} minutes.
     Please use this to login to your account.
     <p>If your OTP does not work, please request for a new one.</p>`
 
-    const mail = {
-      to: email,
-      from: 'CheckWho.gov.sg <donotreply@mail.open.gov.sg>',
-      subject: 'One-Time Password (OTP) for CheckWho',
-      html,
-    }
-
     this.logger.log(`Sending mail to ${email}`)
-    return this.mailerService.sendMail(mail)
+    await this.mailerService.sendMail(htmlBody, email)
   }
 
   async verifyOTP(email: string, token: string): Promise<Officer | undefined> {
