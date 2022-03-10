@@ -8,29 +8,29 @@ import {
 } from '@opengovsg/design-system-react'
 import { useForm } from 'react-hook-form'
 
-interface LoginFormProps {
-  onSuccess: (email: string) => void
+interface EmailFormProps {
+  onSubmit: (email: string) => void
 }
 
-interface LoginFormData {
+interface EmailFormData {
   email: string
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
   // react-hook-form controllers
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>()
+  } = useForm<EmailFormData>()
 
   // login form handlers
-  const onSubmit = (data: LoginFormData) => {
+  const submissionHandler = (data: EmailFormData) => {
     const { email } = data
     //TODO: use email in auth login flow
 
     // trigger onSuccess for now
-    onSuccess(email)
+    onSubmit(email)
   }
 
   // error handler stubs
@@ -41,7 +41,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(submissionHandler)}>
       <VStack spacing={8} align="stretch">
         <FormControl id="email" isInvalid={hasError()}>
           <FormLabel isRequired>Login</FormLabel>

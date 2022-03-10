@@ -11,7 +11,7 @@ import { useAuth } from '../../contexts/auth/AuthContext'
 
 interface OTPFormProps {
   email: string
-  onLogin: () => void
+  onSuccess: () => void
 }
 
 interface OTPFormData {
@@ -21,7 +21,7 @@ interface OTPFormData {
 // controls the OTP resend cooldown time
 const RESEND_WAIT_TIME = 30000 // 30 seconds
 
-export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
+export const OTPForm: React.FC<OTPFormProps> = ({ email, onSuccess }) => {
   const [canResend, setCanResend] = useState(false)
   const [resendTimer, setResendTimer] = useState(RESEND_WAIT_TIME / 1000)
 
@@ -73,7 +73,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onLogin }) => {
 
     // trigger onSuccess for now, instant login
     setAuthState({ ...authState, isAuthenticated: true, email: email })
-    onLogin()
+    onSuccess()
   }
 
   // error handler stubs

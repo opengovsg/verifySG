@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Center, Flex, Image, VStack } from '@chakra-ui/react'
 import { GovtMasthead } from '@opengovsg/design-system-react'
-import LoginForm from '../../components/LoginForm'
+import EmailForm from '../../components/EmailForm'
 import OTPForm from '../../components/OTPForm'
 import { useHistory } from 'react-router-dom'
 
@@ -37,9 +37,9 @@ export const LoginPage: React.FC = () => {
           >
             <Image src={Logo} w={{ base: '273px' }} />
             {!email ? (
-              <LoginForm onSuccess={setEmail} />
+              <EmailForm onSubmit={(email) => setEmail(email)} />
             ) : (
-              <OTPForm email={email} onLogin={loginRedirect} />
+              <OTPForm email={email} onSuccess={loginRedirect} />
             )}
           </VStack>
         </Flex>
