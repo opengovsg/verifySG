@@ -7,7 +7,7 @@ import {
   Input,
 } from '@opengovsg/design-system-react'
 import { useForm } from 'react-hook-form'
-import useAuth from '../../contexts/AuthProvider/useAuth'
+import { useAuth } from '../../contexts/auth/AuthContext'
 
 interface OTPFormProps {
   email: string
