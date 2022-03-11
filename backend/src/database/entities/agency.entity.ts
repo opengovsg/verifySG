@@ -1,7 +1,7 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
@@ -11,14 +11,11 @@ import { Officer } from './officer.entity'
 
 @Entity({ name: 'agency' })
 export class Agency {
-  @PrimaryGeneratedColumn()
-  id!: number
+  @PrimaryColumn('varchar', { unique: true, nullable: false, length: 255 })
+  id!: string // shortName
 
   @Column('varchar', { nullable: false, length: 255 })
   name!: string
-
-  @Column('varchar', { nullable: false, length: 255 })
-  shortName!: string
 
   @Column('text', { nullable: true, default: null })
   logoUrl!: string
