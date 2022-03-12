@@ -15,10 +15,10 @@ export class AgenciesService {
 
   async createAgency(createAgencyDto: CreateAgencyDto): Promise<Agency> {
     const agencyToAdd = this.agencyRepository.create(createAgencyDto)
-    return await this.agencyRepository.save(agencyToAdd)
+    return this.agencyRepository.save(agencyToAdd)
   }
 
-  async findAgencyById(agencyId: string) {
+  async findById(agencyId: string) {
     return this.agencyRepository.findOne({
       where: { id: agencyId },
     })
@@ -36,7 +36,7 @@ export class AgenciesService {
     agencyId: string,
     updateAgencyDto: UpdateAgencyDto,
   ): Promise<Agency> {
-    const agencyToUpdate = await this.findAgencyById(agencyId)
+    const agencyToUpdate = await this.findById(agencyId)
     if (!agencyToUpdate) {
       throw new Error(`Agency ${agencyId} not found`)
     }
