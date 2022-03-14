@@ -14,8 +14,11 @@ export class AgenciesService {
   ) {}
 
   async createAgency(createAgencyDto: CreateAgencyDto): Promise<Agency> {
-    const agencyToAdd = this.agencyRepository.create(createAgencyDto)
-    return this.agencyRepository.save(agencyToAdd)
+    const { id: agencyId } = createAgencyDto
+    await this.agencyRepository.insert(createAgencyDto)
+    const agency = await this.findById(agencyId)
+    if (!agency) throw new Error(`Agency not created ${agencyId}`)
+    return agency
   }
 
   async findById(agencyId: string): Promise<Agency | undefined> {
