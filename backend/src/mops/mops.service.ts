@@ -13,7 +13,7 @@ export class MopsService {
     private connection: Connection,
   ) {}
 
-  async getById(id: number): Promise<Mop | undefined> {
+  async findById(id: number): Promise<Mop | undefined> {
     return this.mopRepository.findOne(id)
   }
 

@@ -18,7 +18,7 @@ export class AuthOfficerGuard implements CanActivate {
     const req = getRequest<Request>()
     const res = getResponse<Response>()
     if (req.session.officerId) {
-      const officer = await this.officersService.getById(req.session.officerId)
+      const officer = await this.officersService.findById(req.session.officerId)
       if (officer) {
         res.locals.officer = officer
         return true

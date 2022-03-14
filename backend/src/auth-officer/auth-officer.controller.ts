@@ -59,7 +59,7 @@ export class AuthOfficerController {
     @OfficerId() officerId: number,
   ): Promise<OfficerDto | undefined> {
     if (officerId) {
-      const officer = await this.officersService.getById(officerId)
+      const officer = await this.officersService.findById(officerId)
       if (officer) {
         const { email } = officer
         return { email }

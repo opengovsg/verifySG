@@ -29,7 +29,7 @@ export class OfficersService {
     return this.officerRepository.save(officerToAdd)
   }
 
-  async getById(id: number): Promise<Officer | undefined> {
+  async findById(id: number): Promise<Officer | undefined> {
     return this.officerRepository.findOne(id)
   }
 
@@ -39,7 +39,7 @@ export class OfficersService {
     })
   }
 
-  async updateDetails(
+  async updateOfficer(
     id: number,
     officerDetails: UpdateOfficerDto,
   ): Promise<void> {
