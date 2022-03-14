@@ -19,7 +19,8 @@
     "pre-commit": "lint-staged",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./src/database/ormconfig.ts",
     "migration:run": "npm run typeorm migration:run",
-    "migration:gen": "npm run typeorm migration:generate -- -n"
+    "migration:gen": "npm run typeorm migration:generate -- -n",
+    "generate-admin-key": "ts-node -r tsconfig-paths/register src/scripts/generate-admin-key.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.37.0",
