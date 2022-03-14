@@ -6,6 +6,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common'
 import { OfficerDto } from 'officers/dto'
 import { AuthOfficerService } from './auth-officer.service'
@@ -29,7 +30,13 @@ export class AuthOfficerController {
   @Post()
   async sendOTP(@Body() body: OfficerDto): Promise<void> {
     const { email } = body
-    return await this.authOfficerService.sendOTP(email)
+    try {
+      return await this.authOfficerService.sendOTP(email)
+    } catch (err) {
+      throw new BadRequestException(
+        err instanceof Error ? err.message : 'Failed to send OTP',
+      )
+    }
   }
 
   @Post('verify')
