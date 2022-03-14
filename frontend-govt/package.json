@@ -20,10 +20,13 @@
     "axios": "^0.25.0",
     "formik": "^2.2.9",
     "framer-motion": "^5.6.0",
+    "libphonenumber-js": "^1.9.49",
     "nric": "^1.2.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.27.1",
+    "react-icons": "^4.3.1",
+    "react-markdown": "^8.0.0",
     "react-router-dom": "^5.3.0"
   },
   "devDependencies": {
