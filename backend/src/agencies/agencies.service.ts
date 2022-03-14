@@ -18,7 +18,7 @@ export class AgenciesService {
     return this.agencyRepository.save(agencyToAdd)
   }
 
-  async findById(agencyId: string) {
+  async findById(agencyId: string): Promise<Agency | undefined> {
     return this.agencyRepository.findOne({
       where: { id: agencyId },
     })
