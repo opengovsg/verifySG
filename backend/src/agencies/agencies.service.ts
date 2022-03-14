@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
+import { parseEmailDomain } from 'common/utils'
 
 import { CreateAgencyDto } from './dto/create-agency.dto'
 import { UpdateAgencyDto } from './dto/update-agency.dto'
@@ -24,6 +25,12 @@ export class AgenciesService {
   async findById(agencyId: string): Promise<Agency | undefined> {
     return this.agencyRepository.findOne({
       where: { id: agencyId },
+    })
+  }
+
+  async findByEmail(email: string): Promise<Agency | undefined> {
+    return this.agencyRepository.findOne({
+      where: `'${parseEmailDomain(email)}' = ANY (email_domains)`,
     })
   }
 
