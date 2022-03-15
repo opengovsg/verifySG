@@ -16,7 +16,7 @@ export class AuthAdminGuard implements CanActivate {
     const adminKey: string | undefined = req.get('Authorization')
 
     const valid = await this.authService.validateAdminKey(adminKey)
-    if (!valid) throw new UnauthorizedException()
+    if (!valid) throw new UnauthorizedException('Admin key is not valid')
 
     return true
   }
