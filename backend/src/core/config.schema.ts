@@ -30,8 +30,8 @@ export interface ConfigSchema {
   }
   adminKey: {
     length: number
-    saltRounds: number
     hash: string
+    algo: string
   }
 }
 
@@ -178,22 +178,22 @@ export const schema: Schema<ConfigSchema> = {
   },
   adminKey: {
     length: {
-      doc: 'Length of API key',
+      doc: 'Byte length of API key',
       env: 'ADMIN_KEY_LENGTH',
       format: 'int',
       default: 64,
-    },
-    saltRounds: {
-      doc: 'Cost factor for bcrypt hash',
-      env: 'ADMIN_KEY_SALT_ROUNDS',
-      format: 'int',
-      default: 10, // bcrypt default
     },
     hash: {
       doc: 'Hash of active admin key',
       env: 'ADMIN_KEY_HASH',
       format: 'required-string',
       default: '',
+    },
+    algo: {
+      doc: 'Algorithm for hashing key',
+      env: 'ADMIN_KEY_ALGO',
+      format: ['sha256', 'sha512'], // family of sha2 hash functions
+      default: 'sha256',
     },
   },
 }
