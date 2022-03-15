@@ -21,7 +21,7 @@ export class OfficersController {
     @Body() officerDetails: UpdateOfficerDto,
   ): Promise<void> {
     try {
-      await this.officersService.updateDetails(officerId, officerDetails)
+      await this.officersService.updateOfficer(officerId, officerDetails)
     } catch (err) {
       throw new BadRequestException(
         err instanceof Error ? err.message : 'Failed to update officer details',
