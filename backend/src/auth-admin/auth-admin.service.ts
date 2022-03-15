@@ -11,7 +11,7 @@ export class AuthAdminService {
     if (!adminKeyHeader) return false
 
     const [headerKey, key] = adminKeyHeader.trim().split(' ')
-    if (headerKey !== 'Bearer' || !key) return false
+    if (headerKey.toLowerCase() !== 'bearer' || !key) return false
 
     const { hash } = this.config.get('adminKey')
     const valid = await bcrypt.compare(key, hash)
