@@ -1,17 +1,14 @@
 import 'dotenv/config'
 
-import crypto from 'crypto'
-import bcrypt from 'bcrypt'
-
-import { schema } from 'core/config.schema'
-import convict from 'convict'
-
-const config = convict(schema)
+import { ConfigService } from 'core/providers'
+import { KeyHashService } from 'common/providers/key-hash.service'
 
 function main() {
-  const { length, saltRounds } = config.get('adminKey')
-  const key = crypto.randomBytes(length / 2).toString('hex')
-  const hash = bcrypt.hashSync(key, saltRounds)
+  const configService = new ConfigService()
+  const keyHashService = new KeyHashService(configService)
+
+  const key = keyHashService.generateKey()
+  const hash = keyHashService.generateHashFromKey(key)
 
   console.log(
     JSON.stringify(
