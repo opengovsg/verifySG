@@ -7,13 +7,16 @@ import {
   Body,
   Put,
   Param,
+  UseGuards,
 } from '@nestjs/common'
 import { AgenciesService } from './agencies.service'
 import { CreateAgencyDto } from './dto/create-agency.dto'
 import { UpdateAgencyDto } from './dto/update-agency.dto'
 
+import { AuthAdminGuard } from 'auth-admin/guards/auth-admin.guard'
 import { Agency } from 'database/entities/agency.entity'
 
+@UseGuards(AuthAdminGuard)
 @Controller('agencies')
 export class AgenciesController {
   constructor(private readonly agencyService: AgenciesService) {}

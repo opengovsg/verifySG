@@ -28,6 +28,11 @@ export interface ConfigSchema {
     apiUrl: string
     apiKey: string
   }
+  adminKey: {
+    length: number
+    hash: string
+    algo: string
+  }
 }
 
 addFormats({
@@ -169,6 +174,26 @@ export const schema: Schema<ConfigSchema> = {
       env: 'POSTMAN_API_KEY',
       default: '',
       format: 'required-string',
+    },
+  },
+  adminKey: {
+    length: {
+      doc: 'Byte length of API key',
+      env: 'ADMIN_KEY_LENGTH',
+      format: 'int',
+      default: 64,
+    },
+    hash: {
+      doc: 'Hash of active admin key',
+      env: 'ADMIN_KEY_HASH',
+      format: 'required-string',
+      default: '',
+    },
+    algo: {
+      doc: 'Algorithm for hashing key',
+      env: 'ADMIN_KEY_ALGO',
+      format: ['sha256', 'sha512'], // family of sha2 hash functions
+      default: 'sha256',
     },
   },
 }

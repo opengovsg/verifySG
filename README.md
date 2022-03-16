@@ -18,6 +18,11 @@
     ```
 - PostgreSQL in current setup is running within Docker container; no need to start up PostgreSQL manually.
 
+- Generate an admin key and set value in backend/.env file
+    ```
+    npm run on-backend -- generate-admin-key
+    ```
+
 ## Migrations
 
 ### Auto-generate migrations
