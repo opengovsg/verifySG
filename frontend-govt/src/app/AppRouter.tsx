@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 import { LOGIN_ROUTE, DASHBOARD_ROUTE, ROOT_ROUTE } from '../constants/routes'
 
@@ -11,7 +12,7 @@ const LoginPage = lazy(() => import('../pages/LoginPage'))
 
 export const AppRouter = (): JSX.Element => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <Switch>
         {/* TODO: add root page */}
         <PublicRoute exact path={ROOT_ROUTE}>
