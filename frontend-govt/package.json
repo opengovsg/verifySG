@@ -2,44 +2,67 @@
   "name": "frontend-govt",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "start": "PORT=3000 react-app-rewired start",
+    "build": "cross-env CI=false INLINE_RUNTIME_CHUNK=false react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject",
+    "dev": "npm run start",
+    "lint": "eslint ./ --ignore-path .gitignore && prettier . -c",
+    "lint:fix": "eslint ./ --ignore-path .gitignore --fix && prettier . -c --write",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.1.1",
-    "@chakra-ui/react": "^1.7.4",
+    "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@opengovsg/design-system-react": "^0.0.6",
     "axios": "^0.25.0",
     "formik": "^2.2.9",
     "framer-motion": "^5.6.0",
-    "next": "12.0.8",
+    "libphonenumber-js": "^1.9.49",
     "nric": "^1.2.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "socket.io": "^4.4.1",
-    "socket.io-client": "^4.4.1"
+    "react-hook-form": "^7.27.1",
+    "react-icons": "^4.3.1",
+    "react-markdown": "^8.0.0",
+    "react-router-dom": "^5.3.0"
   },
   "devDependencies": {
     "@types/node": "17.0.10",
     "@types/react": "17.0.38",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "eslint": "8.7.0",
-    "eslint-config-next": "12.0.8",
     "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
     "husky": "^7.0.4",
-    "lint-staged": "^12.2.2",
+    "lint-staged": "^12.3.6",
     "prettier": "^2.5.1",
+    "react-app-rewire-alias": "^1.1.4",
+    "react-app-rewired": "^2.1.8",
+    "react-scripts": "^5.0.0",
     "typescript": "4.5.4"
   },
   "lint-staged": {
     "**/*.(js|jsx|ts|tsx)": [
       "prettier --write",
       "eslint --cache --fix"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }
