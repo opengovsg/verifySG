@@ -21,7 +21,7 @@ export const AppRouter = (): JSX.Element => {
         <PublicRoute exact path={LOGIN_ROUTE}>
           <LoginPage />
         </PublicRoute>
-        <PrivateRoute exact path={DASHBOARD_ROUTE}>
+        <PrivateRoute path={DASHBOARD_ROUTE}>
           <DashboardPage />
         </PrivateRoute>
         {/* TODO: add 404 page */}
