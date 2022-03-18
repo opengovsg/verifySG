@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   root: true,
-  ignorePatterns: ['.eslintrc.js', 'jest.config.ts'],
+  ignorePatterns: ['.eslintrc.js', 'jest.config.ts', '/src/scripts/*'],
   rules: {
     'no-console': 'warn',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
