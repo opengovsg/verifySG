@@ -8,10 +8,12 @@ import {
 import { useForm } from 'react-hook-form'
 import { useAuth } from '../../contexts/auth/AuthContext'
 import { OTPInput } from './OTPInput'
+import { AuthService } from '../../services/AuthService'
+import { useMutation } from 'react-query'
 
 interface OTPFormProps {
   email: string
-  onSuccess: () => void
+  onSubmit: () => void
 }
 
 interface OTPFormData {
@@ -21,7 +23,7 @@ interface OTPFormData {
 // controls the OTP resend cooldown time
 const RESEND_WAIT_TIME = 30000 // 30 seconds
 
-export const OTPForm: React.FC<OTPFormProps> = ({ email, onSuccess }) => {
+export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const [canResend, setCanResend] = useState(false)
   const [resendTimer, setResendTimer] = useState(RESEND_WAIT_TIME / 1000)
   const [isEditing, setIsEditing] = useState(false)
@@ -30,7 +32,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSuccess }) => {
   const otpInputRef = useRef<HTMLInputElement>(null)
 
   // import auth context
-  const { authState, setAuthState } = useAuth()
+  const { getOfficer } = useAuth()
 
   // otp resend timer side-effect
   useEffect(() => {
@@ -73,26 +75,30 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSuccess }) => {
 
   // handle OTP resending
   const resendOTP = () => {
+    AuthService.getOtp({ email })
     setResendTimer(RESEND_WAIT_TIME / 1000)
     setCanResend(false)
   }
 
   // login form handlers
-  const onSubmit = (data: OTPFormData) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const verifyOtp = useMutation(AuthService.verifyOtp, {
+    onSuccess: async () => {
+      await getOfficer()
+      onSubmit()
+    },
+    onError: () => {
+      // clear form and reset focus
+      resetField('token', { defaultValue: '' })
+      otpInputRef.current?.focus()
+    },
+  })
+
+  const submissionHandler = (data: OTPFormData) => {
     const { token } = data
-    //TODO: do otp validation
-
-    // trigger onSuccess for now, instant login
-    setAuthState({ ...authState, isAuthenticated: true, email: email })
-    onSuccess()
-
-    // clear form and reset focus
-    resetField('token', { defaultValue: '' })
-    otpInputRef.current?.focus()
+    verifyOtp.mutate({ email, token })
   }
   const onSubmitInvalid = () => setIsEditing(false)
-  const triggerSubmit = handleSubmit(onSubmit, onSubmitInvalid)
+  const triggerSubmit = handleSubmit(submissionHandler, onSubmitInvalid)
 
   // otp input handlers
   const handleChange = (token: string) => {
@@ -105,11 +111,12 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSuccess }) => {
   const handleFocus = () => setIsEditing(true)
 
   // error handler stubs
-  //TODO: implement error handling for auth service, otp validation
-  const hasError = () => (errors.token ? true : false)
+  const hasError = (): boolean => !!errors.token || verifyOtp.isError
   const showError = isEditing ? false : hasError()
   const getErrorMessage = (): string => {
-    return 'Please enter the 6-digit OTP in full'
+    return errors && errors.token
+      ? 'Please provide a valid OTP'
+      : `${verifyOtp.error}`
   }
 
   return (
