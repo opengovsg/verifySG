@@ -9,6 +9,7 @@ import {
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import nric from 'nric'
+import HeaderContainer from '../HeaderContainer'
 
 interface CallFormData {
   nricFin: string
@@ -56,48 +57,49 @@ export const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
   // }
 
   return (
-    <VStack mt="64px" spacing="32px">
-      <Text textStyle="h2" color="#1B3C87">
-        Enter the details of the person you need to call
-      </Text>
-      <InlineMessage
-        variant="info"
-        w="440px"
-        useMarkdown
-        // override internal theme style
-        //TODO: shift these into theme folder for cleanup refactor
-        sx={{
-          padding: '8px',
-          display: 'flex',
-          p: '1rem',
-          justifyContent: 'start',
-          color: 'secondary.700',
-          bg: '#EBEFFE',
-        }}
-      >
-        When you click the ‘Notify call recipient’ button, they will receive a
-        notification that you will be calling them shortly. The notification
-        will also show your name, and the purpose of your call.
-      </InlineMessage>
-      <form onSubmit={handleSubmit(submissionHandler)}>
-        <VStack spacing="32px" w="448px">
-          <FormControl isInvalid={!!errors.nricFin}>
-            <FormLabel isRequired>NRIC / FIN</FormLabel>
-            <Input
-              {...register('nricFin', {
-                required: 'Please enter a valid NRIC / FIN',
-                validate: {
-                  valid: (v) =>
-                    nric.validate(v) || 'Please enter a valid NRIC / FIN',
-                },
-              })}
-              placeholder="e.g. S1234567D"
-            />
-            {errors.nricFin && (
-              <FormErrorMessage>{errors.nricFin.message}</FormErrorMessage>
-            )}
-          </FormControl>
-          {/* <FormControl isInvalid={!!errors.phoneNumber}>
+    <HeaderContainer>
+      <VStack mt="64px" spacing="32px">
+        <Text textStyle="h2" color="#1B3C87">
+          Enter the details of the person you need to call
+        </Text>
+        <InlineMessage
+          variant="info"
+          w="440px"
+          useMarkdown
+          // override internal theme style
+          //TODO: shift these into theme folder for cleanup refactor
+          sx={{
+            padding: '8px',
+            display: 'flex',
+            p: '1rem',
+            justifyContent: 'start',
+            color: 'secondary.700',
+            bg: '#EBEFFE',
+          }}
+        >
+          When you click the ‘Notify call recipient’ button, they will receive a
+          notification that you will be calling them shortly. The notification
+          will also show your name, and the purpose of your call.
+        </InlineMessage>
+        <form onSubmit={handleSubmit(submissionHandler)}>
+          <VStack spacing="32px" w="448px">
+            <FormControl isInvalid={!!errors.nricFin}>
+              <FormLabel isRequired>NRIC / FIN</FormLabel>
+              <Input
+                {...register('nricFin', {
+                  required: 'Please enter a valid NRIC / FIN',
+                  validate: {
+                    valid: (v) =>
+                      nric.validate(v) || 'Please enter a valid NRIC / FIN',
+                  },
+                })}
+                placeholder="e.g. S1234567D"
+              />
+              {errors.nricFin && (
+                <FormErrorMessage>{errors.nricFin.message}</FormErrorMessage>
+              )}
+            </FormControl>
+            {/* <FormControl isInvalid={!!errors.phoneNumber}>
             <FormLabel isRequired>Phone number</FormLabel>
             <PhoneNumberInput
               isInvalid={!!errors.phoneNumber}
@@ -109,14 +111,15 @@ export const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
               <FormErrorMessage>{errors.phoneNumber.message}</FormErrorMessage>
             )}
           </FormControl> */}
-          <VStack spacing="16px">
-            <Button type="submit">Notify call recipient</Button>
-            <Button variant="link" onClick={() => reset()} type="reset">
-              Clear details
-            </Button>
+            <VStack spacing="16px">
+              <Button type="submit">Notify call recipient</Button>
+              <Button variant="link" onClick={() => reset()} type="reset">
+                Clear details
+              </Button>
+            </VStack>
           </VStack>
-        </VStack>
-      </form>
-    </VStack>
+        </form>
+      </VStack>
+    </HeaderContainer>
   )
 }

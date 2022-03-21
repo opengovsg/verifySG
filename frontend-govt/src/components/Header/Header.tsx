@@ -3,7 +3,7 @@ import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
 import Logo from '../../assets/CheckWhoLogo.svg'
 import { Tab } from '@opengovsg/design-system-react'
 import { Link } from 'react-router-dom'
-import { DASHBOARD_ROUTE } from '../../constants/routes'
+import { PROFILE_ROUTE } from '../../constants/routes'
 import { AvatarControl } from './AvatarControl'
 
 interface NavlinkProps {
@@ -18,7 +18,7 @@ interface HeaderProps {
 const defaultNavlinks: Array<NavlinkProps> = [
   {
     label: 'CALL DASHBOARD',
-    route: DASHBOARD_ROUTE,
+    route: PROFILE_ROUTE,
   },
 ]
 
