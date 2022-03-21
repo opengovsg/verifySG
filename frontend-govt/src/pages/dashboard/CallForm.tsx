@@ -9,7 +9,7 @@ import {
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import nric from 'nric'
-import HeaderContainer from '../HeaderContainer'
+import HeaderContainer from '../../components/HeaderContainer'
 
 interface CallFormData {
   nricFin: string

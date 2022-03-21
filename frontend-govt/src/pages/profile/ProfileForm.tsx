@@ -8,7 +8,7 @@ import {
 } from '@opengovsg/design-system-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import HeaderContainer from '../HeaderContainer'
+import HeaderContainer from '../../components/HeaderContainer'
 
 interface ProfileFormData {
   agency: string

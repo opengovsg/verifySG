@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
-import ProfileForm from '../components/ProfileForm'
-import CallForm from '../components/CallForm'
+import ProfileForm from '../pages/profile'
+import CallForm from '../pages/dashboard'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 import {
@@ -14,7 +14,7 @@ import {
 import { PrivateRoute } from './PrivateRoute'
 import { PublicRoute } from './PublicRoute'
 
-const LoginPage = lazy(() => import('../pages/LoginPage'))
+const LoginPage = lazy(() => import('../pages/login'))
 
 export const AppRouter = (): JSX.Element => {
   const history = useHistory()
