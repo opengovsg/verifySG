@@ -50,7 +50,6 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             address
           </Text>
           <Input
-            h="48px"
             type="email"
             {...register('email', { required: true })}
             placeholder="e.g. jane@open.gov.sg"

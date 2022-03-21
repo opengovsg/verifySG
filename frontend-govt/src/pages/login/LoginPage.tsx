@@ -3,19 +3,17 @@ import { Center, Flex, Image, VStack } from '@chakra-ui/react'
 import { GovtMasthead } from '@opengovsg/design-system-react'
 import EmailForm from '../../components/EmailForm'
 import OTPForm from '../../components/OTPForm'
-import { useHistory } from 'react-router-dom'
 
 // import assets
 import SignInSplash from '../../assets/SignInSplash.svg'
 import Logo from '../../assets/CheckWhoLogo.svg'
-import { DASHBOARD_ROUTE } from '../../constants/routes'
 
-export const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  onLogin?: () => void
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('')
-  const history = useHistory()
-
-  // login redirect handler
-  const loginRedirect = () => history.push(DASHBOARD_ROUTE)
 
   return (
     <Flex direction="column" h="100vh" align="stretch">
@@ -39,7 +37,7 @@ export const LoginPage: React.FC = () => {
             {!email ? (
               <EmailForm onSubmit={(email) => setEmail(email)} />
             ) : (
-              <OTPForm email={email} onSuccess={loginRedirect} />
+              <OTPForm email={email} onSuccess={() => onLogin?.()} />
             )}
           </VStack>
         </Flex>

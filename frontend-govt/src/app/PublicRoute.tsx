@@ -1,6 +1,6 @@
 import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom'
 import { Location } from 'history'
-import { DASHBOARD_ROUTE } from '../constants/routes'
+import { PROFILE_ROUTE } from '../constants/routes'
 import { useAuth } from '../contexts/auth/AuthContext'
 
 export interface PublicRouteProps extends Omit<RouteProps, 'render'> {
@@ -27,7 +27,7 @@ export const PublicRoute = ({
         !!isAuthenticated && strict ? (
           <Redirect
             to={{
-              pathname: state?.from?.pathname ?? DASHBOARD_ROUTE,
+              pathname: state?.from?.pathname ?? PROFILE_ROUTE,
               state: { from: location },
             }}
           />
