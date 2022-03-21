@@ -17,7 +17,7 @@ export const PublicRoute = ({
   strict = true,
   ...rest
 }: PublicRouteProps): JSX.Element => {
-  const { isAuthenticated } = useAuth().authState
+  const { isAuthenticated } = useAuth()
   const { state } = useLocation<{ from: Location | undefined }>()
 
   return (
