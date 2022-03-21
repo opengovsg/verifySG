@@ -86,11 +86,6 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
       await getOfficer()
       onSubmit()
     },
-    onError: () => {
-      // clear form and reset focus
-      resetField('token', { defaultValue: '' })
-      otpInputRef.current?.focus()
-    },
   })
 
   const submissionHandler = (data: OTPFormData) => {
