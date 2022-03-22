@@ -3,12 +3,12 @@ import { OfficerDto, UpdateOfficerDto } from '../types'
 import { ApiService } from './ApiService'
 
 const getOfficer = async (): Promise<OfficerDto> => {
-  return await ApiService.get('/officers')
+  return ApiService.get('/officers').then((res) => res.data)
 }
 
 const updateOfficer = async (
   officerProfile: UpdateOfficerDto,
-): Promise<OfficerDto> => {
+): Promise<void> => {
   return await ApiService.post('/officers/update', officerProfile)
 }
 
