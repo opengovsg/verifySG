@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { Officer } from '../database/entities'
 import { InjectRepository } from '@nestjs/typeorm'
-import { OfficerDto, UpdateOfficerDto } from './dto/officer.dto'
+import {
+  OfficerDto,
+  UpdateOfficerProfileDto,
+  GetOfficerProfileDto,
+} from './dto'
 
 import { AgenciesService } from 'agencies/agencies.service'
 
@@ -30,23 +34,40 @@ export class OfficersService {
   }
 
   async findById(id: number): Promise<Officer | undefined> {
-    return this.officerRepository.findOne(id)
+    return this.officerRepository.findOne(id, {
+      relations: ['agency'],
+    })
   }
 
   async findByEmail(email: string): Promise<Officer | undefined> {
     return this.officerRepository.findOne({
       where: { email },
+      relations: ['agency'],
     })
   }
 
   async updateOfficer(
     id: number,
-    officerDetails: UpdateOfficerDto,
+    officerDetails: UpdateOfficerProfileDto,
   ): Promise<void> {
     const officerToUpdate = await this.officerRepository.findOne(id)
     if (!officerToUpdate) {
       throw new Error(`Officer ${id} not found`)
     }
     await this.officerRepository.update({ id }, officerDetails)
+  }
+
+  mapToDto(officer: Officer): GetOfficerProfileDto {
+    const { id, name, position, agency } = officer
+    return {
+      id,
+      name,
+      position,
+      agency: {
+        name: agency.name,
+        logoUrl: agency.logoUrl,
+        id: agency.id,
+      },
+    }
   }
 }
