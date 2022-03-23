@@ -4,14 +4,10 @@ import { CreateCallDto, GetCallDto } from 'calls/dto'
 import { OfficerId } from 'common/decorators'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { CallsService } from './calls.service'
-import { MopsService } from 'mops/mops.service'
 
 @Controller('calls')
 export class CallsController {
-  constructor(
-    private callsService: CallsService,
-    private mopsService: MopsService,
-  ) {}
+  constructor(private callsService: CallsService) {}
 
   /**
    * Creates new call given an officerId and mopNric
