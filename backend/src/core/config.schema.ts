@@ -33,6 +33,13 @@ export interface ConfigSchema {
     hash: string
     algo: string
   }
+  sgNotify: {
+    eServiceId: string
+    clientId: string
+    clientSecret: string
+    sgNotifyPublicKey: string
+    ecPrivateKey: string
+  }
 }
 
 addFormats({
@@ -194,6 +201,38 @@ export const schema: Schema<ConfigSchema> = {
       env: 'ADMIN_KEY_ALGO',
       format: ['sha256', 'sha512'], // family of sha2 hash functions
       default: 'sha256',
+    },
+  },
+  sgNotify: {
+    eServiceId: {
+      doc: 'Human-readable identifier of us that doubles up as Key ID in JOSE implementation',
+      env: 'SGNOTIFY_E_SERVICE_ID',
+      format: 'required-string',
+      default: '',
+    },
+    clientId: {
+      doc: 'Username used to identify us to SGNotify',
+      env: 'SGNOTIFY_CLIENT_ID',
+      format: String,
+      default: '',
+    },
+    clientSecret: {
+      doc: 'Corresponding password to clientId',
+      env: 'SGNOTIFY_CLIENT_SECRET',
+      format: String,
+      default: '',
+    },
+    sgNotifyPublicKey: {
+      doc: "SGNotify API's public key used as part of JOSE implementation",
+      env: 'SGNOTIFY_PUBLIC_KEY',
+      format: String,
+      default: '',
+    },
+    ecPrivateKey: {
+      doc: 'Our elliptic curve private key used as part of JOSE implementation',
+      env: 'SGNOTIFY_EC_PRIVATE_KEY',
+      format: String,
+      default: '',
     },
   },
 }
