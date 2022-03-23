@@ -1,4 +1,10 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common'
 
 import { CreateCallDto, GetCallDto } from 'calls/dto'
 import { OfficerId } from 'common/decorators'
@@ -10,7 +16,7 @@ export class CallsController {
   constructor(private callsService: CallsService) {}
 
   /**
-   * Creates new call given an officerId and mopNric
+   * Creates new call given an officerId and call body
    * @param body: CreateCallDto
    * @returns GetCallDto
    */
@@ -20,12 +26,10 @@ export class CallsController {
     @OfficerId() officerId: number,
     @Body() body: CreateCallDto,
   ): Promise<GetCallDto> {
-    const { mopNric } = body
-    // TODO: add default expiration time for calls
-    const inserted = await this.callsService.createCall({
-      mopNric,
-      officerId,
-    })
+    const inserted = await this.callsService.createCall(officerId, body)
+    if (!inserted) throw new BadRequestException('Call not created')
+
+    // TODO: Notification service
     return this.callsService.mapToDto(inserted)
   }
 }

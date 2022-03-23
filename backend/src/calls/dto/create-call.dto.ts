@@ -1,7 +1,11 @@
-import { IsString, IsNotEmpty } from 'class-validator'
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator'
 
 export class CreateCallDto {
   @IsString()
   @IsNotEmpty()
-  mopNric!: string
+  nric!: string
+
+  @IsString()
+  @IsOptional()
+  callScope!: string
 }

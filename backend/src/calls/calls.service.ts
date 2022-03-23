@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { Call } from 'database/entities'
-import { GetCallDto } from 'calls/dto'
+import { GetCallDto, CreateCallDto } from './dto'
 import { MopsService } from 'mops/mops.service'
 
 @Injectable()
@@ -42,27 +42,34 @@ export class CallsService {
     })
   }
 
-  async createCall({
-    mopNric,
-    officerId,
-  }: {
-    mopNric: string
-    officerId: number
-  }): Promise<Call> {
-    const mop = await this.mopsService.findOrInsert({ nric: mopNric })
+  async findById(id: number): Promise<Call | undefined> {
+    return this.callRepository.findOne(id, {
+      relations: ['officer'],
+    })
+  }
+
+  async createCall(
+    officerId: number,
+    callBody: CreateCallDto,
+  ): Promise<Call | undefined> {
+    const { nric, callScope } = callBody
+    const mop = await this.mopsService.findOrInsert({ nric })
 
     const callToAdd = this.callRepository.create({
+      callScope,
       mop: { id: mop.id },
       officer: { id: officerId },
     })
-    return await this.callRepository.save(callToAdd)
+    const addedCall = await this.callRepository.save(callToAdd)
+    return this.findById(addedCall.id)
   }
 
   mapToDto(call: Call): GetCallDto {
-    const { id, officer, createdAt } = call
+    const { id, officer, createdAt, callScope } = call
     return {
       id,
       createdAt,
+      callScope,
       officer: {
         id: officer.id,
         name: officer.name,
