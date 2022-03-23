@@ -1,8 +1,9 @@
+import { AgencyDto } from './agency'
+
 export type OfficerDto = {
   id: number
   name?: string
-  email: string
-  agency: string
+  agency: AgencyDto
   position?: string
 }
 
