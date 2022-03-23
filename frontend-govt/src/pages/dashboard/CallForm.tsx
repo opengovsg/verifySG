@@ -5,14 +5,18 @@ import {
   InlineMessage,
   Input,
   FormErrorMessage,
+  useToast,
 } from '@opengovsg/design-system-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import nric from 'nric'
 import HeaderContainer from '../../components/HeaderContainer'
+import { useMutation } from 'react-query'
+import { CallService } from '../../services/CallService'
 
 interface CallFormData {
-  nricFin: string
+  nric: string
+  callScope?: string
   // phoneNumber: string
 }
 
@@ -24,16 +28,16 @@ export const CallForm: React.FC<CallFormProps> = () => {
   // use form hooks
   const {
     register,
-    // setValue,
-    // watch,
+    watch,
     reset,
     handleSubmit,
     formState: { errors },
   } = useForm<CallFormData>()
+  const toast = useToast()
 
   // handle submission logic
   const submissionHandler = (data: CallFormData) => {
-    onSubmit?.(data)
+    createCall.mutate(data)
   }
 
   // register phone number input programmatically
@@ -47,6 +51,22 @@ export const CallForm: React.FC<CallFormProps> = () => {
   //     },
   //   })
   // }, [register])
+
+  // query hook to mutate data
+  const createCall = useMutation(CallService.createCall, {
+    onSuccess: () => {
+      toast({
+        status: 'success',
+        description: `Notification sent to ${watch('nric')}`,
+      })
+    },
+    onError: (err) => {
+      toast({
+        status: 'warning',
+        description: `${err}` || 'Something went wrong',
+      })
+    },
+  })
 
   // handle change for phone number input
   // const handleChange = (newVal?: string) => {
@@ -83,10 +103,10 @@ export const CallForm: React.FC<CallFormProps> = () => {
         </InlineMessage>
         <form onSubmit={handleSubmit(submissionHandler)}>
           <VStack spacing="32px" w="448px">
-            <FormControl isInvalid={!!errors.nricFin}>
+            <FormControl isInvalid={!!errors.nric}>
               <FormLabel isRequired>NRIC / FIN</FormLabel>
               <Input
-                {...register('nricFin', {
+                {...register('nric', {
                   required: 'Please enter a valid NRIC / FIN',
                   validate: {
                     valid: (v) =>
@@ -95,8 +115,18 @@ export const CallForm: React.FC<CallFormProps> = () => {
                 })}
                 placeholder="e.g. S1234567D"
               />
-              {errors.nricFin && (
-                <FormErrorMessage>{errors.nricFin.message}</FormErrorMessage>
+              {errors.nric && (
+                <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={!!errors.callScope}>
+              <FormLabel>Purpose for call</FormLabel>
+              <Input
+                {...register('callScope')}
+                placeholder="e.g. Police Report"
+              />
+              {errors.callScope && (
+                <FormErrorMessage>{errors.callScope.message}</FormErrorMessage>
               )}
             </FormControl>
             {/* <FormControl isInvalid={!!errors.phoneNumber}>
