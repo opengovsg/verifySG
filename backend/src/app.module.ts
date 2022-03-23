@@ -4,7 +4,10 @@ import {
   NestModule,
   MiddlewareConsumer,
   ValidationPipe,
+  BadRequestException,
+  ValidationError,
 } from '@nestjs/common'
+import { values } from 'lodash'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
@@ -49,6 +52,10 @@ import { AgenciesModule } from './agencies/agencies.module'
       provide: APP_PIPE,
       useValue: new ValidationPipe({
         whitelist: true,
+        exceptionFactory: (errors: ValidationError[]) => {
+          const allErrors = errors.map((e) => values(e.constraints).join(', '))
+          return new BadRequestException(allErrors.join(', '))
+        },
       }),
     },
   ],
