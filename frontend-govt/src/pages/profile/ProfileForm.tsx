@@ -5,19 +5,21 @@ import {
   InlineMessage,
   Input,
   FormErrorMessage,
+  useToast,
 } from '@opengovsg/design-system-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import HeaderContainer from '../../components/HeaderContainer'
+import { useQuery, useMutation } from 'react-query'
+import { OfficerService } from '../../services/OfficerService'
 
 interface ProfileFormData {
-  agency: string
   name: string
-  title: string
+  position: string
 }
 
 interface ProfileFormProps {
-  onSubmit?: (data: ProfileFormData) => void
+  onSubmit?: () => void
 }
 
 export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
@@ -25,12 +27,41 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    setValue,
   } = useForm<ProfileFormData>()
+  const toast = useToast()
+
+  // query hooks to retrieve and mutate data
+  const { data: profile } = useQuery('profile', OfficerService.getOfficer, {
+    onSuccess: (profile) => {
+      // update form only if no user edits have been made
+      if (profile && !isDirty) {
+        setValue('name', profile.name || '')
+        setValue('position', profile.position || '')
+      }
+    },
+  })
+
+  const updateProfile = useMutation(OfficerService.updateOfficer, {
+    onSuccess: () => {
+      toast({
+        status: 'success',
+        description: 'Profile successfully updated!',
+      })
+      onSubmit?.()
+    },
+    onError: (err) => {
+      toast({
+        status: 'warning',
+        description: `${err}` || 'Something went wrong',
+      })
+    },
+  })
 
   // handle submission logic
   const submissionHandler = (data: ProfileFormData) => {
-    onSubmit?.(data)
+    updateProfile.mutate(data)
   }
 
   return (
@@ -54,23 +85,15 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
             bg: '#EBEFFE',
           }}
         >
-          Your **name**, **title**, and **agency** will be visible to the member
-          of the public when they receive a notification that you will be
+          Your **name**, **position**, and **agency** will be visible to the
+          member of the public when they receive a notification that you will be
           calling them.
         </InlineMessage>
         <form onSubmit={handleSubmit(submissionHandler)}>
           <VStack spacing="32px" w="448px">
-            <FormControl isInvalid={!!errors.agency}>
+            <FormControl isDisabled>
               <FormLabel isRequired>Your agency / organisation</FormLabel>
-              <Input
-                {...register('agency', {
-                  required: 'Please enter a valid agency',
-                })}
-                placeholder="e.g. Singapore Police Force (SPF)"
-              />
-              {errors.agency && (
-                <FormErrorMessage>{errors.agency.message}</FormErrorMessage>
-              )}
+              <Input placeholder={profile?.agency.name} />
             </FormControl>
             <FormControl isInvalid={!!errors.name}>
               <FormLabel isRequired>Your name</FormLabel>
@@ -84,16 +107,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                 <FormErrorMessage>{errors.name.message}</FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={!!errors.title}>
-              <FormLabel isRequired>Your title</FormLabel>
+            <FormControl isInvalid={!!errors.position}>
+              <FormLabel isRequired>Your position</FormLabel>
               <Input
-                {...register('title', {
-                  required: 'Please enter a valid title',
+                {...register('position', {
+                  required: 'Please enter a valid position',
                 })}
                 placeholder="e.g. Senior Manager"
               />
-              {errors.title && (
-                <FormErrorMessage>{errors.title.message}</FormErrorMessage>
+              {errors.position && (
+                <FormErrorMessage>{errors.position.message}</FormErrorMessage>
               )}
             </FormControl>
             <Button type="submit">Save</Button>

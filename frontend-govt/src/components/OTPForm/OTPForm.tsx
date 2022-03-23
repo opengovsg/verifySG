@@ -62,7 +62,6 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const {
     setValue,
     getValues,
-    resetField,
     register,
     handleSubmit,
     formState: { errors },
