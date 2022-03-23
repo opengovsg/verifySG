@@ -6,21 +6,21 @@ import {
   Input,
   FormErrorMessage,
 } from '@opengovsg/design-system-react'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import nric from 'nric'
 import HeaderContainer from '../../components/HeaderContainer'
 
 interface CallFormData {
   nricFin: string
-  phoneNumber: string
+  // phoneNumber: string
 }
 
 interface CallFormProps {
   onSubmit?: (data: CallFormData) => void
 }
 
-export const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
+export const CallForm: React.FC<CallFormProps> = () => {
   // use form hooks
   const {
     register,
@@ -37,16 +37,16 @@ export const CallForm: React.FC<CallFormProps> = ({ onSubmit }) => {
   }
 
   // register phone number input programmatically
-  useEffect(() => {
-    register('phoneNumber', {
-      required: 'Please enter a valid phone number',
-      pattern: {
-        // temporary validation regex adapted from https://ihateregex.io/expr/phone/
-        value: /[\+]?[0-9]{3}[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/,
-        message: 'Please enter a valid phone number',
-      },
-    })
-  }, [register])
+  // useEffect(() => {
+  //   register('phoneNumber', {
+  //     required: 'Please enter a valid phone number',
+  //     pattern: {
+  //       // temporary validation regex adapted from https://ihateregex.io/expr/phone/
+  //       value: /[\+]?[0-9]{3}[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/,
+  //       message: 'Please enter a valid phone number',
+  //     },
+  //   })
+  // }, [register])
 
   // handle change for phone number input
   // const handleChange = (newVal?: string) => {
