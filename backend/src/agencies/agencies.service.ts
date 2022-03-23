@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
 import { parseEmailDomain } from 'common/utils'
 
-import { CreateAgencyDto } from './dto/create-agency.dto'
-import { UpdateAgencyDto } from './dto/update-agency.dto'
+import { CreateAgencyDto, UpdateAgencyDto, GetAgencyDto } from './dto'
 
 import { Agency } from 'database/entities/agency.entity'
 
@@ -58,5 +57,10 @@ export class AgenciesService {
 
   splitCompoundAgencyIds(compoundId: string, delimiter = ','): string[] {
     return compoundId.split(delimiter)
+  }
+
+  mapToDto(agency: Agency): GetAgencyDto {
+    const { id, name, logoUrl } = agency
+    return { id, name, logoUrl }
   }
 }

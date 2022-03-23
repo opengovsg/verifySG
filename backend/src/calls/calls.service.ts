@@ -5,6 +5,7 @@ import { Repository } from 'typeorm'
 import { Call } from 'database/entities'
 import { GetCallDto, CreateCallDto } from './dto'
 import { MopsService } from 'mops/mops.service'
+import { OfficersService } from 'officers/officers.service'
 
 @Injectable()
 export class CallsService {
@@ -12,6 +13,7 @@ export class CallsService {
     @InjectRepository(Call)
     private callRepository: Repository<Call>,
     private readonly mopsService: MopsService,
+    private officersService: OfficersService,
   ) {}
 
   async getLatestCallForMop(mopId: number): Promise<Call | undefined> {
@@ -44,7 +46,7 @@ export class CallsService {
 
   async findById(id: number): Promise<Call | undefined> {
     return this.callRepository.findOne(id, {
-      relations: ['officer'],
+      relations: ['officer', 'officer.agency'],
     })
   }
 
@@ -70,13 +72,7 @@ export class CallsService {
       id,
       createdAt,
       callScope,
-      officer: {
-        id: officer.id,
-        name: officer.name,
-        email: officer.email,
-        agency: officer.agency,
-        position: officer.position,
-      },
+      officer: this.officersService.mapToDto(officer),
     }
   }
 }
