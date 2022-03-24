@@ -1,11 +1,9 @@
-import { CallDto } from '../types'
+import { CallDto, CreateCallDto } from '../types'
 
 import { ApiService } from './ApiService'
 
-const createCall = async (nric: string): Promise<CallDto> => {
-  return await ApiService.post('/calls', {
-    nric,
-  })
+const createCall = async (callDetails: CreateCallDto): Promise<CallDto> => {
+  return ApiService.post('/calls', callDetails).then((res) => res.data)
 }
 
 export const CallService = {

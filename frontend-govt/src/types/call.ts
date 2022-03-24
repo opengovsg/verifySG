@@ -1,9 +1,12 @@
-// TOOD: decide what CallDto needs to contain
+import { OfficerDto } from './officer'
 
 export type CallDto = {
   id: number
   createdAt: Date
-  officer: {
-    id: number
-  }
+  officer: OfficerDto
+}
+
+export type CreateCallDto = {
+  nric: string
+  callScope?: string
 }

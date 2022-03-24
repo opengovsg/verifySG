@@ -63,11 +63,7 @@ export class OfficersService {
       id,
       name,
       position,
-      agency: {
-        name: agency.name,
-        logoUrl: agency.logoUrl,
-        id: agency.id,
-      },
+      agency: this.agencyService.mapToDto(agency),
     }
   }
 }
