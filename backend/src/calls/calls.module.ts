@@ -12,5 +12,4 @@ import { OfficersModule } from 'officers/officers.module'
   controllers: [CallsController],
   providers: [CallsService],
 })
-export class CallsModule {
-}
+export class CallsModule {}

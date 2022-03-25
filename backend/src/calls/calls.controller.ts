@@ -14,8 +14,7 @@ import { CreateCallDto } from './dto'
 
 @Controller('calls')
 export class CallsController {
-  constructor(private callsService: CallsService) {
-  }
+  constructor(private callsService: CallsService) {}
 
   /**
    * Creates new call given an officerId and call body

@@ -12,8 +12,7 @@ export class CallsService {
     @InjectRepository(Call)
     private callRepository: Repository<Call>,
     private officersService: OfficersService,
-  ) {
-  }
+  ) {}
 
   async findById(id: number): Promise<Call | undefined> {
     return this.callRepository.findOne(id, {
