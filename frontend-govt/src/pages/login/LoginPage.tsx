@@ -37,7 +37,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             {!email ? (
               <EmailForm onSubmit={(email) => setEmail(email)} />
             ) : (
-              <OTPForm email={email} onSuccess={() => onLogin?.()} />
+              <OTPForm email={email} onSubmit={() => onLogin?.()} />
             )}
           </VStack>
         </Flex>

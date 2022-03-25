@@ -1,14 +1,17 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import ProfileForm from '../pages/profile'
+import WelcomePage from '../pages/welcome'
 import CallForm from '../pages/dashboard'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ProfileGuard from '../components/ProfileGuard'
 
 import {
   LOGIN_ROUTE,
   ROOT_ROUTE,
   CALLFORM_ROUTE,
   PROFILE_ROUTE,
+  WELCOME_ROUTE,
 } from '../constants/routes'
 
 import { PrivateRoute } from './PrivateRoute'
@@ -27,10 +30,15 @@ export const AppRouter = (): JSX.Element => {
           <Redirect to={LOGIN_ROUTE} />
         </PublicRoute>
         <PublicRoute exact path={LOGIN_ROUTE}>
-          <LoginPage onLogin={() => history.push(PROFILE_ROUTE)} />
+          <LoginPage onLogin={() => history.push(CALLFORM_ROUTE)} />
         </PublicRoute>
         <PrivateRoute exact path={CALLFORM_ROUTE}>
-          <CallForm />
+          <ProfileGuard>
+            <CallForm />
+          </ProfileGuard>
+        </PrivateRoute>
+        <PrivateRoute exact path={WELCOME_ROUTE}>
+          <WelcomePage />
         </PrivateRoute>
         <PrivateRoute exact path={PROFILE_ROUTE}>
           <ProfileForm onSubmit={() => history.push(CALLFORM_ROUTE)} />

@@ -1,6 +1,6 @@
 import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom'
 import { Location } from 'history'
-import { PROFILE_ROUTE } from '../constants/routes'
+import { CALLFORM_ROUTE } from '../constants/routes'
 import { useAuth } from '../contexts/auth/AuthContext'
 
 export interface PublicRouteProps extends Omit<RouteProps, 'render'> {
@@ -17,7 +17,7 @@ export const PublicRoute = ({
   strict = true,
   ...rest
 }: PublicRouteProps): JSX.Element => {
-  const { isAuthenticated } = useAuth().authState
+  const { isAuthenticated } = useAuth()
   const { state } = useLocation<{ from: Location | undefined }>()
 
   return (
@@ -27,7 +27,7 @@ export const PublicRoute = ({
         !!isAuthenticated && strict ? (
           <Redirect
             to={{
-              pathname: state?.from?.pathname ?? PROFILE_ROUTE,
+              pathname: state?.from?.pathname ?? CALLFORM_ROUTE,
               state: { from: location },
             }}
           />

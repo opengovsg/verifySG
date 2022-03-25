@@ -6,7 +6,7 @@ export const PrivateRoute = ({
   children,
   ...rest
 }: Omit<RouteProps, 'render'>): JSX.Element => {
-  const { isAuthenticated } = useAuth().authState
+  const { isAuthenticated } = useAuth()
 
   return (
     <Route

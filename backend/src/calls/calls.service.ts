@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { Call } from 'database/entities'
-import { GetCallDto } from 'calls/dto'
+import { GetCallDto, CreateCallDto } from './dto'
 import { MopsService } from 'mops/mops.service'
+import { OfficersService } from 'officers/officers.service'
 
 @Injectable()
 export class CallsService {
@@ -12,6 +13,7 @@ export class CallsService {
     @InjectRepository(Call)
     private callRepository: Repository<Call>,
     private readonly mopsService: MopsService,
+    private officersService: OfficersService,
   ) {}
 
   async getLatestCallForMop(mopId: number): Promise<Call | undefined> {
@@ -42,34 +44,35 @@ export class CallsService {
     })
   }
 
-  async createCall({
-    mopNric,
-    officerId,
-  }: {
-    mopNric: string
-    officerId: number
-  }): Promise<Call> {
-    const mop = await this.mopsService.findOrInsert({ nric: mopNric })
+  async findById(id: number): Promise<Call | undefined> {
+    return this.callRepository.findOne(id, {
+      relations: ['officer', 'officer.agency'],
+    })
+  }
+
+  async createCall(
+    officerId: number,
+    callBody: CreateCallDto,
+  ): Promise<Call | undefined> {
+    const { nric, callScope } = callBody
+    const mop = await this.mopsService.findOrInsert({ nric })
 
     const callToAdd = this.callRepository.create({
+      callScope,
       mop: { id: mop.id },
       officer: { id: officerId },
     })
-    return await this.callRepository.save(callToAdd)
+    const addedCall = await this.callRepository.save(callToAdd)
+    return this.findById(addedCall.id)
   }
 
   mapToDto(call: Call): GetCallDto {
-    const { id, officer, createdAt } = call
+    const { id, officer, createdAt, callScope } = call
     return {
       id,
       createdAt,
-      officer: {
-        id: officer.id,
-        name: officer.name,
-        email: officer.email,
-        agency: officer.agency,
-        position: officer.position,
-      },
+      callScope,
+      officer: this.officersService.mapToDto(officer),
     }
   }
 }

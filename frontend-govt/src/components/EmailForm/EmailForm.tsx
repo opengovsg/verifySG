@@ -7,6 +7,8 @@ import {
   Input,
 } from '@opengovsg/design-system-react'
 import { useForm } from 'react-hook-form'
+import { AuthService } from '../../services/AuthService'
+import { useMutation } from 'react-query'
 
 interface EmailFormProps {
   onSubmit: (email: string) => void
@@ -22,22 +24,27 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<EmailFormData>()
 
+  const { email } = watch()
+
   // login form handlers
+  const sendOtp = useMutation(AuthService.getOtp, {
+    onSuccess: () => onSubmit(email),
+  })
+
   const submissionHandler = (data: EmailFormData) => {
     const { email } = data
-    //TODO: use email in auth login flow
-
-    // trigger onSuccess for now
-    onSubmit(email)
+    sendOtp.mutate({ email })
   }
 
   // error handler stubs
-  //TODO: implement error handling for auth service, email validation
-  const hasError = () => (errors.email ? true : false)
+  const hasError = (): boolean => !!errors.email || sendOtp.isError
   const getErrorMessage = (): string => {
-    return 'Please provide a valid email address.'
+    return errors && errors.email
+      ? 'Please provide a valid email address.'
+      : `${sendOtp.error}`
   }
 
   return (

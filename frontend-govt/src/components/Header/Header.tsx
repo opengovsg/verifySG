@@ -5,6 +5,7 @@ import { Tab } from '@opengovsg/design-system-react'
 import { Link } from 'react-router-dom'
 import { PROFILE_ROUTE } from '../../constants/routes'
 import { AvatarControl } from './AvatarControl'
+import { useAuth } from '../../contexts/auth/AuthContext'
 
 interface NavlinkProps {
   label: string
@@ -27,6 +28,8 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   // use default navlinks if not provided
   if (!navlinks) navlinks = defaultNavlinks
+
+  const { officer } = useAuth()
 
   return (
     <Flex
@@ -56,9 +59,10 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
       {/* Right Cluster */}
       <AvatarControl
-        //TODO: fill this in based on user context
-        name="A"
+        //TODO: shift these into theme folder for cleanup refactor
+        name={officer}
         bgColor="#1B3C87"
+        textColor="#FFFFFF"
       />
     </Flex>
   )
