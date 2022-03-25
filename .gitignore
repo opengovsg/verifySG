@@ -71,3 +71,6 @@ frontend/build
 
 # JetBrains IDEs' settings
 .idea
+
+# cdk deploy emitted files
+cdk.out
