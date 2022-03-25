@@ -32,7 +32,7 @@ import { AgenciesModule } from './agencies/agencies.module'
     CoreModule,
     HealthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'frontend', 'build'),
+      rootPath: join(__dirname, '..', '..', 'frontend-govt', 'build'),
     }),
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigService,
