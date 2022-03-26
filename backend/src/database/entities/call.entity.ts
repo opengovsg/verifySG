@@ -3,11 +3,12 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  DeleteDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
+import { Notification } from './notification.entity'
 
 @Entity({ name: 'call' })
 export class Call {
@@ -20,12 +21,12 @@ export class Call {
   })
   officer!: Officer
 
+  @OneToMany(() => Notification, (notification) => notification.call)
+  notifications!: Notification[]
+
   @Column('text', { nullable: true, default: null })
   callScope!: string
 
   @CreateDateColumn()
   createdAt!: Date
-
-  @DeleteDateColumn()
-  deletedAt!: Date
 }
