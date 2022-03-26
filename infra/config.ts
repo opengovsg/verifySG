@@ -3,7 +3,8 @@ import convict = require('convict')
 
 export interface ConfigSchema {
   environment: 'staging' | 'production' | 'test'
-  awsRegion: string
+  cdkAccountId: string,
+  awsRegion: string,
   database: {
     host: string
     username: string
@@ -35,9 +36,14 @@ addFormats({
 })
 
 const schema: Schema<ConfigSchema> = {
+  cdkAccountId: {
+    env: 'CDK_ACCOUNT_ID',
+    default: '',
+    format: 'required-string',
+  },
   applicationName: {
     env: 'APPLICATION_NAME',
-    default: '',
+    default: 'checkwho',
     format: 'required-string',
   },
   environment: {

@@ -13,7 +13,7 @@ import { StorageType } from 'aws-cdk-lib/aws-rds'
 
 // import config env vars
 const APPLICATION_NAME = config.get('applicationName')
-const ENVIRONMENT_NAME = config.get('environment')
+const ENVIRONMENT = config.get('environment')
 const DB_NAME = config.get('database.name')
 
 export class CheckWhoStack extends Stack {
@@ -21,63 +21,63 @@ export class CheckWhoStack extends Stack {
     super(scope, id, props)
 
     // [!] VPC Configuration
-    const vpc = new ec2.Vpc(
-      this,
-      `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-vpc`,
-      {
-        cidr: '172.31.0.0/16', // TODO: move to config
-        natGateways: 1,
-        enableDnsHostnames: true,
-        enableDnsSupport: true,
-        vpcName: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-vpc`,
-        maxAzs: 99, //
-        /**
-         * Each entry in this list configures a Subnet Group
-         *
-         * ISOLATED: Isolated Subnets do not route traffic to the Internet (in this VPC).
-         * PRIVATE.: Subnet that routes to the internet, but not vice versa.
-         * PUBLIC..: Subnet connected to the Internet.
-         */
-        /**
-         * IP address ranges are automatically assigned by
-         * https://github.com/aws/aws-cdk/issues/3562
-         */
-        subnetConfiguration: [
-          {
-            cidrMask: 24,
-            name: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-rds`,
-            subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-          },
-          {
-            cidrMask: 24,
-            name: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-ec2`,
-            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
-          },
-          {
-            cidrMask: 24,
-            name: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-public`,
-            subnetType: ec2.SubnetType.PUBLIC,
-          },
-        ],
-      },
-    )
+    const vpc = new ec2.Vpc(this, `${APPLICATION_NAME}-${ENVIRONMENT}-vpc`, {
+      cidr: '172.31.0.0/16', // TODO: move to config
+      natGateways: 1,
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+      vpcName: `${APPLICATION_NAME}-${ENVIRONMENT}-vpc`,
+      maxAzs: 99, //
+      /**
+       * Each entry in this list configures a Subnet Group
+       *
+       * ISOLATED: Isolated Subnets do not route traffic to the Internet (in this VPC).
+       * PRIVATE.: Subnet that routes to the internet, but not vice versa.
+       * PUBLIC..: Subnet connected to the Internet.
+       */
+      /**
+       * IP address ranges are automatically assigned by
+       * https://github.com/aws/aws-cdk/issues/3562
+       */
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+        {
+          cidrMask: 24,
+          name: `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        },
+        {
+          cidrMask: 24,
+          name: `${APPLICATION_NAME}-${ENVIRONMENT}-public`,
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+      ],
+    })
+
+    const privateSubnetIds = vpc.privateSubnets
+      .map((subnet) => subnet.subnetId)
+      .join(',')
 
     // [!] VPC Security Groups
     const sgEc2 = new ec2.SecurityGroup(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-ec2`,
+      `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
       {
         vpc: vpc,
-        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-ec2`,
+        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
       },
     )
 
     const sgRds = new ec2.SecurityGroup(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-rds`,
+      `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
       {
         vpc: vpc,
-        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-rds`,
+        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
       },
     )
 
@@ -127,22 +127,55 @@ export class CheckWhoStack extends Stack {
     // [!] ACM
     const stagingCert = new acm.Certificate(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-certificate`,
+      `${APPLICATION_NAME}-${ENVIRONMENT}-certificate`,
       {
         domainName: 'staging.checkwho.gov.sg',
         validation: acm.CertificateValidation.fromDns(),
       },
     )
 
-    // beanstalk stuff
-    const app = new elasticbeanstalk.CfnEnvironment(
+    const EbInstanceRole = new cdk.aws_iam.Role(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-beanstalk`,
+      `${APPLICATION_NAME}-aws-elasticbeanstalk-ec2-role`,
       {
-        environmentName: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-beanstalk`,
-        solutionStackName: `${APPLICATION_NAME}_SOLUTION_STACK`,
-        applicationName: APPLICATION_NAME,
+        assumedBy: new cdk.aws_iam.ServicePrincipal('ec2.amazonaws.com'),
+      },
+    )
+
+    const managedPolicy = cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
+      'AWSElasticBeanstalkWebTier',
+    )
+    EbInstanceRole.addManagedPolicy(managedPolicy)
+
+    const profileName = `${APPLICATION_NAME}-InstanceProfile`
+    const instanceProfile = new cdk.aws_iam.CfnInstanceProfile(
+      this,
+      profileName,
+      {
+        instanceProfileName: profileName,
+        roles: [EbInstanceRole.roleName],
+      },
+    )
+
+    // beanstalk stuff
+    const app = new elasticbeanstalk.CfnApplication(
+      this,
+      `${APPLICATION_NAME}-${ENVIRONMENT}-application`,
+      { applicationName: `${APPLICATION_NAME}-${ENVIRONMENT}-application` },
+    )
+    const env = new elasticbeanstalk.CfnEnvironment(
+      this,
+      `${APPLICATION_NAME}-${ENVIRONMENT}-environment`,
+      {
+        environmentName: `${APPLICATION_NAME}-${ENVIRONMENT}-environment`,
+        solutionStackName: `64bit Amazon Linux 2 v5.5.0 running Node.js 16`,
+        applicationName: `${APPLICATION_NAME}-${ENVIRONMENT}-application`,
         optionSettings: [
+          {
+            namespace: 'aws:autoscaling:launchconfiguration',
+            optionName: 'IamInstanceProfile',
+            value: profileName,
+          },
           {
             namespace: 'aws:ec2:vpc',
             optionName: 'VPCId',
@@ -151,7 +184,7 @@ export class CheckWhoStack extends Stack {
           {
             namespace: 'aws:ec2:vpc',
             optionName: 'Subnets',
-            value: `${APPLICATION_NAME}-${ENVIRONMENT_NAME}-ec2`,
+            value: privateSubnetIds,
           },
           {
             namespace: 'aws:autoscaling:launchconfiguration',
@@ -162,13 +195,10 @@ export class CheckWhoStack extends Stack {
       },
     )
 
-    // // [!] ECR
-    // const repository = new ecr.Repository(this, 'Repository')
-
     // to do after setting up eb
-    // const eb = dbInstance.connections.allowFrom(app., ec2.Port.tcp(5432))
+    const eb = dbInstance.connections.allowFrom(sgEc2, ec2.Port.tcp(5432))
 
-    // example S3 bucket
+    // S3 Bucket
     new s3.Bucket(this, `${APPLICATION_NAME}-bucket`, {
       versioned: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
