@@ -22,13 +22,13 @@ export interface SGNotifyParams {
   senderName: string
   title: string
   shortMessage: string
+  // long message can be generated using templateId + sgNotifyLongMessageParams
   templateId: string
-  sgNotifyLongMessageParams: SGNotifyTemplateParams
+  sgNotifyLongMessageParams: Record<string, string>
 }
 
-type SGNotifyTemplateParams = Record<string, string>
-
 export enum SGNotifyNotificationStatus {
+  NOT_SENT = 'NOT_SENT',
   SENT_BY_SERVER = 'SENT_BY_SERVER',
   RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
   READ_BY_USER = 'READ_BY_USER',
