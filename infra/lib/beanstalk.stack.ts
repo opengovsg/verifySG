@@ -4,6 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { BaseStackProps } from '../infra.types'
 import * as cdk from 'aws-cdk-lib'
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
+import { LogGroup } from 'aws-cdk-lib/aws-logs'
 
 type BeanstalkStackProps = BaseStackProps & {
   vpc: ec2.Vpc
@@ -19,6 +20,8 @@ export class BeanstalkStack extends Stack {
     super(scope, id, props)
 
     const platform = props.platform ?? this.node.tryGetContext('platform')
+
+    const logGroup = new LogGroup(this, `${props.appNamePrefix}-logGroup`)
 
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
@@ -45,8 +48,6 @@ export class BeanstalkStack extends Stack {
       { applicationName: `${props.appNamePrefix}-application` },
     )
 
-    console.log(props.publicSubnetIds, props.ec2SubnetIds)
-
     const env = new elasticbeanstalk.CfnEnvironment(
       this,
       `${props.appNamePrefix}-environment`,
@@ -60,6 +61,16 @@ export class BeanstalkStack extends Stack {
             namespace: 'aws:autoscaling:launchconfiguration',
             optionName: 'IamInstanceProfile',
             value: profileName,
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:cloudwatch:logs',
+            optionName: 'StreamLogs',
+            value: 'true',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:cloudwatch:logs',
+            optionName: 'RetentionInDays',
+            value: '365',
           },
           {
             namespace: 'aws:ec2:vpc',
