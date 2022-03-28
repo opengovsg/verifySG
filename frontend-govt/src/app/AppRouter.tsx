@@ -1,18 +1,18 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
-import ProfileForm from '../pages/profile'
-import WelcomePage from '../pages/welcome'
-import CallForm from '../pages/dashboard'
+
 import LoadingSpinner from '../components/LoadingSpinner'
 import ProfileGuard from '../components/ProfileGuard'
-
 import {
-  LOGIN_ROUTE,
-  ROOT_ROUTE,
   CALLFORM_ROUTE,
+  LOGIN_ROUTE,
   PROFILE_ROUTE,
+  ROOT_ROUTE,
   WELCOME_ROUTE,
 } from '../constants/routes'
+import CallForm from '../pages/dashboard'
+import ProfileForm from '../pages/profile'
+import WelcomePage from '../pages/welcome'
 
 import { PrivateRoute } from './PrivateRoute'
 import { PublicRoute } from './PublicRoute'

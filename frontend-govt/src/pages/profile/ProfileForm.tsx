@@ -1,16 +1,17 @@
-import { VStack, Text, FormControl } from '@chakra-ui/react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { useMutation, useQuery } from 'react-query'
+import { FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
+  FormErrorMessage,
   FormLabel,
   InlineMessage,
   Input,
-  FormErrorMessage,
   useToast,
 } from '@opengovsg/design-system-react'
-import React from 'react'
-import { useForm } from 'react-hook-form'
+
 import HeaderContainer from '../../components/HeaderContainer'
-import { useQuery, useMutation } from 'react-query'
 import { OfficerService } from '../../services/OfficerService'
 
 interface ProfileFormData {

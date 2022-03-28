@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
+
 import { WELCOME_ROUTE } from '../../constants/routes'
 import { OfficerService } from '../../services/OfficerService'
 
