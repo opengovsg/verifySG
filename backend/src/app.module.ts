@@ -26,6 +26,7 @@ import { OfficersModule } from './officers/officers.module'
 import { AuthOfficerModule } from './auth-officer/auth-officer.module'
 import { AgenciesModule } from './agencies/agencies.module'
 import { NotificationsModule } from './notifications/notifications.module'
+import { SgnotifyModule } from './sgnotify/sgnotify.module'
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { NotificationsModule } from './notifications/notifications.module'
     AuthOfficerModule,
     AgenciesModule,
     NotificationsModule,
+    SgnotifyModule,
   ],
   providers: [
     {
