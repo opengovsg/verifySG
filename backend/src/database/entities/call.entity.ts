@@ -12,20 +12,20 @@ import { Officer } from './officer.entity'
 @Entity({ name: 'call' })
 export class Call {
   @PrimaryGeneratedColumn()
-  id!: number
+  id: number
 
   @ManyToOne(() => Officer, (officer) => officer.calls, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  officer!: Officer
+  officer: Officer
 
   @Column('text', { nullable: true, default: null })
-  callScope!: string
+  callScope: string
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt: Date
 
   @DeleteDateColumn()
-  deletedAt!: Date
+  deletedAt: Date
 }

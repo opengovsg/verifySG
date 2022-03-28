@@ -7,8 +7,8 @@ export class Session implements ISession {
   expiredAt = Date.now()
 
   @PrimaryColumn('varchar', { length: 255 })
-  id!: string
+  id: string
 
   @Column('text', { default: '' })
-  json!: string
+  json: string
 }
