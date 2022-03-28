@@ -7,7 +7,8 @@ import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
 
 type BeanstalkStackProps = BaseStackProps & {
   vpc: ec2.Vpc
-  subnetIds: string[]
+  publicSubnetIds: string[]
+  ec2SubnetIds: string[]
   securityGroup: ec2.SecurityGroup
   platform?: string
   solutionStackName?: string
@@ -44,6 +45,8 @@ export class BeanstalkStack extends Stack {
       { applicationName: `${props.appNamePrefix}-application` },
     )
 
+    console.log(props.publicSubnetIds, props.ec2SubnetIds)
+
     const env = new elasticbeanstalk.CfnEnvironment(
       this,
       `${props.appNamePrefix}-environment`,
@@ -65,8 +68,13 @@ export class BeanstalkStack extends Stack {
           },
           {
             namespace: 'aws:ec2:vpc',
+            optionName: 'ELBSubnets',
+            value: props.publicSubnetIds.join(',')
+          },
+          {
+            namespace: 'aws:ec2:vpc',
             optionName: 'Subnets',
-            value: props.subnetIds.join(','),
+            value: props.ec2SubnetIds.join(','),
           },
           {
             namespace: 'aws:autoscaling:launchconfiguration',
