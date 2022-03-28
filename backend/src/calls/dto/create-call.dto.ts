@@ -1,12 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator'
-import { IsNric } from 'common/decorators'
+import { IsString, IsOptional } from 'class-validator'
 
 export class CreateCallDto {
-  @IsString()
-  @IsNotEmpty()
-  @IsNric()
-  nric!: string
-
   @IsString()
   @IsOptional()
   callScope!: string

@@ -8,7 +8,6 @@ import {
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
-import { Mop } from './mop.entity'
 
 @Entity({ name: 'call' })
 export class Call {
@@ -20,12 +19,6 @@ export class Call {
     onUpdate: 'CASCADE',
   })
   officer!: Officer
-
-  @ManyToOne(() => Mop, (mop) => mop.calls, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  mop!: Mop
 
   @Column('text', { nullable: true, default: null })
   callScope!: string
