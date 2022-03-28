@@ -1,14 +1,15 @@
 import React from 'react'
-import { FormControl, VStack, Text, Box } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
+import { Box, FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
   Input,
 } from '@opengovsg/design-system-react'
-import { useForm } from 'react-hook-form'
+
 import { AuthService } from '../../services/AuthService'
-import { useMutation } from 'react-query'
 
 interface EmailFormProps {
   onSubmit: (email: string) => void

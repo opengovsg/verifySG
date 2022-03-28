@@ -1,5 +1,6 @@
-import { Container, Flex } from '@chakra-ui/react'
 import React from 'react'
+import { Container, Flex } from '@chakra-ui/react'
+
 import Header from '../Header'
 
 export const HeaderContainer: React.FC = ({ children }) => (

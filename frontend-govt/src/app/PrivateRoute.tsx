@@ -1,4 +1,5 @@
 import { Redirect, Route, RouteProps } from 'react-router-dom'
+
 import { LOGIN_ROUTE } from '../constants/routes'
 import { useAuth } from '../contexts/auth/AuthContext'
 

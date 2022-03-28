@@ -1,17 +1,18 @@
-import { VStack, Text, FormControl } from '@chakra-ui/react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
+import { FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
+  FormErrorMessage,
   FormLabel,
   InlineMessage,
   Input,
-  FormErrorMessage,
   useToast,
 } from '@opengovsg/design-system-react'
-import React from 'react'
-import { useForm } from 'react-hook-form'
 import nric from 'nric'
+
 import HeaderContainer from '../../components/HeaderContainer'
-import { useMutation } from 'react-query'
 import { CallService } from '../../services/CallService'
 
 interface CallFormData {

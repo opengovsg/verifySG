@@ -1,6 +1,6 @@
-import { HStack, Avatar, Icon, AvatarProps } from '@chakra-ui/react'
-import { BxsChevronDown } from '@opengovsg/design-system-react'
 import React from 'react'
+import { Avatar, AvatarProps, HStack, Icon } from '@chakra-ui/react'
+import { BxsChevronDown } from '@opengovsg/design-system-react'
 
 export const AvatarControl: React.FC<AvatarProps> = (props) => {
   return (

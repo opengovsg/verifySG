@@ -1,7 +1,8 @@
-import { ReactChild, ReactChildren, useState, useEffect } from 'react'
-import { AuthContext } from './AuthContext'
+import { ReactChild, ReactChildren, useEffect, useState } from 'react'
 
 import { AuthService } from '../../services/AuthService'
+
+import { AuthContext } from './AuthContext'
 
 // auth provider props & declaration
 interface AuthProps {

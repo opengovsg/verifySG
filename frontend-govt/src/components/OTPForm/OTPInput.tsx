@@ -11,6 +11,7 @@ import {
   useControllableState,
   useOutsideClick,
 } from '@chakra-ui/react'
+
 import OTPInputField from './OTPInputField'
 
 export interface OTPInputProps extends Omit<PinInputProps, 'children'> {
