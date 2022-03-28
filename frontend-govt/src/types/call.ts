@@ -7,6 +7,5 @@ export type CallDto = {
 }
 
 export type CreateCallDto = {
-  nric: string
   callScope?: string
 }

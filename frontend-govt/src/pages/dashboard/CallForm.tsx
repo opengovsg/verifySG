@@ -11,8 +11,8 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import nric from 'nric'
 import HeaderContainer from '../../components/HeaderContainer'
-import { useMutation } from 'react-query'
 import { CallService } from '../../services/CallService'
+import { NotificationService } from '../../services/NotificationService'
 
 interface CallFormData {
   nric: string
@@ -36,9 +36,7 @@ export const CallForm: React.FC<CallFormProps> = () => {
   const toast = useToast()
 
   // handle submission logic
-  const submissionHandler = (data: CallFormData) => {
-    createCall.mutate(data)
-  }
+  const submissionHandler = (data: CallFormData) => createCall(data)
 
   // register phone number input programmatically
   // useEffect(() => {
@@ -53,20 +51,27 @@ export const CallForm: React.FC<CallFormProps> = () => {
   // }, [register])
 
   // query hook to mutate data
-  const createCall = useMutation(CallService.createCall, {
-    onSuccess: () => {
+  const createCall = async (callFormData: CallFormData) => {
+    try {
+      const data = await CallService.createCall({
+        callScope: callFormData.callScope,
+      })
+      // TODO enable after backend Notification API is ready
+      // await NotificationService.createNotification({
+      //   callId: data.id,
+      //   nric: callFormData.nric,
+      // })
       toast({
         status: 'success',
         description: `Notification sent to ${watch('nric')}`,
       })
-    },
-    onError: (err) => {
+    } catch (err) {
       toast({
         status: 'warning',
         description: `${err}` || 'Something went wrong',
       })
-    },
-  })
+    }
+  }
 
   // handle change for phone number input
   // const handleChange = (newVal?: string) => {
