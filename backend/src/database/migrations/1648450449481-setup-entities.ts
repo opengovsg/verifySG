@@ -1,14 +1,26 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class setupEntities1648293536468 implements MigrationInterface {
-  name = 'setupEntities1648293536468'
+export class setupEntities1648450449481 implements MigrationInterface {
+  name = 'setupEntities1648450449481'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "notification" ("id" SERIAL NOT NULL, "notification_type" "public"."notification_notification_type_enum" NOT NULL, "recipient_id" character varying(9) NOT NULL, "notification_params" jsonb NOT NULL, "notification_status" character varying(255) NOT NULL, "notification_response" jsonb NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "call_id" integer, CONSTRAINT "PK_705b6c7cdf9b2c2ff7ac7872cb7" PRIMARY KEY ("id"))`,
+      `CREATE TYPE "public"."sgnotify_status_enum" AS ENUM('NOT_SENT', 'SENT_BY_SERVER', 'RECEIVED_BY_DEVICE', 'READ_BY_USER')`,
     )
     await queryRunner.query(
-      `CREATE TABLE "call" ("id" SERIAL NOT NULL, "call_scope" text, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "officer_id" integer, CONSTRAINT "PK_2098af0169792a34f9cfdd39c47" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "sgnotify" ("id" SERIAL NOT NULL, "agency_logo_url" character varying(255) NOT NULL, "sender_name" character varying(255) NOT NULL, "title" character varying(50) NOT NULL, "uin" character varying(9) NOT NULL, "short_message" character varying(100) NOT NULL, "template_id" character varying(50) NOT NULL, "sg_notify_long_message_params" json NOT NULL, "status" "public"."sgnotify_status_enum" NOT NULL DEFAULT 'NOT_SENT', "request_id" character varying(50) NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_d2517932c0ce32e1d57043d77d7" PRIMARY KEY ("id"))`,
+    )
+    await queryRunner.query(
+      `CREATE TYPE "public"."notification_notification_type_enum" AS ENUM('SGNOTIFY', 'WHATSAPP')`,
+    )
+    await queryRunner.query(
+      `CREATE TYPE "public"."notification_status_enum" AS ENUM('NOT_SENT', 'SENT')`,
+    )
+    await queryRunner.query(
+      `CREATE TABLE "notification" ("id" SERIAL NOT NULL, "notification_type" "public"."notification_notification_type_enum" NOT NULL, "recipient_id" character varying(9) NOT NULL, "status" "public"."notification_status_enum" NOT NULL DEFAULT 'NOT_SENT', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "call_id" integer, CONSTRAINT "PK_705b6c7cdf9b2c2ff7ac7872cb7" PRIMARY KEY ("id"))`,
+    )
+    await queryRunner.query(
+      `CREATE TABLE "call" ("id" SERIAL NOT NULL, "call_scope" text, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "officer_id" integer, CONSTRAINT "PK_2098af0169792a34f9cfdd39c47" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
       `CREATE TABLE "officer" ("id" SERIAL NOT NULL, "email" character varying(255) NOT NULL, "name" character varying(255), "position" character varying(255), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "agency_id" character varying(255), CONSTRAINT "UQ_775b4f1f79cf3492b3ac6d024aa" UNIQUE ("email"), CONSTRAINT "PK_b9bab694da36794c5065085936c" PRIMARY KEY ("id"))`,
@@ -51,5 +63,11 @@ export class setupEntities1648293536468 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "officer"`)
     await queryRunner.query(`DROP TABLE "call"`)
     await queryRunner.query(`DROP TABLE "notification"`)
+    await queryRunner.query(`DROP TYPE "public"."notification_status_enum"`)
+    await queryRunner.query(
+      `DROP TYPE "public"."notification_notification_type_enum"`,
+    )
+    await queryRunner.query(`DROP TABLE "sgnotify"`)
+    await queryRunner.query(`DROP TYPE "public"."sgnotify_status_enum"`)
   }
 }
