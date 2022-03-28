@@ -6,7 +6,6 @@ import { Peer } from 'aws-cdk-lib/aws-ec2'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
 export class CoreStack extends Stack {
-  readonly sslCert: acm.Certificate;
   readonly vpc: ec2.Vpc
   readonly privateSubnetsIds: string[]
   readonly publicSubnetIds: string[]
@@ -17,16 +16,6 @@ export class CoreStack extends Stack {
 
   constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props)
-
-    // [!] ACM
-    this.sslCert = new acm.Certificate(
-      this,
-      `${props.appNamePrefix}-certificate`,
-      {
-        domainName: `${props.environment}.${props.app}.gov.sg`,
-        validation: acm.CertificateValidation.fromDns(),
-      },
-    )
 
     // [!] VPC Configuration
     this.vpc = new ec2.Vpc(this, `${props.appNamePrefix}-vpc`, {
