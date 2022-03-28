@@ -14,6 +14,8 @@ type BeanstalkStackProps = BaseStackProps & {
   securityGroup: ec2.SecurityGroup
   platform?: string
   solutionStackName?: string
+  minInstances?: string
+  maxInstances?: string
 }
 
 export class BeanstalkStack extends Stack {
@@ -30,7 +32,7 @@ export class BeanstalkStack extends Stack {
         validation: acm.CertificateValidation.fromEmail(),
       },
     )
-    
+
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
       `${props.appNamePrefix}-aws-elasticbeanstalk-ec2-role`,
@@ -62,7 +64,9 @@ export class BeanstalkStack extends Stack {
       {
         environmentName: `${props.appNamePrefix}-environment`,
         platformArn: platform,
-        solutionStackName: props.solutionStackName ?? '64bit Amazon Linux 2 v5.5.0 running Node.js 16',
+        solutionStackName:
+          props.solutionStackName ??
+          '64bit Amazon Linux 2 v5.5.0 running Node.js 16',
         applicationName: `${props.appNamePrefix}-application`,
         optionSettings: [
           {
@@ -86,14 +90,39 @@ export class BeanstalkStack extends Stack {
             value: 'application',
           },
           {
-            namespace: 'aws:elbv2:listener:default',
-            optionName: 'SSLCertificateArns',
-            value: sslCert.certificateArn
+            namespace: 'aws:autoscaling:asg',
+            optionName: 'MinSize',
+            value: props.minInstances ?? '1',
+          },
+          {
+            namespace: 'aws:autoscaling:asg',
+            optionName: 'MaxSize',
+            value: props.maxInstances ?? '10',
           },
           {
             namespace: 'aws:elbv2:listener:default',
+            optionName: 'ListenerEnabled',
+            value: 'False',
+          },
+          {
+            namespace: 'aws:elbv2:listener:443',
+            optionName: 'DefaultProcess',
+            value: 'default',
+          },
+          {
+            namespace: 'aws:elbv2:listener:443',
             optionName: 'Protocol',
-            value: 'HTTPS'
+            value: 'HTTPS',
+          },
+          {
+            namespace: 'aws:elbv2:listener:443',
+            optionName: 'SSLCertificateArns',
+            value: sslCert.certificateArn,
+          },
+          {
+            namespace: 'aws:elbv2:listener:443',
+            optionName: 'ListenerEnabled',
+            value: 'true',
           },
           {
             namespace: 'aws:ec2:vpc',
@@ -103,7 +132,7 @@ export class BeanstalkStack extends Stack {
           {
             namespace: 'aws:ec2:vpc',
             optionName: 'ELBSubnets',
-            value: props.publicSubnetIds.join(',')
+            value: props.publicSubnetIds.join(','),
           },
           {
             namespace: 'aws:ec2:vpc',
