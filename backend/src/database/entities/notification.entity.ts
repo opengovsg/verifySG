@@ -33,43 +33,43 @@ export enum NotificationStatus {
 @Entity({ name: 'notification' })
 export class Notification {
   @PrimaryGeneratedColumn()
-  id!: number
+  id: number
 
   @ManyToOne(() => Call, (call) => call.notifications, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  call!: Call
+  call: Call
 
   @OneToOne(
     () => SGNotifyNotification,
     (sgNotifyNotification) => sgNotifyNotification.notification,
     { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
-  sgNotifyNotification!: SGNotifyNotification
+  sgNotifyNotification: SGNotifyNotification
 
   @Column({
     type: 'enum',
     enum: NotificationType,
   })
-  notificationType!: NotificationType
+  notificationType: NotificationType
 
   @Column('varchar', { length: 9, nullable: false })
-  recipientId!: string
+  recipientId: string
 
   @Column({
     type: 'enum',
     enum: NotificationStatus,
     default: NotificationStatus.NOT_SENT,
   })
-  status!: NotificationStatus
+  status: NotificationStatus
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt: Date
 
   @DeleteDateColumn()
-  deletedAt!: Date
+  deletedAt: Date
 }

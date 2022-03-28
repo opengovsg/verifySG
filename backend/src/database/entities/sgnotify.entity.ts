@@ -32,52 +32,52 @@ export enum SGNotifyNotificationStatus {
 @Entity({ name: 'sgnotify' })
 export class SGNotifyNotification {
   @PrimaryGeneratedColumn()
-  id!: number
+  id: number
 
   @OneToOne(
     () => Notification,
     (notification) => notification.sgNotifyNotification,
     { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
-  notification!: Notification
+  notification: Notification
 
   @Column({ type: 'varchar', length: 255 })
   agencyLogoUrl: string
 
   @Column({ type: 'varchar', length: 255 })
-  senderName!: string
+  senderName: string
 
   @Column({ type: 'varchar', length: 50 })
-  title!: string
+  title: string
 
   @Column({ type: 'varchar', length: 9 })
-  uin!: string
+  uin: string
 
   @Column({ type: 'varchar', length: 100 })
-  shortMessage!: string
+  shortMessage: string
 
   @Column({ type: 'varchar', length: 50 })
-  templateId!: string
+  templateId: string
 
   @Column({ type: 'json' })
-  sgNotifyLongMessageParams!: Record<string, string>
+  sgNotifyLongMessageParams: Record<string, string>
 
   @Column({
     type: 'enum',
     enum: SGNotifyNotificationStatus,
     default: SGNotifyNotificationStatus.NOT_SENT,
   })
-  status!: SGNotifyNotificationStatus
+  status: SGNotifyNotificationStatus
 
   @Column({ type: 'varchar', length: 50 })
-  requestId!: string
+  requestId: string
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt: Date
 
   @DeleteDateColumn()
-  deletedAt!: Date
+  deletedAt: Date
 }

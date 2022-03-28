@@ -14,29 +14,29 @@ import { Agency } from './agency.entity'
 @Entity({ name: 'officer' })
 export class Officer {
   @PrimaryGeneratedColumn()
-  id!: number
+  id: number
 
   @Column('varchar', { unique: true, nullable: false, length: 255 })
-  email!: string
+  email: string
 
   @Column('varchar', { nullable: true, length: 255 })
-  name!: string
+  name: string
 
   @Column('varchar', { nullable: true, length: 255 })
-  position!: string
+  position: string
 
   @ManyToOne(() => Agency, (agency) => agency.officers, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  agency!: Agency
+  agency: Agency
 
   @OneToMany(() => Call, (call) => call.officer)
-  calls!: Call[]
+  calls: Call[]
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt: Date
 }
