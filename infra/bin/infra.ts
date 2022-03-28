@@ -1,22 +1,56 @@
 #!/usr/bin/env node
 import 'source-map-support/register'
 import * as cdk from 'aws-cdk-lib'
-import { CheckWhoStack } from '../lib/checkwho-stack'
 import config from '../config'
+import { CoreStack } from '../lib/core.stack'
+import { DatabaseStack } from '../lib/database.stack'
+import { BeanstalkStack } from '../lib/beanstalk.stack'
+import { S3Stack } from '../lib/s3.stack'
 
 const app = new cdk.App()
-new CheckWhoStack(app, 'InfraStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
+const stackProps = {
+  app: config.get('applicationName'),
+  environment: config.get('environment'),
+  appNamePrefix: `${config.get('applicationName')}-${config.get(
+    'environment',
+  )}`,
   env: {
     account: config.get('cdkAccountId'),
     region: config.get('awsRegion'),
   },
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-})
+}
+
+const coreStack = new CoreStack(
+  app,
+  `VPCStack-${config.get('environment')}`,
+  stackProps,
+)
+const databaseStack = new DatabaseStack(
+  app,
+  `DBStack-${config.get('environment')}`,
+  {
+    ...stackProps,
+    vpc: coreStack.vpc,
+    databaseSg: coreStack.securityGroups.rds,
+    ec2Sg: coreStack.securityGroups.ec2,
+    databaseName: config.get('database.name'),
+  },
+)
+databaseStack.addDependency(coreStack)
+// beanstalk stuff
+const beanstalkStack = new BeanstalkStack(
+  app,
+  `BeanstalkStack-${config.get('environment')}`,
+  {
+    ...stackProps,
+    vpc: coreStack.vpc,
+    subnetIds: coreStack.privateSubnetsIds,
+    securityGroup: coreStack.securityGroups.ec2,
+  },
+)
+beanstalkStack.addDependency(coreStack)
+const s3Stack = new S3Stack(
+  app,
+  `S3Stack-${config.get('environment')}`,
+  stackProps,
+)
