@@ -5,7 +5,6 @@ import * as cdk from 'aws-cdk-lib'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as rds from 'aws-cdk-lib/aws-rds'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
-import * as ecr from 'aws-cdk-lib/aws-ecr'
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
 import config from '../config'
 import { StorageType } from 'aws-cdk-lib/aws-rds'
@@ -15,18 +14,19 @@ import { StorageType } from 'aws-cdk-lib/aws-rds'
 const APPLICATION_NAME = config.get('applicationName')
 const ENVIRONMENT = config.get('environment')
 const DB_NAME = config.get('database.name')
+const PREFIX = `${APPLICATION_NAME}-${ENVIRONMENT}`
 
 export class CheckWhoStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
 
     // [!] VPC Configuration
-    const vpc = new ec2.Vpc(this, `${APPLICATION_NAME}-${ENVIRONMENT}-vpc`, {
+    const vpc = new ec2.Vpc(this, `${PREFIX}-vpc`, {
       cidr: '172.31.0.0/16', // TODO: move to config
       natGateways: 1,
       enableDnsHostnames: true,
       enableDnsSupport: true,
-      vpcName: `${APPLICATION_NAME}-${ENVIRONMENT}-vpc`,
+      vpcName: `${PREFIX}-vpc`,
       maxAzs: 99, //
       /**
        * Each entry in this list configures a Subnet Group
@@ -42,42 +42,38 @@ export class CheckWhoStack extends Stack {
       subnetConfiguration: [
         {
           cidrMask: 24,
-          name: `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
+          name: `${PREFIX}-rds`,
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
         {
           cidrMask: 24,
-          name: `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
+          name: `${PREFIX}-ec2`,
           subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
         },
         {
           cidrMask: 24,
-          name: `${APPLICATION_NAME}-${ENVIRONMENT}-public`,
+          name: `${PREFIX}-public`,
           subnetType: ec2.SubnetType.PUBLIC,
         },
       ],
     })
 
-    const privateSubnetIds = vpc.privateSubnets
-      .map((subnet) => subnet.subnetId)
-      .join(',')
-
     // [!] VPC Security Groups
     const sgEc2 = new ec2.SecurityGroup(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
+      `${PREFIX}-ec2`,
       {
         vpc: vpc,
-        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT}-ec2`,
+        securityGroupName: `${PREFIX}-ec2`,
       },
     )
 
     const sgRds = new ec2.SecurityGroup(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
+      `${PREFIX}-rds`,
       {
         vpc: vpc,
-        securityGroupName: `${APPLICATION_NAME}-${ENVIRONMENT}-rds`,
+        securityGroupName: `${PREFIX}-rds`,
       },
     )
 
@@ -127,9 +123,9 @@ export class CheckWhoStack extends Stack {
     // [!] ACM
     const stagingCert = new acm.Certificate(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT}-certificate`,
+      `${PREFIX}-certificate`,
       {
-        domainName: 'staging.checkwho.gov.sg',
+        domainName: `${ENVIRONMENT}.${APPLICATION_NAME}.gov.sg`,
         validation: acm.CertificateValidation.fromDns(),
       },
     )
@@ -158,18 +154,22 @@ export class CheckWhoStack extends Stack {
     )
 
     // beanstalk stuff
+    const node = this.node
+    const platform = node.tryGetContext('platform')
+
     const app = new elasticbeanstalk.CfnApplication(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT}-application`,
-      { applicationName: `${APPLICATION_NAME}-${ENVIRONMENT}-application` },
+      `${PREFIX}-application`,
+      { applicationName: `${PREFIX}-application` },
     )
+
     const env = new elasticbeanstalk.CfnEnvironment(
       this,
-      `${APPLICATION_NAME}-${ENVIRONMENT}-environment`,
+      `${PREFIX}-environment`,
       {
-        environmentName: `${APPLICATION_NAME}-${ENVIRONMENT}-environment`,
-        solutionStackName: `64bit Amazon Linux 2 v5.5.0 running Node.js 16`,
-        applicationName: `${APPLICATION_NAME}-${ENVIRONMENT}-application`,
+        environmentName: `${PREFIX}-environment`,
+        platformArn: platform,
+        applicationName: `${PREFIX}-application`,
         optionSettings: [
           {
             namespace: 'aws:autoscaling:launchconfiguration',
@@ -184,7 +184,9 @@ export class CheckWhoStack extends Stack {
           {
             namespace: 'aws:ec2:vpc',
             optionName: 'Subnets',
-            value: privateSubnetIds,
+            value: vpc.privateSubnets
+              .map((subnet) => subnet.subnetId)
+              .join(','),
           },
           {
             namespace: 'aws:autoscaling:launchconfiguration',
@@ -195,8 +197,7 @@ export class CheckWhoStack extends Stack {
       },
     )
 
-    // to do after setting up eb
-    const eb = dbInstance.connections.allowFrom(sgEc2, ec2.Port.tcp(5432))
+    env.addDependsOn(app)
 
     // S3 Bucket
     new s3.Bucket(this, `${APPLICATION_NAME}-bucket`, {
