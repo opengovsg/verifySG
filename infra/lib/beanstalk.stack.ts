@@ -14,7 +14,6 @@ type BeanstalkStackProps = BaseStackProps & {
   securityGroup: ec2.SecurityGroup
   platform?: string
   solutionStackName?: string
-  sslCert: acm.Certificate
 }
 
 export class BeanstalkStack extends Stack {
@@ -22,7 +21,16 @@ export class BeanstalkStack extends Stack {
     super(scope, id, props)
 
     const platform = props.platform ?? this.node.tryGetContext('platform')
-
+    // [!] ACM
+    const sslCert = new acm.Certificate(
+      this,
+      `${props.appNamePrefix}-ssl-certificate`,
+      {
+        domainName: `${props.environment}.${props.app}.gov.sg`,
+        validation: acm.CertificateValidation.fromEmail(),
+      },
+    )
+    
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
       `${props.appNamePrefix}-aws-elasticbeanstalk-ec2-role`,
@@ -80,7 +88,7 @@ export class BeanstalkStack extends Stack {
           {
             namespace: 'aws:elbv2:listener:default',
             optionName: 'SSLCertificateArns',
-            value: props.sslCert.certificateArn
+            value: sslCert.certificateArn
           },
           {
             namespace: 'aws:elbv2:listener:default',
