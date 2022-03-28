@@ -121,7 +121,7 @@ export class CheckWhoStack extends Stack {
     )
 
     // [!] ACM
-    const stagingCert = new acm.Certificate(
+    const certificate = new acm.Certificate(
       this,
       `${PREFIX}-certificate`,
       {

@@ -2,8 +2,11 @@ import { Stack } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { BaseStackProps } from '../infra.types'
+import { Peer } from 'aws-cdk-lib/aws-ec2'
+import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
 export class CoreStack extends Stack {
+  readonly sslCert: acm.Certificate;
   readonly vpc: ec2.Vpc
   readonly privateSubnetsIds: string[]
   readonly publicSubnetIds: string[]
@@ -14,6 +17,16 @@ export class CoreStack extends Stack {
 
   constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props)
+
+    // [!] ACM
+    this.sslCert = new acm.Certificate(
+      this,
+      `${props.appNamePrefix}-certificate`,
+      {
+        domainName: `${props.environment}.${props.app}.gov.sg`,
+        validation: acm.CertificateValidation.fromDns(),
+      },
+    )
 
     // [!] VPC Configuration
     this.vpc = new ec2.Vpc(this, `${props.appNamePrefix}-vpc`, {
@@ -65,6 +78,8 @@ export class CoreStack extends Stack {
       vpc: this.vpc,
       securityGroupName: `${props.appNamePrefix}-ec2`,
     })
+
+    sgEc2.addIngressRule(Peer.anyIpv4(), ec2.Port.tcp(443))
 
     const sgRds = new ec2.SecurityGroup(this, `${props.appNamePrefix}-rds`, {
       vpc: this.vpc,

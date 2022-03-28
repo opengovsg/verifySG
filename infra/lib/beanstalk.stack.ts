@@ -5,6 +5,7 @@ import { BaseStackProps } from '../infra.types'
 import * as cdk from 'aws-cdk-lib'
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
 import { LogGroup } from 'aws-cdk-lib/aws-logs'
+import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
 type BeanstalkStackProps = BaseStackProps & {
   vpc: ec2.Vpc
@@ -13,6 +14,7 @@ type BeanstalkStackProps = BaseStackProps & {
   securityGroup: ec2.SecurityGroup
   platform?: string
   solutionStackName?: string
+  sslCert: acm.Certificate
 }
 
 export class BeanstalkStack extends Stack {
@@ -20,8 +22,6 @@ export class BeanstalkStack extends Stack {
     super(scope, id, props)
 
     const platform = props.platform ?? this.node.tryGetContext('platform')
-
-    const logGroup = new LogGroup(this, `${props.appNamePrefix}-logGroup`)
 
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
@@ -71,6 +71,21 @@ export class BeanstalkStack extends Stack {
             namespace: 'aws:elasticbeanstalk:cloudwatch:logs',
             optionName: 'RetentionInDays',
             value: '365',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:environment',
+            optionName: 'LoadBalancerType',
+            value: 'application',
+          },
+          {
+            namespace: 'aws:elbv2:listener:default',
+            optionName: 'SSLCertificateArns',
+            value: props.sslCert.certificateArn
+          },
+          {
+            namespace: 'aws:elbv2:listener:default',
+            optionName: 'Protocol',
+            value: 'HTTPS'
           },
           {
             namespace: 'aws:ec2:vpc',
