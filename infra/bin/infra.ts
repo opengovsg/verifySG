@@ -44,7 +44,8 @@ const beanstalkStack = new BeanstalkStack(
   {
     ...stackProps,
     vpc: coreStack.vpc,
-    subnetIds: coreStack.privateSubnetsIds,
+    ec2SubnetIds: coreStack.privateSubnetsIds,
+    publicSubnetIds: coreStack.publicSubnetIds,
     securityGroup: coreStack.securityGroups.ec2,
   },
 )
