@@ -1,8 +1,8 @@
 import { IsString } from 'class-validator'
 export class UpdateOfficerProfileDto {
   @IsString()
-  name!: string
+  name: string
 
   @IsString()
-  position!: string
+  position: string
 }
