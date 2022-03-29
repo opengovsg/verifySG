@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { Call } from './call.entity'
+import { Notification } from './notification.entity'
 import { Agency } from './agency.entity'
 
 @Entity({ name: 'officer' })
@@ -31,8 +31,8 @@ export class Officer {
   })
   agency: Agency
 
-  @OneToMany(() => Call, (call) => call.officer)
-  calls: Call[]
+  @OneToMany(() => Notification, (notification) => notification.officer)
+  calls: Notification[]
 
   @CreateDateColumn()
   createdAt: Date
