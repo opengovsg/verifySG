@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  UpdateDateColumn,
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
@@ -82,6 +83,9 @@ export class Notification {
 
   @CreateDateColumn()
   createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @DeleteDateColumn()
   deletedAt: Date
