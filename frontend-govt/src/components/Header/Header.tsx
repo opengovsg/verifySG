@@ -1,11 +1,13 @@
 import React from 'react'
-import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
-import Logo from '../../assets/CheckWhoLogo.svg'
-import { Tab } from '@opengovsg/design-system-react'
 import { Link } from 'react-router-dom'
+import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
+import { Tab } from '@opengovsg/design-system-react'
+
+import Logo from '../../assets/CheckWhoLogo.svg'
 import { PROFILE_ROUTE } from '../../constants/routes'
-import { AvatarControl } from './AvatarControl'
 import { useAuth } from '../../contexts/auth/AuthContext'
+
+import { AvatarControl } from './AvatarControl'
 
 interface NavlinkProps {
   label: string

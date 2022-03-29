@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { FormControl, VStack, Text, HStack } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
+import { FormControl, HStack, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
-  FormLabel,
   FormErrorMessage,
+  FormLabel,
 } from '@opengovsg/design-system-react'
-import { useForm } from 'react-hook-form'
+
 import { useAuth } from '../../contexts/auth/AuthContext'
-import { OTPInput } from './OTPInput'
 import { AuthService } from '../../services/AuthService'
-import { useMutation } from 'react-query'
+
+import { OTPInput } from './OTPInput'
 
 interface OTPFormProps {
   email: string

@@ -1,9 +1,10 @@
-import { Image, Text, VStack } from '@chakra-ui/react'
-import HeaderContainer from '../../components/HeaderContainer'
-import WelcomeSplash from '../../assets/WelcomeSplash.svg'
-import { Button } from '@opengovsg/design-system-react'
 import { BiPlus } from 'react-icons/bi'
 import { useHistory } from 'react-router-dom'
+import { Image, Text, VStack } from '@chakra-ui/react'
+import { Button } from '@opengovsg/design-system-react'
+
+import WelcomeSplash from '../../assets/WelcomeSplash.svg'
+import HeaderContainer from '../../components/HeaderContainer'
 import { PROFILE_ROUTE } from '../../constants/routes'
 
 export const WelcomePage: React.FC = () => {
