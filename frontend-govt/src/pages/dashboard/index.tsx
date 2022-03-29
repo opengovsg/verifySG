@@ -1,3 +1,3 @@
-import { CallForm } from './CallForm'
+import { NotificationForm } from './NotificationForm'
 
-export default CallForm
+export default NotificationForm
