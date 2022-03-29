@@ -52,7 +52,7 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number
 
-  @ManyToOne(() => Officer, (officer) => officer.calls, {
+  @ManyToOne(() => Officer, (officer) => officer.notifications, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

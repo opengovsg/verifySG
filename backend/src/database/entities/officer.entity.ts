@@ -32,7 +32,7 @@ export class Officer {
   agency: Agency
 
   @OneToMany(() => Notification, (notification) => notification.officer)
-  calls: Notification[]
+  notifications: Notification[]
 
   @CreateDateColumn()
   createdAt: Date
