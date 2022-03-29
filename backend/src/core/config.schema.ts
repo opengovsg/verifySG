@@ -37,7 +37,6 @@ export interface ConfigSchema {
     eServiceId: string
     clientId: string
     clientSecret: string
-    sgNotifyPublicKey: string
     ecPrivateKey: string
   }
 }
@@ -219,12 +218,6 @@ export const schema: Schema<ConfigSchema> = {
     clientSecret: {
       doc: 'Corresponding password to clientId',
       env: 'SGNOTIFY_CLIENT_SECRET',
-      format: String,
-      default: '',
-    },
-    sgNotifyPublicKey: {
-      doc: "SGNotify API's public key used as part of JOSE implementation",
-      env: 'SGNOTIFY_PUBLIC_KEY',
       format: String,
       default: '',
     },
