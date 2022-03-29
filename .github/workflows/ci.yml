@@ -2,13 +2,13 @@ name: CI
 on:
   push:
   pull_request:
-    branches: [develop, master]
+    branches: [staging, master]
 env:
   PRODUCTION_BRANCH: refs/heads/master
-  STAGING_BRANCH: refs/heads/develop
-  EB_APPLICATION: ''
-  EB_PRODUCTION_ENVIRONMENT: ''
-  EB_STAGING_ENVIRONMENT: ''
+  STAGING_BRANCH: refs/heads/staging
+  EB_APPLICATION: checkwho-staging-application
+  EB_PRODUCTION_ENVIRONMENT: ""
+  EB_STAGING_ENVIRONMENT: checkwho-staging-environment
 jobs:
   test:
     name: Lint and test
@@ -68,6 +68,8 @@ jobs:
             backend/package*.json
             backend/build
             .nvmrc
+            .npmrc
+            Buildfile
 
   gatekeep:
     name: Determine if deploy is needed
