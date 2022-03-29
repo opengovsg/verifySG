@@ -4,7 +4,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { BaseStackProps } from '../infra.types'
 import * as cdk from 'aws-cdk-lib'
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
-import { LogGroup } from 'aws-cdk-lib/aws-logs'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
 type BeanstalkStackProps = BaseStackProps & {
@@ -66,7 +65,7 @@ export class BeanstalkStack extends Stack {
         platformArn: platform,
         solutionStackName:
           props.solutionStackName ??
-          '64bit Amazon Linux 2 v5.5.0 running Node.js 16',
+          '64bit Amazon Linux 2 v5.5.0 running Node.js 14',
         applicationName: `${props.appNamePrefix}-application`,
         optionSettings: [
           {

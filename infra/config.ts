@@ -4,6 +4,9 @@ import convict = require('convict')
 export interface ConfigSchema {
   environment: 'staging' | 'production' | 'test'
   cdkAccountId: string,
+  clientCertArn: string,
+  serverCertArn: string,
+  samlProviderArn: string,
   awsRegion: string,
   database: {
     host: string
@@ -38,6 +41,21 @@ addFormats({
 const schema: Schema<ConfigSchema> = {
   cdkAccountId: {
     env: 'CDK_ACCOUNT_ID',
+    default: '',
+    format: 'required-string',
+  },
+  clientCertArn: {
+    env: 'AWS_VPN_CLIENT_CERT_ARN',
+    default: '',
+    format: 'required-string',
+  },
+  serverCertArn: {
+    env: 'AWS_VPN_SERVER_CERT_ARN',
+    default: '',
+    format: 'required-string',
+  },
+  samlProviderArn: {
+    env: 'AWS_SAML_PROVIDER_ARN',
     default: '',
     format: 'required-string',
   },

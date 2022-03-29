@@ -7,6 +7,7 @@ import { DatabaseStack } from '../lib/database.stack'
 import { BeanstalkStack } from '../lib/beanstalk.stack'
 import { S3Stack } from '../lib/s3.stack'
 import { BastionStack } from '../lib/bastionHost.stack'
+import { VPNStack } from '../lib/vpn.stack'
 
 const app = new cdk.App()
 const stackProps = {
@@ -66,3 +67,12 @@ const bastionStack = new BastionStack(
   },
 )
 bastionStack.addDependency(coreStack)
+
+const vpnStack = new VPNStack(app, `VPNStack-${config.get('environment')}`, {
+  ...stackProps,
+  vpc: coreStack.vpc,
+  clientCertArn: config.get('clientCertArn'),
+  serverCertArn: config.get('serverCertArn'),
+  samlProviderArn: config.get('samlProviderArn')
+})
+vpnStack.addDependency(coreStack)
