@@ -15,6 +15,7 @@ type VPNStackProps = BaseStackProps & {
   serverCertArn: string
   clientCertArn: string
   samlProviderArn: string
+  vpnSecurityGroup: ec2.SecurityGroup,
 }
 
 export class VPNStack extends Stack {
@@ -42,6 +43,8 @@ export class VPNStack extends Stack {
       `${props.appNamePrefix}-clientVpnEndpoint`,
       {
         description: 'VPN',
+        securityGroupIds: [props.vpnSecurityGroup.securityGroupId],
+        vpcId: props.vpc.vpcId,
         authenticationOptions: [
           {
             type: 'certificate-authentication',
@@ -82,7 +85,7 @@ export class VPNStack extends Stack {
 
     let i = 0
     props.vpc.isolatedSubnets.map((subnet) => {
-      let assoc = new CfnClientVpnTargetNetworkAssociation(
+      new CfnClientVpnTargetNetworkAssociation(
         this,
         `${props.appNamePrefix}-IsolatedSubnet-ClientVpnNetworkAssociation-` + i,
         {

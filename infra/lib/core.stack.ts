@@ -10,9 +10,7 @@ export class CoreStack extends Stack {
   readonly privateSubnetsIds: string[]
   readonly publicSubnetIds: string[]
   readonly securityGroups: {
-    ec2: ec2.SecurityGroup
-    rds: ec2.SecurityGroup
-    bastion: ec2.SecurityGroup
+    [key: string]: ec2.SecurityGroup
   }
 
   constructor(scope: Construct, id: string, props: BaseStackProps) {
@@ -64,6 +62,15 @@ export class CoreStack extends Stack {
     )
 
     // [!] SG configs
+    const sgVpn = new ec2.SecurityGroup(
+      this,
+      `${props.appNamePrefix}-vpn`,
+      {
+        vpc: this.vpc,
+        securityGroupName: `${props.appNamePrefix}-vpn`,
+      },
+    )
+
     const sgBastion = new ec2.SecurityGroup(
       this,
       `${props.appNamePrefix}-bastion`,
@@ -97,6 +104,12 @@ export class CoreStack extends Stack {
       'allow inbound traffic from bastion host',
     )
 
+    sgRds.addIngressRule(
+      sgVpn,
+      ec2.Port.tcp(5432),
+      'allow inbound traffic from vpn',
+    )
+
     sgEc2.addIngressRule(
       sgBastion,
       ec2.Port.tcp(22),
@@ -107,6 +120,7 @@ export class CoreStack extends Stack {
       ec2: sgEc2,
       rds: sgRds,
       bastion: sgBastion,
+      vpn: sgVpn,
     }
   }
 }
