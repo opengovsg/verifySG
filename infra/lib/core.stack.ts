@@ -12,6 +12,7 @@ export class CoreStack extends Stack {
   readonly securityGroups: {
     ec2: ec2.SecurityGroup
     rds: ec2.SecurityGroup
+    bastion: ec2.SecurityGroup
   }
 
   constructor(scope: Construct, id: string, props: BaseStackProps) {
@@ -63,6 +64,15 @@ export class CoreStack extends Stack {
     )
 
     // [!] SG configs
+    const sgBastion = new ec2.SecurityGroup(
+      this,
+      `${props.appNamePrefix}-bastion`,
+      {
+        vpc: this.vpc,
+        securityGroupName: `${props.appNamePrefix}-bastion`,
+      },
+    )
+
     const sgEc2 = new ec2.SecurityGroup(this, `${props.appNamePrefix}-ec2`, {
       vpc: this.vpc,
       securityGroupName: `${props.appNamePrefix}-ec2`,
@@ -81,9 +91,22 @@ export class CoreStack extends Stack {
       'allow inbound traffic from ec2',
     )
 
+    sgRds.addIngressRule(
+      sgBastion,
+      ec2.Port.tcp(5432),
+      'allow inbound traffic from bastion host',
+    )
+
+    sgEc2.addIngressRule(
+      sgBastion,
+      ec2.Port.tcp(22),
+      'allow inbound traffic from bastion host',
+    )
+
     this.securityGroups = {
-        ec2: sgEc2,
-        rds: sgRds,
+      ec2: sgEc2,
+      rds: sgRds,
+      bastion: sgBastion,
     }
   }
 }

@@ -6,6 +6,7 @@ import { CoreStack } from '../lib/core.stack'
 import { DatabaseStack } from '../lib/database.stack'
 import { BeanstalkStack } from '../lib/beanstalk.stack'
 import { S3Stack } from '../lib/s3.stack'
+import { BastionStack } from '../lib/bastionHost.stack'
 
 const app = new cdk.App()
 const stackProps = {
@@ -55,3 +56,13 @@ const s3Stack = new S3Stack(
   `S3Stack-${config.get('environment')}`,
   stackProps,
 )
+const bastionStack = new BastionStack(
+  app,
+  `BastionStack-${config.get('environment')}`,
+  {
+    ...stackProps,
+    vpc: coreStack.vpc,
+    bastionSecurityGroup: coreStack.securityGroups.bastion,
+  },
+)
+bastionStack.addDependency(coreStack)
