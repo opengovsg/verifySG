@@ -20,8 +20,8 @@ type VPNStackProps = BaseStackProps & {
 export class VPNStack extends Stack {
   constructor(scope: Construct, id: string, props: VPNStackProps) {
     super(scope, id, props)
-    const logGroup = new logs.LogGroup(this, 'ClientVpnLogGroup', {
-      retention: logs.RetentionDays.ONE_MONTH,
+    const logGroup = new logs.LogGroup(this, `${props.appNamePrefix}-ClientVpnLogGroup`, {
+      retention: logs.RetentionDays.ONE_YEAR,
     })
 
     const logStream = logGroup.addStream('ClientVpnLogStream')
@@ -49,6 +49,13 @@ export class VPNStack extends Stack {
               clientRootCertificateChainArn: clientCert.certificateArn,
             },
           },
+          // TODO (Austin): Ask yuanruo to enable SSO access so that we can enable SAML login
+          // {
+          //   type: "federated-authentication",
+          //   federatedAuthentication: {
+          //     samlProviderArn: props.samlProviderArn
+          //   }
+          // }
         ],
         tagSpecifications: [
           {
