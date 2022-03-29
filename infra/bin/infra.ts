@@ -73,6 +73,7 @@ const vpnStack = new VPNStack(app, `VPNStack-${config.get('environment')}`, {
   vpc: coreStack.vpc,
   clientCertArn: config.get('clientCertArn'),
   serverCertArn: config.get('serverCertArn'),
-  samlProviderArn: config.get('samlProviderArn')
+  samlProviderArn: config.get('samlProviderArn'),
+  vpnSecurityGroup: coreStack.securityGroups.vpn,
 })
 vpnStack.addDependency(coreStack)
