@@ -9,8 +9,6 @@ async function saveAllParameters() {
   const prefix = `/${process.env.ENV}-checkwho-gov/`
   const params = {}
 
-  console.log(prefix)
-
   let nextToken
 
   do {
