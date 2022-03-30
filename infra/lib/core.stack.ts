@@ -12,9 +12,20 @@ export class CoreStack extends Stack {
   readonly securityGroups: {
     [key: string]: ec2.SecurityGroup
   }
+  readonly sslCert: acm.Certificate
 
   constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props)
+
+    // [!] ACM
+    this.sslCert = new acm.Certificate(
+      this,
+      `${props.appNamePrefix}-ssl-certificate`,
+      {
+        domainName: `${props.environment}.${props.app}.gov.sg`,
+        validation: acm.CertificateValidation.fromEmail(),
+      },
+    )
 
     // [!] VPC Configuration
     this.vpc = new ec2.Vpc(this, `${props.appNamePrefix}-vpc`, {
