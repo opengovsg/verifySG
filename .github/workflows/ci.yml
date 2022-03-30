@@ -62,6 +62,7 @@ jobs:
             npm run env:staging
           elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
             npm run env:production
+          fi
         
       - name: Build
         run: npm run build
