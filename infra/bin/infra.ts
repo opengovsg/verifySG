@@ -49,6 +49,7 @@ const beanstalkStack = new BeanstalkStack(
     ec2SubnetIds: coreStack.privateSubnetsIds,
     publicSubnetIds: coreStack.publicSubnetIds,
     securityGroup: coreStack.securityGroups.ec2,
+    sslCert: coreStack.sslCert,
   },
 )
 beanstalkStack.addDependency(coreStack)

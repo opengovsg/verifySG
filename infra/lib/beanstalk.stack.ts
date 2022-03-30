@@ -15,6 +15,7 @@ type BeanstalkStackProps = BaseStackProps & {
   solutionStackName?: string
   minInstances?: string
   maxInstances?: string
+  sslCert: acm.Certificate,
 }
 
 export class BeanstalkStack extends Stack {
@@ -22,15 +23,6 @@ export class BeanstalkStack extends Stack {
     super(scope, id, props)
 
     const platform = props.platform ?? this.node.tryGetContext('platform')
-    // [!] ACM
-    const sslCert = new acm.Certificate(
-      this,
-      `${props.appNamePrefix}-ssl-certificate`,
-      {
-        domainName: `${props.environment}.${props.app}.gov.sg`,
-        validation: acm.CertificateValidation.fromEmail(),
-      },
-    )
 
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
@@ -116,7 +108,7 @@ export class BeanstalkStack extends Stack {
           {
             namespace: 'aws:elbv2:listener:443',
             optionName: 'SSLCertificateArns',
-            value: sslCert.certificateArn,
+            value: props.sslCert.certificateArn,
           },
           {
             namespace: 'aws:elbv2:listener:443',
