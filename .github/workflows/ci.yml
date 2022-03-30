@@ -56,30 +56,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./lcov.info
 
-      - name: Build
-        run: |
-          if [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" ]]; then
-            npm run build:staging
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
-            npm run build:production
-          else:
-            npm run build
-          fi
-
-      - name: Upload deployment files
-        uses: actions/upload-artifact@v2
-        with:
-          name: deployment-files
-          path: |
-            package*.json
-            frontend-govt/package*.json
-            frontend-govt/build
-            backend/package*.json
-            backend/build
-            backend/.env
-            .nvmrc
-            .npmrc
-            Buildfile
+      # - name: Upload deployment files
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: deployment-files
+      #     path: |
+      #       package*.json
+      #       frontend-govt/package*.json
+      #       frontend-govt/build
+      #       backend/package*.json
+      #       backend/build
+      #       .nvmrc
+      #       .npmrc
+      #       Buildfile
 
   gatekeep:
     name: Determine if deploy is needed
@@ -107,16 +96,23 @@ jobs:
     needs: [test, gatekeep]
     if: needs.gatekeep.outputs.proceed == 'true'
     steps:
-      - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: deployment-files
-          path: deploy
+      # - name: Download frontend build artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: deployment-files
+      #     path: deploy
 
       - name: Generate deployment package
         run: |
-          cd deploy
-          zip -r ../deploy.zip .
+          if [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" ]]; then
+            npm run build:staging
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
+            npm run build:production
+          else:
+            npm run build
+          fi
+
+          zip -r deploy.zip backend/.env package*.json frontend-govt/package*.json frontend-govt/build backend/package*.json backend/build .nvmrc .npmrc Buildfile
 
       - name: Set branch specific env vars
         run: |

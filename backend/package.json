@@ -5,7 +5,7 @@
   "author": "Open Government Products, GovTech Singapore (https://open.gov.sg)",
   "license": "MIT",
   "scripts": {
-    "env": "node scripts/envLoader.mjs",
+    "env": "node src/scripts/envLoader.mjs",
     "env:develop": "ENV=${ENV:-'develop'} npm run env",
     "env:staging": "ENV=${ENV:-'staging'} npm run env",
     "env:production": "ENV=${ENV:-'production'} npm run env",
