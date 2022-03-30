@@ -76,6 +76,7 @@ jobs:
             frontend-govt/build
             backend/package*.json
             backend/build
+            backend/.env
             .nvmrc
             .npmrc
             Buildfile
