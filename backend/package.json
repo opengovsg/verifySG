@@ -12,6 +12,8 @@
     "lint": "eslint --ext ts,tsx,js,jsx .",
     "lint:fix": "eslint --fix --ext ts,tsx,js,jsx .",
     "prebuild": "rimraf build",
+    "build:staging": "npm run env:staging && nest build",
+    "build:production": "npm run env:production && nest build",
     "build": "nest build",
     "start": "node build/index.js",
     "dev": "nest start --watch",

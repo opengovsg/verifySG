@@ -56,16 +56,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./lcov.info
 
-      - name: Create env file
+      - name: Build
         run: |
           if [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" ]]; then
-            npm run env:staging
+            npm run build:staging
           elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
-            npm run env:production
+            npm run build:production
+          else:
+            npm run build
           fi
-        
-      - name: Build
-        run: npm run build
 
       - name: Upload deployment files
         uses: actions/upload-artifact@v2

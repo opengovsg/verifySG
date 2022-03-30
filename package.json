@@ -12,6 +12,8 @@
     "lint": "npm run on-backend -- lint && npm run on-frontend-govt -- lint",
     "lint:fix": "npm run on-backend -- lint:fix && npm run on-frontend-govt -- lint:fix",
     "test": "npm run on-backend -- test && npm run on-frontend-govt -- test",
+    "build:staging": "npm run on-backend -- build:staging && npm run on-frontend-govt -- build",
+    "build:production": "npm run on-backend -- build:production && npm run on-frontend-govt -- build",
     "build": "npm run on-backend -- build && npm run on-frontend-govt -- build",
     "coverage": "npm run on-backend -- test:cov && cat backend/coverage/lcov.info > lcov.info",
     "cz": "git-cz",
