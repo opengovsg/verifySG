@@ -17,7 +17,6 @@ export class AuthAdminService {
     if (headerKey.toLowerCase() !== 'bearer' || !key) return false
 
     const { hash } = this.config.get('adminKey')
-    const valid = this.keyHashService.compareKeyHash(key, hash)
-    return valid
+    return this.keyHashService.compareKeyHash(key, hash)
   }
 }

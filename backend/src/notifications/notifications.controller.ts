@@ -18,8 +18,8 @@ export class NotificationsController {
 
   /**
    * Creates new call given an officerId and call body
-   * @param body: CreateNotificationDto
-   * @returns GetNotificationDto
+   * @param officerId id of officer creating the call from session
+   * @param body contains callScope and nric from frontend
    */
   @UseGuards(AuthOfficerGuard)
   @Post()
