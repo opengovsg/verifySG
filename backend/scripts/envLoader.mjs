@@ -33,8 +33,6 @@ async function saveAllParameters() {
     nextToken = res.NextToken
   } while (nextToken)
 
-  console.log(params)
-
   // format strings, JSON strings, and StringList appropriately
   const envString = Object.entries(params)
     .map(([k, v]) => {
