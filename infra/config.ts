@@ -20,6 +20,16 @@ export interface ConfigSchema {
     maxPool: number
   }
   applicationName: string
+  elasticBeanstalkEnv: {
+    postmanApiKey: string
+    postmanApiUrl: string
+    adminKeyHash: string
+    sgNotifyEServiceId: string
+    sgNotifyClientId: string
+    sgNotifyClientSecret: string
+    sgNotifyPublicKey: string
+    sgNotifyEcPrivateKey: string
+  }
 }
 
 // add format for required strings (no defaults)
@@ -118,6 +128,48 @@ const schema: Schema<ConfigSchema> = {
       default: 200,
     },
   },
+  elasticBeanstalkEnv: {
+    postmanApiKey: {
+      env: 'POSTMAN_API_KEY',
+      default: '',
+      format: 'required-string'
+    },
+    postmanApiUrl: {
+      env: 'POSTMAN_API_URL',
+      default: '',
+      format: 'required-string'
+    },
+    adminKeyHash: {
+      env: 'ADMIN_KEY_HASH',
+      default: '',
+      format: 'required-string'
+    },
+    sgNotifyEServiceId: {
+      env: 'SGNOTIFY_E_SERVICE_ID',
+      default: '',
+      format: 'required-string'
+    },
+    sgNotifyClientId: {
+      env: 'SGNOTIFY_CLIENT_ID',
+      default: '',
+      format: 'required-string'
+    },
+    sgNotifyClientSecret: {
+      env: 'SGNOTIFY_CLIENT_SECRET',
+      default: '',
+      format: 'required-string'
+    },
+    sgNotifyPublicKey: {
+      env: 'SGNOTIFY_PUBLIC_KEY',
+      default: '',
+      format: 'required-string'
+    },
+    sgNotifyEcPrivateKey: {
+      env: 'SGNOTIFY_EC_PRIVATE_KEY',
+      default: '',
+      format: 'required-string'
+    },
+  }
 }
 
 // valid schema
