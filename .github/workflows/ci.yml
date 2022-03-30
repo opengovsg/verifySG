@@ -9,6 +9,8 @@ env:
   EB_APPLICATION: checkwho-staging-application
   EB_PRODUCTION_ENVIRONMENT: ""
   EB_STAGING_ENVIRONMENT: checkwho-staging-environment
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
   test:
     name: Lint and test
@@ -54,6 +56,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./lcov.info
 
+      - name: Create env file
+        run: |
+          if [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" ]]; then
+            npm run env:staging
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
+            npm run env:production
+        
       - name: Build
         run: npm run build
 
@@ -90,9 +99,6 @@ jobs:
           else
             echo '::set-output name=proceed::false';
           fi
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   deploy:
     name: Deploy to Elastic Beanstalk
