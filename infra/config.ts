@@ -1,5 +1,6 @@
 import { addFormats, Schema } from 'convict'
 import convict = require('convict')
+import 'dotenv/config'
 
 export interface ConfigSchema {
   environment: 'staging' | 'production' | 'test'
