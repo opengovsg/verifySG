@@ -12,23 +12,23 @@ import { Officer } from './officer.entity'
 @Entity({ name: 'agency' })
 export class Agency {
   @PrimaryColumn('varchar', { unique: true, nullable: false, length: 255 })
-  id!: string // shortName
+  id: string // shortName
 
   @Column('varchar', { nullable: false, length: 255 })
-  name!: string
+  name: string
 
   @Column('text', { nullable: true, default: null })
-  logoUrl!: string
+  logoUrl: string
 
   @OneToMany(() => Officer, (officer) => officer.agency)
-  officers!: Officer[]
+  officers: Officer[]
 
   @Column('varchar', { array: true, length: 255, default: [] })
-  emailDomains!: string[]
+  emailDomains: string[]
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt: Date
 }

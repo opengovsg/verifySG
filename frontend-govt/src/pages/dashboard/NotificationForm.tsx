@@ -13,19 +13,19 @@ import {
 import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
-import { CallService } from '../../services/CallService'
+import { NotificationService } from '../../services/NotificationService'
 
-interface CallFormData {
+interface NotificationFormData {
   nric: string
   callScope?: string
   // phoneNumber: string
 }
 
-interface CallFormProps {
-  onSubmit?: (data: CallFormData) => void
+interface NotificationFormProps {
+  onSubmit?: (data: NotificationFormData) => void
 }
 
-export const CallForm: React.FC<CallFormProps> = () => {
+export const NotificationForm: React.FC<NotificationFormProps> = () => {
   // use form hooks
   const {
     register,
@@ -33,12 +33,12 @@ export const CallForm: React.FC<CallFormProps> = () => {
     reset,
     handleSubmit,
     formState: { errors },
-  } = useForm<CallFormData>()
+  } = useForm<NotificationFormData>()
   const toast = useToast()
 
   // handle submission logic
-  const submissionHandler = (data: CallFormData) => {
-    createCall.mutate(data)
+  const submissionHandler = (data: NotificationFormData) => {
+    createNotification.mutate(data)
   }
 
   // register phone number input programmatically
@@ -54,20 +54,23 @@ export const CallForm: React.FC<CallFormProps> = () => {
   // }, [register])
 
   // query hook to mutate data
-  const createCall = useMutation(CallService.createCall, {
-    onSuccess: () => {
-      toast({
-        status: 'success',
-        description: `Notification sent to ${watch('nric')}`,
-      })
+  const createNotification = useMutation(
+    NotificationService.createNotification,
+    {
+      onSuccess: () => {
+        toast({
+          status: 'success',
+          description: `Notification sent to ${watch('nric')}`,
+        })
+      },
+      onError: (err) => {
+        toast({
+          status: 'warning',
+          description: `${err}` || 'Something went wrong',
+        })
+      },
     },
-    onError: (err) => {
-      toast({
-        status: 'warning',
-        description: `${err}` || 'Something went wrong',
-      })
-    },
-  })
+  )
 
   // handle change for phone number input
   // const handleChange = (newVal?: string) => {

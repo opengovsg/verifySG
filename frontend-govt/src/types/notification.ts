@@ -1,12 +1,12 @@
 import { OfficerDto } from './officer'
 
-export type CallDto = {
+export type NotificationDto = {
   id: number
   createdAt: Date
   officer: OfficerDto
 }
 
-export type CreateCallDto = {
+export type CreateNotificationDto = {
   nric: string
   callScope?: string
 }

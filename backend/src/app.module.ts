@@ -21,7 +21,7 @@ import { HealthModule } from 'health/health.module'
 import { CoreModule } from 'core/core.module'
 
 import { DatabaseConfigService } from 'database/db-config.service'
-import { CallsModule } from './calls/calls.module'
+import { NotificationsModule } from './notifications/notifications.module'
 import { OfficersModule } from './officers/officers.module'
 import { AuthOfficerModule } from './auth-officer/auth-officer.module'
 import { AgenciesModule } from './agencies/agencies.module'
@@ -36,10 +36,11 @@ import { AgenciesModule } from './agencies/agencies.module'
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigService,
     }),
-    CallsModule,
+    NotificationsModule,
     OfficersModule,
     AuthOfficerModule,
     AgenciesModule,
+    NotificationsModule,
   ],
   providers: [
     {
