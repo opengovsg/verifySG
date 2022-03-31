@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import convict, { Config, Path } from 'convict'
-import 'dotenv/config'
 import { GetParametersByPathCommand, SSMClient } from '@aws-sdk/client-ssm'
 import fs from 'fs'
+import dotenv = require('dotenv')
 
 import { ConfigSchema, schema } from '../config.schema'
 
@@ -10,6 +10,7 @@ import { ConfigSchema, schema } from '../config.schema'
 export class ConfigService {
   config: Config<ConfigSchema>
   constructor() {
+    dotenv.config()
     this.config = convict(schema)
     this.config.validate()
   }
@@ -28,10 +29,11 @@ export class ConfigService {
   // It emulates the loading of SSM which Lambda will do.
   // This file is not meant to be used in a deployment and is .mjs so we can use top-level await
   static async createEnvFile() {
+    dotenv.config()
     const client = new SSMClient({ region: 'ap-southeast-1' })
+    console.log('>>> PROCESS ENV', process.env.ENV)
     const ENV = process.env.ENV ?? 'staging'
     const prefix = `/${ENV}-checkwho-gov/`
-    console.log('>>> prefix', prefix)
     const params: Record<string, string> = {}
     let nextToken
 
