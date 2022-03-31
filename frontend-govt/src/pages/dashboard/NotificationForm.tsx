@@ -30,6 +30,8 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
   const {
     register,
     watch,
+    trigger,
+    clearErrors,
     reset,
     handleSubmit,
     formState: { errors },
@@ -117,6 +119,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                       nric.validate(v) || 'Please enter a valid NRIC / FIN',
                   },
                 })}
+                onBlur={() => {
+                  trigger('nric')
+                }}
+                onFocus={() => {
+                  clearErrors('nric')
+                }}
                 placeholder="e.g. S1234567D"
               />
               {errors.nric && (
