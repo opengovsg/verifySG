@@ -40,7 +40,7 @@ export class ConfigService {
       environment: ENV,
     })
 
-    if (ENV == 'develop') return
+    if (ENV === 'develop') return
 
     const filePathPrefix = `/${ENV}-checkwho-gov/`
     const params: Record<string, string> = {}
