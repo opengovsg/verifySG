@@ -29,7 +29,8 @@ export class ConfigService {
   // This file is not meant to be used in a deployment and is .mjs so we can use top-level await
   static async createEnvFile() {
     const client = new SSMClient({ region: 'ap-southeast-1' })
-    const prefix = `/${process.env.ENV}-checkwho-gov/`
+    const ENV = process.env.ENV ?? 'staging'
+    const prefix = `/${ENV}-checkwho-gov/`
     const params: Record<string, string> = {}
     let nextToken
 
@@ -65,8 +66,8 @@ export class ConfigService {
           : `${k}='${strippedValue}'`
       })
       .join('\n')
-      .concat(`\nENV=${process.env.ENV}`)
-      .concat(`\nNODE_ENV=${process.env.ENV}`)
+      .concat(`\nENV=${ENV}`)
+      .concat(`\nNODE_ENV=${ENV}`)
 
     console.log({
       message: 'Succesfully fetched environment variables from SSM',
