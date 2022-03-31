@@ -10,8 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { AgenciesService } from './agencies.service'
-import { CreateAgencyDto } from './dto/create-agency.dto'
-import { UpdateAgencyDto } from './dto/update-agency.dto'
+import { CreateAgencyDto, UpdateAgencyDto } from './dto'
 
 import { AuthAdminGuard } from 'auth-admin/guards/auth-admin.guard'
 import { Agency } from 'database/entities/agency.entity'

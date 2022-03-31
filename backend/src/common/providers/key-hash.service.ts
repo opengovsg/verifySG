@@ -18,8 +18,7 @@ export class KeyHashService {
   }
 
   generateHashFromKey(key: string): string {
-    const hash = createHash(this.config.algo).update(key).digest('base64')
-    return hash
+    return createHash(this.config.algo).update(key).digest('base64')
   }
 
   compareKeyHash(key: string, hash: string): boolean {
