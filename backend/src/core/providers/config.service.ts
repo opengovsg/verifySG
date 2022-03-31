@@ -34,11 +34,14 @@ export class ConfigService {
   static async createEnvFileFromSystemsManager() {
     dotenv.config()
     const client = new SSMClient({ region: 'ap-southeast-1' })
-    const ENV = process.env.ENV
+    const ENV = process.env.ENV ?? 'develop'
     console.log({
       message: 'Initializing config for',
       environment: ENV,
     })
+
+    if (ENV == 'develop') return
+
     const filePathPrefix = `/${ENV}-checkwho-gov/`
     const params: Record<string, string> = {}
     let nextToken
