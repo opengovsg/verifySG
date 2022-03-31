@@ -1,26 +1,24 @@
 import * as cdk from 'aws-cdk-lib'
 
-type EnvVars = [string, string]
+type EnvVars = {
+    [key: string]: string
+}
 
 type LaunchConfig = {
     namespace: string,
-    optionName: string,
+    option_name: string,
     value: string
 }
-
-const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
 
 export const getEnvironmentLaunchConfigs = (envVars: EnvVars[]) => {
     const beanstalkConfigs: cdk.aws_elasticbeanstalk.CfnEnvironment.OptionSettingProperty[] = []
 
     for (const envVariable of envVars) {
-        const [key, val] = envVariable
-        const parsedKey = camelToSnakeCase(key).toUpperCase() // TODO: to clean up
-
+        const [optionName, value] = Object.values(envVariable)
         beanstalkConfigs.push({
-            namespace: "aws:elasticbeanstalk:application:environment",
-            optionName: parsedKey,
-            value: val,
+            "namespace": "aws:elasticbeanstalk:application:environment",
+            optionName,
+            value,
         })
     }
 

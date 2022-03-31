@@ -50,7 +50,7 @@ const beanstalkStack = new BeanstalkStack(
     publicSubnetIds: coreStack.publicSubnetIds,
     securityGroup: coreStack.securityGroups.ec2,
     sslCert: coreStack.sslCert,
-    beanstalkEnvironmentVars: Object.entries(config.get('elasticBeanstalkEnv'))
+    beanstalkEnvironmentVars: 
   },
 )
 beanstalkStack.addDependency(coreStack)
