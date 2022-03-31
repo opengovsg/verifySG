@@ -25,15 +25,22 @@ export class ConfigService {
     return this.config.get('environment') === 'development'
   }
 
-  // This is a helper for local file runs or jest, as specified in package.json
-  // It emulates the loading of SSM which Lambda will do.
-  // This file is not meant to be used in a deployment and is .mjs so we can use top-level await
-  static async createEnvFile() {
+  /**
+   * This function calls systems manager and generates a .env file based on the environment you are in.
+   * The default prefix path will be for the environment variable will be /${ENV}-checkwho-gov followed by the environment key
+   * Example:
+   *  A parameter with the file path on SSM /staging-checkwho-gov/DB_NAME will be echoed to .env file with the format DB_NAME={}
+   * @param {string=/${ENV}-checkwho-gov/} prefix: Prefix file path to search param by in SSM
+   */
+  static async createEnvFileFromSystemsManager(prefix?: string) {
     dotenv.config()
     const client = new SSMClient({ region: 'ap-southeast-1' })
-    console.log('>>> PROCESS ENV', process.env.ENV)
+    console.log({
+      message: 'Initializing config for',
+      environment: process.env.ENV,
+    })
     const ENV = process.env.ENV ?? 'staging'
-    const prefix = `/${ENV}-checkwho-gov/`
+    const filePathPrefix = prefix ?? `/${ENV}-checkwho-gov/`
     const params: Record<string, string> = {}
     let nextToken
 
@@ -41,7 +48,7 @@ export class ConfigService {
       // Handle pagination (max 10 params per call)
       const res: any = await client.send(
         new GetParametersByPathCommand({
-          Path: prefix,
+          Path: filePathPrefix,
           Recursive: true,
           WithDecryption: true,
           ...(nextToken ? { NextToken: nextToken } : {}),
@@ -49,7 +56,7 @@ export class ConfigService {
       )
 
       for (const parameter of res.Parameters ?? []) {
-        const paramName = parameter.Name.slice(prefix.length)
+        const paramName = parameter.Name.slice(filePathPrefix.length)
         const isStringList = parameter.Type === 'StringList'
         params[paramName] = isStringList
           ? `[${parameter.Value.split(',').map((x: string) => `"${x}"`)}]`
@@ -69,7 +76,6 @@ export class ConfigService {
           : `${k}='${strippedValue}'`
       })
       .join('\n')
-      .concat(`\nENV=${ENV}`)
       .concat(`\nNODE_ENV=${ENV}`)
 
     console.log({

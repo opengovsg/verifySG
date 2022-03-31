@@ -5,7 +5,7 @@ import { AppModule } from './app.module'
 import { ConfigService, Logger } from 'core/providers'
 
 async function bootstrap() {
-  await ConfigService.createEnvFile()
+  await ConfigService.createEnvFileFromSystemsManager()
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   })
