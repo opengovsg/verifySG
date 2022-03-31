@@ -110,11 +110,11 @@ jobs:
         run: |
           cd deploy
           if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "ENV=staging" >> .env
+            echo "ENV=staging" >> backend/.env
           elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "ENV=production" >> .env
+            echo "ENV=production" >> backend/.env
           else:
-            echo "ENV=deploy" >> .env
+            echo "ENV=deploy" >> backend/.env
           fi
           zip -r ../deploy.zip .
 
