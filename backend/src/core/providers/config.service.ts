@@ -30,9 +30,8 @@ export class ConfigService {
    * The default prefix path will be for the environment variable will be /${ENV}-checkwho-gov followed by the environment key
    * Example:
    *  A parameter with the file path on SSM /staging-checkwho-gov/DB_NAME will be echoed to .env file with the format DB_NAME={}
-   * @param {string=/${ENV}-checkwho-gov/} prefix: Prefix file path to search param by in SSM
    */
-  static async createEnvFileFromSystemsManager(prefix?: string) {
+  static async createEnvFileFromSystemsManager() {
     dotenv.config()
     const client = new SSMClient({ region: 'ap-southeast-1' })
     console.log({
@@ -40,7 +39,7 @@ export class ConfigService {
       environment: process.env.ENV,
     })
     const ENV = process.env.ENV ?? 'staging'
-    const filePathPrefix = prefix ?? `/${ENV}-checkwho-gov/`
+    const filePathPrefix = `/${ENV}-checkwho-gov/`
     const params: Record<string, string> = {}
     let nextToken
 

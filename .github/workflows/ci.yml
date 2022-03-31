@@ -106,7 +106,7 @@ jobs:
           name: deployment-files
           path: deploy
 
-      - name: Generate deployment package
+      - name: Generate .env file for backend so systems manager script knows the file path to pull from
         run: |
           cd deploy
           if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
@@ -116,6 +116,10 @@ jobs:
           else:
             echo "ENV=deploy" >> backend/.env
           fi
+
+      - name: Generate deployment package
+        run: |
+          cd deploy
           zip -r ../deploy.zip .
 
       - name: Set branch specific env vars
