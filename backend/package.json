@@ -5,7 +5,6 @@
   "author": "Open Government Products, GovTech Singapore (https://open.gov.sg)",
   "license": "MIT",
   "scripts": {
-    "env": "node src/scripts/envLoader.mjs",
     "lint": "eslint --ext ts,tsx,js,jsx .",
     "lint:fix": "eslint --fix --ext ts,tsx,js,jsx .",
     "prebuild": "rimraf build",
