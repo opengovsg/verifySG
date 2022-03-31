@@ -17,7 +17,9 @@ type BeanstalkStackProps = BaseStackProps & {
   minInstances?: string
   maxInstances?: string
   sslCert: acm.Certificate
-  beanstalkEnvironmentVars: [string, string][] // TODO: create type
+  beanstalkEnvironmentVars: {
+    [key: string]: string
+  }[]
 }
 
 export class BeanstalkStack extends Stack {
@@ -129,7 +131,7 @@ export class BeanstalkStack extends Stack {
       },
     ]
 
-    const allOptionSettings = optionSettings.concat(getEnvironmentLaunchConfigs(props.beanstalkEnvironmentVars))
+    optionSettings.concat(getEnvironmentLaunchConfigs(props.beanstalkEnvironmentVars))
 
     const env = new elasticbeanstalk.CfnEnvironment(
       this,
@@ -141,7 +143,7 @@ export class BeanstalkStack extends Stack {
           props.solutionStackName ??
           '64bit Amazon Linux 2 v5.5.0 running Node.js 14',
         applicationName: `${props.appNamePrefix}-application`,
-        optionSettings: allOptionSettings,
+        optionSettings,
       },
     )
 
