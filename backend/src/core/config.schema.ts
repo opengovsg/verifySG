@@ -34,6 +34,7 @@ export interface ConfigSchema {
     algo: string
   }
   sgNotify: {
+    baseUrl: string
     eServiceId: string
     clientId: string
     clientSecret: string
@@ -203,6 +204,12 @@ export const schema: Schema<ConfigSchema> = {
     },
   },
   sgNotify: {
+    baseUrl: {
+      doc: 'Base URL for getting SGNotify public cert and making API calls',
+      env: 'SGNOTIFY_URL',
+      format: 'required-string',
+      default: 'https://stg-ntf.singpass.gov.sg',
+    },
     eServiceId: {
       doc: 'Human-readable identifier of us that doubles up as Key ID in JOSE implementation',
       env: 'SGNOTIFY_E_SERVICE_ID',
