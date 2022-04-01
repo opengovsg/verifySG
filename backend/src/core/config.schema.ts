@@ -1,8 +1,8 @@
 import { Schema, addFormats } from 'convict'
 
 export interface ConfigSchema {
-  frontend_urls: {
-    frontend_govt_base: string
+  frontendUrls: {
+    frontendGovtBase: string
   }
   port: number
   environment: 'development' | 'staging' | 'production' | 'test'
@@ -52,8 +52,8 @@ addFormats({
 })
 
 export const schema: Schema<ConfigSchema> = {
-  frontend_urls: {
-    frontend_govt_base: {
+  frontendUrls: {
+    frontendGovtBase: {
       doc: 'The frontend government base url',
       env: 'FRONTEND_GOVT',
       format: String,
@@ -83,13 +83,13 @@ export const schema: Schema<ConfigSchema> = {
       env: 'DB_USERNAME',
       sensitive: true,
       default: '',
-      format: String,
+      format: 'required-string',
     },
     password: {
       env: 'DB_PASSWORD',
       sensitive: true,
       default: '',
-      format: String,
+      format: 'required-string',
     },
     host: {
       env: 'DB_HOST',
@@ -212,19 +212,19 @@ export const schema: Schema<ConfigSchema> = {
     clientId: {
       doc: 'Username used to identify us to SGNotify',
       env: 'SGNOTIFY_CLIENT_ID',
-      format: String,
+      format: 'required-string',
       default: '',
     },
     clientSecret: {
       doc: 'Corresponding password to clientId',
       env: 'SGNOTIFY_CLIENT_SECRET',
-      format: String,
+      format: 'required-string',
       default: '',
     },
     ecPrivateKey: {
       doc: 'Our elliptic curve private key used as part of JOSE implementation',
       env: 'SGNOTIFY_EC_PRIVATE_KEY',
-      format: String,
+      format: 'required-string',
       default: '',
     },
   },
