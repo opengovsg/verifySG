@@ -31,7 +31,13 @@ export class NotificationsController {
       officerId,
       body,
     )
-    if (!inserted) throw new BadRequestException('Call not created')
-    return this.notificationsService.mapToDto(inserted)
+    if (!inserted) throw new BadRequestException('Notification not created')
+    const sgNotifyParamsUpdated =
+      await this.notificationsService.sendNotification(inserted.id)
+    const updated = await this.notificationsService.updateNotification(
+      inserted.id,
+      sgNotifyParamsUpdated,
+    )
+    return this.notificationsService.mapToDto(updated)
   }
 }
