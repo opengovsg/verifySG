@@ -35,6 +35,7 @@ export interface ConfigSchema {
   }
   sgNotify: {
     baseUrl: string
+    timeout: number
     eServiceId: string
     clientId: string
     clientSecret: string
@@ -209,6 +210,12 @@ export const schema: Schema<ConfigSchema> = {
       env: 'SGNOTIFY_URL',
       format: 'required-string',
       default: 'https://stg-ntf.singpass.gov.sg',
+    },
+    timeout: {
+      doc: 'Client timeout for sgNotify API in milliseconds',
+      env: 'SGNOTIFY_TIMEOUT',
+      format: Number,
+      default: 15000,
     },
     eServiceId: {
       doc: 'Human-readable identifier of us that doubles up as Key ID in JOSE implementation',
