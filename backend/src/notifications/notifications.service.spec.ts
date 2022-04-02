@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm'
 import { Agency, Notification, Officer } from '../database/entities'
 import { OfficersService } from '../officers/officers.service'
 import { AgenciesService } from '../agencies/agencies.service'
+import { ConfigService, Logger } from '../core/providers'
 
 describe('NotificationsService', () => {
   let service: NotificationsService
@@ -32,6 +33,8 @@ describe('NotificationsService', () => {
             /*TODO: ADD MOCK VALUES HERE*/
           },
         },
+        Logger,
+        ConfigService,
       ],
     }).compile()
 
