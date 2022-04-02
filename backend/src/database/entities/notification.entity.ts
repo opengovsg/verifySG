@@ -27,15 +27,21 @@ export enum SGNotifyNotificationStatus {
   READ_BY_USER = 'READ_BY_USER',
 }
 
+export enum MessageTemplateId {
+  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
+  GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
+  GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
+}
+
 export interface SGNotifyParams {
   agencyLogoUrl: string
   senderName: string
   title: string
   uin: string // NRIC
   shortMessage: string
-  templateId: string
+  templateId: MessageTemplateId
   sgNotifyLongMessageParams: Record<string, string>
-  status?: SGNotifyNotificationStatus
+  status: SGNotifyNotificationStatus
   requestId?: string
 }
 
