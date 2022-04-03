@@ -49,6 +49,12 @@ export class NotificationsService {
     })
   }
 
+  /**
+   * Create a new notification and insert into database
+   * @param officerId officer sending the notification
+   * @param notificationBody params for notification (call scope and nric for now)
+   * @return created notification if successful, else throw error
+   */
   async createNotification(
     officerId: number,
     notificationBody: CreateNotificationDto,
@@ -89,6 +95,14 @@ export class NotificationsService {
     return this.findById(addedNotification.id)
   }
 
+  /**
+   * Update previously created notification.
+   * notifications.sgNotifyParams updated directly and notification.status updated using mapper
+   * all other fields in notifications should not change after creation
+   * @param notificationId id of notification to update
+   * @param sgNotifyParams new params to update.
+   * @return updated notification if successful, else throw error
+   */
   async updateNotification(
     notificationId: number,
     sgNotifyParams: SGNotifyParams,
@@ -105,6 +119,12 @@ export class NotificationsService {
     })
   }
 
+  /**
+   * Send notification to SGNotify API based on id of existing notification in database
+   * Throws error if notification not found in database or if SGNotify API says user not found
+   * Returns sgNotifyParams (to facilitate database update)
+   * @param notificationId id of notification to send
+   */
   async sendNotification(notificationId: number): Promise<SGNotifyParams> {
     const SGNotifyPublicKey = await this.getPublicKey()
     const ecPrivateKey = await this.getPrivateKey()
@@ -112,16 +132,13 @@ export class NotificationsService {
     if (!notificationToSend)
       throw new BadRequestException(`Notification ${notificationId} not found`)
     const { sgNotifyParams } = notificationToSend
-    const jwe = await this.sendNotificationRequest(
+    const jwe = await this.callSGNotifyEndpointsToSendNotification(
       sgNotifyParams,
       SGNotifyPublicKey,
       ecPrivateKey,
     )
     if (!jwe) {
-      this.logger.log({
-        message: 'NRIC provided not found',
-        ...sgNotifyParams,
-      })
+      // no need to log since already logged in callSGNotifyEndpointsToSendNotification
       throw new BadRequestException(
         'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.',
       )
@@ -141,12 +158,22 @@ export class NotificationsService {
     }
   }
 
-  async sendNotificationRequest(
+  /**
+   * Function that bundles calling authz token endpoint and notification endpoint to send a SG-Notify notification
+   * @param sgNotifyParams params of SG-Notify notification
+   * @param SGNotifyPublicKey public key of SGNotify API
+   * @param ecPrivateKey our EC private key
+   * @return jwe encrypted payload of SG-Notify notification endpoint response
+   */
+  async callSGNotifyEndpointsToSendNotification(
     sgNotifyParams: SGNotifyParams,
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
   ): Promise<string | null> {
-    const authToken = await this.getAuthToken(SGNotifyPublicKey, ecPrivateKey)
+    const authToken = await this.getAuthzTokenFromSGNotifyEndpoint(
+      SGNotifyPublicKey,
+      ecPrivateKey,
+    )
     const jweObject = await this.generateNotificationJWEObject(
       sgNotifyParams,
       SGNotifyPublicKey,
@@ -167,12 +194,19 @@ export class NotificationsService {
       return data.jwe
     } catch (e) {
       if ((e as AxiosError).response?.status === 404) {
+        this.logger.log({
+          message: 'NRIC provided not found',
+          ...sgNotifyParams,
+        })
         return null
       }
       throw e
     }
   }
 
+  /**
+   * Function that gets public key from SGNotify discovery endpoint and returns it as a JWK
+   */
   async getPublicKey(): Promise<jose.KeyLike | Uint8Array> {
     const url = '/.well-known/ntf-authz-keys'
     // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
@@ -180,6 +214,9 @@ export class NotificationsService {
     return await jose.importJWK(data.keys[0], 'ES256')
   }
 
+  /**
+   * Function that gets private key from config schema and return it as JWK
+   */
   async getPrivateKey(): Promise<jose.KeyLike | Uint8Array> {
     const { ecPrivateKey: ecPrivateKeyString, eServiceId } =
       this.config.get('sgNotify')
@@ -194,6 +231,10 @@ export class NotificationsService {
     return await jose.importJWK(updatedEcPrivateKeyJWK, 'ES256')
   }
 
+  /**
+   * decode encrypted payloads from SGNotify endpoint (used in both authz and notification endpoints)
+   * @return custom SGNotifyPayload that specifies the decrypted payload's shape
+   */
   async decodePayload(
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
@@ -209,7 +250,7 @@ export class NotificationsService {
     return payload
   }
 
-  async generateAuthJWEObject(
+  async generateAuthzJWEObject(
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
   ): Promise<string> {
@@ -235,35 +276,56 @@ export class NotificationsService {
       .encrypt(SGNotifyPublicKey)
   }
 
-  async getAuthToken(
+  /**
+   * Get authz token from SG-Notify endpoint
+   * @param SGNotifyPublicKey
+   * @param ecPrivateKey
+   * @return decrypted authz token
+   */
+  async getAuthzTokenFromSGNotifyEndpoint(
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
   ): Promise<string> {
-    const jweObject = await this.generateAuthJWEObject(
+    const jweObject = await this.generateAuthzJWEObject(
       SGNotifyPublicKey,
       ecPrivateKey,
     )
     const { clientId, clientSecret } = this.config.get('sgNotify')
     // TODO error handling if authz request fails
-    const { data } = await this.client.post<PostSGNotifyAuthzDto>(
-      '/v1/oauth2/token',
-      {
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: 'CLIENT_CREDENTIALS',
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${jweObject}`,
+    try {
+      const { data } = await this.client.post<PostSGNotifyAuthzDto>(
+        '/v1/oauth2/token',
+        {
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'CLIENT_CREDENTIALS',
         },
-      },
-    )
-    const authPayload = (await this.decodePayload(
-      SGNotifyPublicKey,
-      ecPrivateKey,
-      data.token,
-    )) as AuthPayload
-    return authPayload.access_token
+        {
+          headers: {
+            Authorization: `Bearer ${jweObject}`,
+          },
+        },
+      )
+      const authPayload = (await this.decodePayload(
+        SGNotifyPublicKey,
+        ecPrivateKey,
+        data.token,
+      )) as AuthPayload
+      return authPayload.access_token
+    } catch (e) {
+      if ((e as AxiosError).response?.status === 400) {
+        this.logger.log({
+          message: `Bad request: ${e}`,
+          jweObject,
+        })
+      } else if ((e as AxiosError).response?.status === 401) {
+        this.logger.log({
+          message: `Unauthorized request: ${e}`,
+          jweObject,
+        })
+      }
+      throw e
+    }
   }
 
   async generateNotificationJWEObject(
