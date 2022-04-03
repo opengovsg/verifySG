@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import {
-  MessageTemplateId,
+  SGNotifyMessageTemplateId,
   Notification,
   NotificationType,
   SGNotifyNotificationStatus,
@@ -76,7 +76,7 @@ export class NotificationsService {
         title: 'Upcoming Phone Call',
         uin: nric,
         shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
-        templateId: MessageTemplateId.GENERIC_PHONE_CALL,
+        templateId: SGNotifyMessageTemplateId.GENERIC_PHONE_CALL,
         sgNotifyLongMessageParams: {
           agency: agencyShortName,
           officer_name: officer.name,

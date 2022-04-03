@@ -12,6 +12,7 @@ import { Officer } from './officer.entity'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
+  // currently, only supports SGNotify; likely will support WhatsApp in future
   WHATSAPP = 'WHATSAPP',
 }
 
@@ -23,13 +24,15 @@ export enum NotificationStatus {
 export enum SGNotifyNotificationStatus {
   NOT_SENT = 'NOT_SENT',
   SENT_BY_SERVER = 'SENT_BY_SERVER',
+  // last two enums unused for now; can be obtained by consuming notification status endpoints
   RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
   READ_BY_USER = 'READ_BY_USER',
 }
 
-export enum MessageTemplateId {
-  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
+export enum SGNotifyMessageTemplateId {
   GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
+  // last two enums unused for now; GENERIC_PHONE_CALL template might be subject to editing by GovTech CMG though
+  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
   GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
@@ -39,7 +42,7 @@ export interface SGNotifyParams {
   title: string
   uin: string // NRIC
   shortMessage: string
-  templateId: MessageTemplateId
+  templateId: SGNotifyMessageTemplateId
   sgNotifyLongMessageParams: Record<string, string>
   status: SGNotifyNotificationStatus
   requestId?: string
@@ -48,11 +51,11 @@ export interface SGNotifyParams {
 /**
  * Notification entity
  * @officer one officer can make multiple notifications
- * @notificationType currently SGNotify only, will support WhatsApp in future
+ * @notificationType
  * @recipientId allow us to identify who was the recipient of the notification; currently NRIC only; could be phone number in future
- * @status rough indicator of whether notification is sent successfully; more specific statuses in SGNotifyNotification
- * @callScope optional field for officer to track what call is about; will work into something more systematic in future
- * @deletedAt added to safeguard against accidental deletion; by right there should be no deletion at all
+ * @status currently tracks whether given notification has been sent (enum for possible extension); SGNotify-specific statuses tracked in SGNotifyNotification
+ * @callScope optional field for officer to track what call is about; currently merely recorded in database and not shown to MOP/officer on frontend (for future extension)
+ * @deletedAt to safeguard against accidental deletion; by right there should be no deletion at all
  */
 @Entity({ name: 'notification' })
 export class Notification {
