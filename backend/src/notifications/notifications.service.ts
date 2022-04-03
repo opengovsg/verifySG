@@ -69,7 +69,7 @@ export class NotificationsService {
       notificationType: NotificationType.SGNOTIFY,
       recipientId: nric,
       callScope,
-      // TODO: process different message templates programmatically
+      // TODO: process different message templates programmatically (part 1)
       sgNotifyParams: {
         agencyLogoUrl: logoUrl,
         senderName: agencyName,
@@ -84,7 +84,7 @@ export class NotificationsService {
           masked_nric: `(${maskNric(nric)})`,
           call_details:
             'This call will be made in the next 10 minutes. Please verify the person calling you is indeed a public officer using the name and position provided in this message.',
-          callback_details: ' ', // unused for now, but useful for future extension
+          callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
           status: SGNotifyNotificationStatus.NOT_SENT,
         },
       },
@@ -342,6 +342,7 @@ export class NotificationsService {
       title,
       uin,
     } = sgNotifyParams
+    // TODO: process different message templates programmatically (part 2)
     const {
       agency,
       masked_nric,
