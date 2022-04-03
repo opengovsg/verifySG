@@ -4,7 +4,7 @@ import {
   SGNotifyParams,
 } from '../../database/entities'
 
-export const SGNotifyParamsStatusToNotificationStatusMapper = (
+export const sgNotifyParamsStatusToNotificationStatusMapper = (
   params: SGNotifyParams,
 ): NotificationStatus => {
   if (params.status === SGNotifyNotificationStatus.NOT_SENT)

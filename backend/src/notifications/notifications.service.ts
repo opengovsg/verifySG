@@ -23,7 +23,7 @@ import { OfficersService } from 'officers/officers.service'
 import { ConfigService } from '../core/providers'
 import { AuthPayload, NotificationPayload, SGNotifyPayload } from './dto'
 import { maskNric } from '../common/utils'
-import { SGNotifyParamsStatusToNotificationStatusMapper } from '../common/utils'
+import { sgNotifyParamsStatusToNotificationStatusMapper } from '../common/utils'
 import { Logger } from 'core/providers'
 
 @Injectable()
@@ -111,7 +111,7 @@ export class NotificationsService {
     if (!notificationToUpdate)
       throw new BadRequestException(`Notification ${notificationId} not found`)
     const notificationStatus =
-      SGNotifyParamsStatusToNotificationStatusMapper(sgNotifyParams)
+      sgNotifyParamsStatusToNotificationStatusMapper(sgNotifyParams)
     return await this.notificationRepository.save({
       ...notificationToUpdate,
       status: notificationStatus,
