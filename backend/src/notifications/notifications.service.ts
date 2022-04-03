@@ -97,7 +97,7 @@ export class NotificationsService {
 
   /**
    * Update previously created notification.
-   * notifications.sgNotifyParams updated directly and notification.status updated using mapper
+   * notifications.sgNotifyParams updated directly and notification.status updated using mapper function
    * all other fields in notifications should not change after creation
    * @param notificationId id of notification to update
    * @param sgNotifyParams new params to update.
@@ -138,9 +138,9 @@ export class NotificationsService {
       ecPrivateKey,
     )
     if (!jwe) {
-      // no need to log since already logged in callSGNotifyEndpointsToSendNotification
+      // no need to log since already logged in subroutine
       throw new BadRequestException(
-        'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.',
+        'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
       )
     }
     const notificationPayload = (await this.decodePayload(
@@ -159,7 +159,7 @@ export class NotificationsService {
   }
 
   /**
-   * Function that bundles calling authz token endpoint and notification endpoint to send a SG-Notify notification
+   * Function that bundles calling authz token endpoint and notification endpoint to send an SG-Notify notification
    * @param sgNotifyParams params of SG-Notify notification
    * @param SGNotifyPublicKey public key of SGNotify API
    * @param ecPrivateKey our EC private key
