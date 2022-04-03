@@ -17,13 +17,14 @@ export class NotificationsController {
   constructor(private notificationsService: NotificationsService) {}
 
   /**
-   * Creates new call given an officerId and call body
+   * Endpoint for frontend to call to send a new notification
+   * Insert notification into database, sends notification to user, and updates notification status based on response
    * @param officerId id of officer creating the call from session
    * @param body contains callScope and nric from frontend
    */
   @UseGuards(AuthOfficerGuard)
   @Post()
-  async createNewNotification(
+  async sendNewNotification(
     @OfficerId() officerId: number,
     @Body() body: CreateNotificationDto,
   ): Promise<GetNotificationDto> {
