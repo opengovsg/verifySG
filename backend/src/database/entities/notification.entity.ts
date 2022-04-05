@@ -36,6 +36,7 @@ export enum SGNotifyMessageTemplateId {
   GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
+// TODO: move this out of entities
 export interface SGNotifyParams {
   agencyLogoUrl: string
   senderName: string

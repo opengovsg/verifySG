@@ -1,4 +1,4 @@
-export * from './create-notification.dto'
+export * from './send-new-notification.dto'
 export * from './get-notification.dto'
 export * from './get-sgnotify-jwks.dto'
 export * from './decode-payload.dto'

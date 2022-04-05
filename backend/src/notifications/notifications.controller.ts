@@ -6,11 +6,10 @@ import {
   BadRequestException,
 } from '@nestjs/common'
 
-import { GetNotificationDto } from 'notifications/dto'
 import { OfficerId } from 'common/decorators'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { NotificationsService } from './notifications.service'
-import { CreateNotificationDto } from './dto'
+import { SendNewNotificationDto, GetNotificationDto } from './dto'
 
 @Controller('notifications')
 export class NotificationsController {
@@ -26,7 +25,7 @@ export class NotificationsController {
   @Post()
   async sendNewNotification(
     @OfficerId() officerId: number,
-    @Body() body: CreateNotificationDto,
+    @Body() body: SendNewNotificationDto,
   ): Promise<GetNotificationDto> {
     const inserted = await this.notificationsService.createNotification(
       officerId,

@@ -13,11 +13,11 @@ import {
   SGNotifyParams,
 } from 'database/entities'
 import {
-  CreateNotificationDto,
   GetNotificationDto,
   GetSGNotifyJwksDto,
   PostSGNotifyAuthzDto,
   PostSGNotifyJweDto,
+  SendNewNotificationDto,
 } from './dto'
 import { OfficersService } from 'officers/officers.service'
 import { ConfigService } from '../core/providers'
@@ -57,7 +57,7 @@ export class NotificationsService {
    */
   async createNotification(
     officerId: number,
-    notificationBody: CreateNotificationDto,
+    notificationBody: SendNewNotificationDto,
   ): Promise<Notification | undefined> {
     const { callScope, nric } = notificationBody
     const officer = await this.officersService.findById(officerId)
@@ -100,7 +100,7 @@ export class NotificationsService {
    * notifications.sgNotifyParams updated directly and notification.status updated using mapper function
    * all other fields in notifications should not change after creation
    * @param notificationId id of notification to update
-   * @param sgNotifyParams new params to update.
+   * @param sgNotifyParams update existing notifications to reflect these new params
    * @return updated notification if successful, else throw error
    */
   async updateNotification(
@@ -115,7 +115,7 @@ export class NotificationsService {
     return await this.notificationRepository.save({
       ...notificationToUpdate,
       status: notificationStatus,
-      sgNotifyParams,
+      sgNotifyParams: sgNotifyParams,
     })
   }
 
@@ -170,7 +170,7 @@ export class NotificationsService {
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
   ): Promise<string | null> {
-    const authToken = await this.getAuthzTokenFromSGNotifyEndpoint(
+    const authzToken = await this.getAuthzTokenFromSGNotifyEndpoint(
       SGNotifyPublicKey,
       ecPrivateKey,
     )
@@ -187,7 +187,7 @@ export class NotificationsService {
         },
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${authzToken}`,
           },
         },
       )
