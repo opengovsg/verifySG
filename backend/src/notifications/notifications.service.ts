@@ -11,21 +11,24 @@ import {
   Notification,
   NotificationType,
   SGNotifyNotificationStatus,
-  SGNotifyParams,
+  ModalityParams,
 } from 'database/entities'
+import { GetNotificationDto, SendNewNotificationDto } from './dto'
+import { OfficersService } from 'officers/officers.service'
 import {
-  GetNotificationDto,
+  AuthPayload,
+  NotificationPayload,
+  SGNotifyPayload,
   GetSGNotifyJwksDto,
   PostSGNotifyAuthzDto,
   PostSGNotifyJweDto,
-  SendNewNotificationDto,
 } from './dto'
-import { OfficersService } from 'officers/officers.service'
-import { ConfigService } from '../core/providers'
-import { AuthPayload, NotificationPayload, SGNotifyPayload } from './dto'
-import { maskNric } from '../common/utils'
-import { sgNotifyParamsStatusToNotificationStatusMapper } from '../common/utils'
-import { Logger } from 'core/providers'
+import {
+  maskNric,
+  sgNotifyParamsStatusToNotificationStatusMapper,
+} from 'common/utils'
+import { ConfigService, Logger } from 'core/providers'
+import { SGNotifyParams } from './sgnotify/sgnotify.service'
 
 @Injectable()
 export class NotificationsService {
@@ -71,7 +74,7 @@ export class NotificationsService {
       recipientId: nric,
       callScope,
       // TODO: process different message templates programmatically (part 1)
-      sgNotifyParams: {
+      modalityParams: {
         agencyLogoUrl: logoUrl,
         senderName: agencyName,
         title: 'Upcoming Phone Call',
@@ -98,43 +101,45 @@ export class NotificationsService {
 
   /**
    * Update previously created notification.
-   * notifications.sgNotifyParams updated directly and notification.status updated using mapper function
+   * notifications.modalityParams updated directly and notification.status updated using mapper function
    * all other fields in notifications should not change after creation
    * @param notificationId id of notification to update
-   * @param sgNotifyParams update existing notifications to reflect these new params
+   * @param modalityParams update existing notifications to reflect these new params
    * @return updated notification if successful, else throw error
    */
   async updateNotification(
     notificationId: number,
-    sgNotifyParams: SGNotifyParams,
+    modalityParams: ModalityParams,
   ): Promise<Notification> {
     const notificationToUpdate = await this.findById(notificationId)
     if (!notificationToUpdate)
       throw new BadRequestException(`Notification ${notificationId} not found`)
+    // ideally, should check type of notification is indeed SGNotify
     const notificationStatus =
-      sgNotifyParamsStatusToNotificationStatusMapper(sgNotifyParams)
+      sgNotifyParamsStatusToNotificationStatusMapper(modalityParams)
     return await this.notificationRepository.save({
       ...notificationToUpdate,
       status: notificationStatus,
-      sgNotifyParams: sgNotifyParams,
+      modalityParams,
     })
   }
 
   /**
    * Send notification to SGNotify API based on id of existing notification in database
    * Throws error if notification not found in database or if SGNotify API says user not found
-   * Returns sgNotifyParams (to facilitate database update)
+   * Returns modalityParams (to facilitate database update)
    * @param notificationId id of notification to send
    */
-  async sendNotification(notificationId: number): Promise<SGNotifyParams> {
+  async sendNotification(notificationId: number): Promise<ModalityParams> {
+    // extract these into separate methods
     const SGNotifyPublicKey = await this.getPublicKey()
     const ecPrivateKey = await this.getPrivateKey()
     const notificationToSend = await this.findById(notificationId)
     if (!notificationToSend)
       throw new BadRequestException(`Notification ${notificationId} not found`)
-    const { sgNotifyParams } = notificationToSend
+    const { modalityParams } = notificationToSend
     const jwe = await this.callSGNotifyEndpointsToSendNotification(
-      sgNotifyParams,
+      modalityParams,
       SGNotifyPublicKey,
       ecPrivateKey,
     )
@@ -150,10 +155,10 @@ export class NotificationsService {
       jwe,
     )) as NotificationPayload
     return {
-      ...sgNotifyParams,
+      ...modalityParams,
       requestId: notificationPayload.request_id,
       sgNotifyLongMessageParams: {
-        ...sgNotifyParams.sgNotifyLongMessageParams,
+        ...modalityParams.sgNotifyLongMessageParams,
         status: SGNotifyNotificationStatus.SENT_BY_SERVER,
       },
     }

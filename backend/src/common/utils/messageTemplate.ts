@@ -1,8 +1,8 @@
 import {
   NotificationStatus,
   SGNotifyNotificationStatus,
-  SGNotifyParams,
 } from '../../database/entities'
+import { SGNotifyParams } from '../../notifications/sgnotify/sgnotify.service'
 
 export const sgNotifyParamsStatusToNotificationStatusMapper = (
   params: SGNotifyParams,

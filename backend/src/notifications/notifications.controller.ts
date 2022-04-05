@@ -32,11 +32,11 @@ export class NotificationsController {
       body,
     )
     if (!inserted) throw new BadRequestException('Notification not created')
-    const sgNotifyParamsUpdated =
+    const modalityParamsUpdated =
       await this.notificationsService.sendNotification(inserted.id)
     const updated = await this.notificationsService.updateNotification(
       inserted.id,
-      sgNotifyParamsUpdated,
+      modalityParamsUpdated,
     )
     return this.notificationsService.mapToDto(updated)
   }
