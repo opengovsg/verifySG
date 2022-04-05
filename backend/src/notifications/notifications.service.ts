@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
 import crypto from 'crypto'
 import * as jose from 'jose'
+import { JWTPayload } from 'jose'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -143,7 +144,7 @@ export class NotificationsService {
         'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
       )
     }
-    const notificationPayload = (await this.decodePayload(
+    const notificationPayload = (await this.decryptAndVerifyPayload(
       SGNotifyPublicKey,
       ecPrivateKey,
       jwe,
@@ -232,10 +233,10 @@ export class NotificationsService {
   }
 
   /**
-   * decode encrypted payloads from SGNotify endpoint (used in both authz and notification endpoints)
+   * decrypt and verify encrypted payloads from SGNotify endpoint (used in both authz and notification endpoints)
    * @return custom SGNotifyPayload that specifies the decrypted payload's shape
    */
-  async decodePayload(
+  async decryptAndVerifyPayload(
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
     encryptedPayload: string,
@@ -250,15 +251,17 @@ export class NotificationsService {
     return payload
   }
 
-  async generateAuthzJWEObject(
+  /**
+   * sign and encrpyt payload to be sent to SGNotify endpoint (used in both authz and notification endpoints)
+   * @return JWE object
+   */
+  async signAndEncryptPayload(
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
+    payload: JWTPayload,
   ): Promise<string> {
-    const { clientId, clientSecret, eServiceId } = this.config.get('sgNotify')
-    const signedJWT = await new jose.SignJWT({
-      client_id: clientId,
-      client_secret: clientSecret,
-    })
+    const { eServiceId } = this.config.get('sgNotify')
+    const signedJWT = await new jose.SignJWT(payload)
       .setExpirationTime('2m')
       .setProtectedHeader({
         typ: 'JWT',
@@ -274,6 +277,17 @@ export class NotificationsService {
         cty: 'JWT',
       })
       .encrypt(SGNotifyPublicKey)
+  }
+
+  async generateAuthzJWEObject(
+    SGNotifyPublicKey: jose.KeyLike | Uint8Array,
+    ecPrivateKey: jose.KeyLike | Uint8Array,
+  ): Promise<string> {
+    const { clientId, clientSecret } = this.config.get('sgNotify')
+    return this.signAndEncryptPayload(SGNotifyPublicKey, ecPrivateKey, {
+      client_id: clientId,
+      client_secret: clientSecret,
+    })
   }
 
   /**
@@ -306,7 +320,7 @@ export class NotificationsService {
           },
         },
       )
-      const authPayload = (await this.decodePayload(
+      const authPayload = (await this.decryptAndVerifyPayload(
         SGNotifyPublicKey,
         ecPrivateKey,
         data.token,
@@ -333,7 +347,6 @@ export class NotificationsService {
     SGNotifyPublicKey: jose.KeyLike | Uint8Array,
     ecPrivateKey: jose.KeyLike | Uint8Array,
   ): Promise<string> {
-    const eServiceId = this.config.get('sgNotify.eServiceId')
     const {
       agencyLogoUrl,
       senderName,
@@ -351,7 +364,7 @@ export class NotificationsService {
       call_details,
       callback_details,
     } = sgNotifyLongMessageParams
-    const signedJWT = await new jose.SignJWT({
+    return this.signAndEncryptPayload(SGNotifyPublicKey, ecPrivateKey, {
       notification_req: {
         category: 'MESSAGES',
         channel_mode: 'SPM',
@@ -376,21 +389,6 @@ export class NotificationsService {
         uin,
       },
     })
-      .setExpirationTime('2m')
-      .setProtectedHeader({
-        typ: 'JWT',
-        alg: 'ES256',
-        kid: eServiceId,
-      })
-      .sign(ecPrivateKey)
-
-    return await new jose.CompactEncrypt(new TextEncoder().encode(signedJWT))
-      .setProtectedHeader({
-        alg: 'ECDH-ES+A256KW',
-        enc: 'A256GCM',
-        cty: 'JWT',
-      })
-      .encrypt(SGNotifyPublicKey)
   }
   mapToDto(notification: Notification): GetNotificationDto {
     const { id, officer, createdAt, callScope } = notification
