@@ -4,8 +4,8 @@ import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ProfileGuard from '../components/ProfileGuard'
 import {
-  CALLFORM_ROUTE,
   LOGIN_ROUTE,
+  NOTIFYFORM_ROUTE,
   PROFILE_ROUTE,
   ROOT_ROUTE,
   WELCOME_ROUTE,
@@ -30,9 +30,9 @@ export const AppRouter = (): JSX.Element => {
           <Redirect to={LOGIN_ROUTE} />
         </PublicRoute>
         <PublicRoute exact path={LOGIN_ROUTE}>
-          <LoginPage onLogin={() => history.push(CALLFORM_ROUTE)} />
+          <LoginPage onLogin={() => history.push(NOTIFYFORM_ROUTE)} />
         </PublicRoute>
-        <PrivateRoute exact path={CALLFORM_ROUTE}>
+        <PrivateRoute exact path={NOTIFYFORM_ROUTE}>
           <ProfileGuard>
             <CallForm />
           </ProfileGuard>
@@ -41,7 +41,7 @@ export const AppRouter = (): JSX.Element => {
           <WelcomePage />
         </PrivateRoute>
         <PrivateRoute exact path={PROFILE_ROUTE}>
-          <ProfileForm onSubmit={() => history.push(CALLFORM_ROUTE)} />
+          <ProfileForm onSubmit={() => history.push(NOTIFYFORM_ROUTE)} />
         </PrivateRoute>
         {/* TODO: add 404 page */}
         <Route path="*">404</Route>
