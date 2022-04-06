@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import convict, { Config, Path } from 'convict'
-import 'dotenv/config'
+import { GetParametersByPathCommand, SSMClient } from '@aws-sdk/client-ssm'
+import fs from 'fs'
+import dotenv = require('dotenv')
 
 import { ConfigSchema, schema } from '../config.schema'
 
@@ -8,6 +10,7 @@ import { ConfigSchema, schema } from '../config.schema'
 export class ConfigService {
   config: Config<ConfigSchema>
   constructor() {
+    dotenv.config()
     this.config = convict(schema)
     this.config.validate()
   }
@@ -20,5 +23,68 @@ export class ConfigService {
 
   get isDevEnv(): boolean {
     return this.config.get('environment') === 'development'
+  }
+
+  /**
+   * This function calls systems manager and generates a .env file based on the environment you are in.
+   * The default prefix path will be for the environment variable will be /${ENV}-checkwho-gov followed by the environment key
+   * Example:
+   *  A parameter with the file path on SSM /staging-checkwho-gov/DB_NAME will be echoed to .env file with the format DB_NAME={}
+   */
+  static async createEnvFileFromSystemsManager() {
+    dotenv.config()
+    const client = new SSMClient({ region: 'ap-southeast-1' })
+    const ENV = process.env.ENV ?? 'develop'
+    console.log({
+      message: 'Initializing config for',
+      environment: ENV,
+    })
+
+    if (ENV === 'develop') return
+
+    const filePathPrefix = `/${ENV}-checkwho-gov/`
+    const params: Record<string, string> = {}
+    let nextToken
+
+    do {
+      // Handle pagination (max 10 params per call)
+      const res: any = await client.send(
+        new GetParametersByPathCommand({
+          Path: filePathPrefix,
+          Recursive: true,
+          WithDecryption: true,
+          ...(nextToken ? { NextToken: nextToken } : {}),
+        }),
+      )
+
+      for (const parameter of res.Parameters ?? []) {
+        const paramName = parameter.Name.slice(filePathPrefix.length)
+        const isStringList = parameter.Type === 'StringList'
+        params[paramName] = isStringList
+          ? `[${parameter.Value.split(',').map((x: string) => `"${x}"`)}]`
+          : parameter.Value
+      }
+
+      nextToken = res.NextToken
+    } while (nextToken)
+
+    // format strings, JSON strings, and StringList appropriately
+    const envString = Object.entries(params)
+      .map(([k, v]) => {
+        const strippedValue = v.replace(/\s/g, '')
+        const looksLikeJson = strippedValue.includes('{')
+        return looksLikeJson
+          ? `${k}=${strippedValue}`
+          : `${k}='${strippedValue}'`
+      })
+      .join('\n')
+      .concat(`\nNODE_ENV=${ENV}`)
+
+    console.log({
+      message: 'Succesfully fetched environment variables from SSM',
+      keys: Object.keys(params),
+    })
+
+    await fs.promises.writeFile('.env', envString)
   }
 }
