@@ -104,16 +104,26 @@ export class NotificationsService {
   }
 
   /**
-   * Send notification to SGNotify API based on id of existing notification in database
-   * Throws error if notification not found in database or if SGNotify API says user not found
-   * Returns modalityParams (to facilitate database update)
-   * @param notificationId id of notification to send
+   * Counterpart to sendNotification on the controller
+   * Insert notification into database, sends notification to user, and updates notification status based on response
+   *
+   * @param officerId id of officer creating the call from session
+   * @param body contains callScope and nric from frontend
    */
-  async sendNotification(notificationId: number): Promise<ModalityParams> {
-    const notificationToSend = await this.findById(notificationId)
-    if (!notificationToSend)
-      throw new BadRequestException(`Notification ${notificationId} not found`)
-    return await this.sgNotifyService.sendNotification(notificationToSend)
+  async sendNotification(
+    officerId: number,
+    body: SendNewNotificationDto,
+  ): Promise<GetNotificationDto> {
+    const inserted = await this.createNotification(officerId, body)
+    if (!inserted) throw new BadRequestException('Notification not created')
+    const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
+      inserted,
+    )
+    const updated = await this.updateNotification(
+      inserted.id,
+      modalityParamsUpdated,
+    )
+    return this.mapToDto(updated)
   }
 
   mapToDto(notification: Notification): GetNotificationDto {
