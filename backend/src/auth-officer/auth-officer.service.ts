@@ -35,10 +35,8 @@ export class AuthOfficerService {
 
   async verifyOTP(email: string, token: string): Promise<Officer | undefined> {
     const isVerified = this.otpService.verifyOtp(email, token)
-    const officer = isVerified
+    return isVerified
       ? await this.officerService.findOrInsert({ email })
       : undefined
-
-    return officer
   }
 }
