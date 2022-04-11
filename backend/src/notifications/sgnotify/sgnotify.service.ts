@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios'
 import crypto from 'crypto'
 import * as jose from 'jose'
 import { JWTPayload } from 'jose'
+import { BadRequestException, Injectable } from '@nestjs/common'
 
 import { ConfigService, Logger } from '../../core/providers'
 import { ConfigSchema } from '../../core/config.schema'
@@ -18,7 +19,7 @@ import {
   PostSGNotifyJweDto,
   SGNotifyPayload,
 } from './dto'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { insertECPrivateKeyHeaderAndFooter } from './utils/keys'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -69,10 +70,9 @@ export class SGNotifyService {
   async getPrivateKey(): Promise<jose.KeyLike | Uint8Array> {
     const { ecPrivateKey: ecPrivateKeyString, eServiceId } = this.config
     const ecPrivateKey = crypto.createPrivateKey(
-      '-----BEGIN EC PRIVATE KEY-----\n' +
-        ecPrivateKeyString +
-        '\n-----END EC PRIVATE KEY-----',
+      insertECPrivateKeyHeaderAndFooter(ecPrivateKeyString),
     )
+
     const ecPrivateKeyJWK = await jose.exportJWK(ecPrivateKey)
     // this update does not affect functionality, but included for adherence to SGNotify's sample code
     const updatedEcPrivateKeyJWK = {
