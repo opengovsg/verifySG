@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class setupEntities1648561702774 implements MigrationInterface {
-  name = 'setupEntities1648561702774'
+export class setupEntities1649659132133 implements MigrationInterface {
+  name = 'setupEntities1649659132133'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,7 @@ export class setupEntities1648561702774 implements MigrationInterface {
       `CREATE TYPE "public"."notification_status_enum" AS ENUM('NOT_SENT', 'SENT')`,
     )
     await queryRunner.query(
-      `CREATE TABLE "notification" ("id" SERIAL NOT NULL, "notification_type" "public"."notification_notification_type_enum" NOT NULL, "recipient_id" character varying(9) NOT NULL, "status" "public"."notification_status_enum" NOT NULL DEFAULT 'NOT_SENT', "call_scope" text, "sg_notify_params" jsonb NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "officer_id" integer, CONSTRAINT "PK_705b6c7cdf9b2c2ff7ac7872cb7" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "notification" ("id" SERIAL NOT NULL, "notification_type" "public"."notification_notification_type_enum" NOT NULL, "recipient_id" character varying(9) NOT NULL, "status" "public"."notification_status_enum" NOT NULL DEFAULT 'NOT_SENT', "call_scope" text, "modality_params" jsonb NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "officer_id" integer, CONSTRAINT "PK_705b6c7cdf9b2c2ff7ac7872cb7" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
       `CREATE TABLE "officer" ("id" SERIAL NOT NULL, "email" character varying(255) NOT NULL, "name" character varying(255), "position" character varying(255), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "agency_id" character varying(255), CONSTRAINT "UQ_775b4f1f79cf3492b3ac6d024aa" UNIQUE ("email"), CONSTRAINT "PK_b9bab694da36794c5065085936c" PRIMARY KEY ("id"))`,

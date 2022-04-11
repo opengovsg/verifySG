@@ -71,7 +71,7 @@ export class ConfigService {
     // format strings, JSON strings, and StringList appropriately
     const envString = Object.entries(params)
       .map(([k, v]) => {
-        const strippedValue = v.replace(/\s/g, '')
+        const strippedValue = v.trim()
         const looksLikeJson = strippedValue.includes('{')
         return looksLikeJson
           ? `${k}=${strippedValue}`
