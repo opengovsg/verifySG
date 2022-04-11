@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from '@opengovsg/design-system-react'
 
 import AuthProvider from '../contexts/auth/AuthProvider'
+import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
 
 import { AppRouter } from './AppRouter'
 
@@ -21,7 +22,9 @@ export const App: React.FC = () => {
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
-            <AppRouter />
+            <NotificationDataProvider>
+              <AppRouter />
+            </NotificationDataProvider>
           </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
