@@ -5,7 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import ProfileGuard from '../components/ProfileGuard'
 import {
   LOGIN_ROUTE,
-  NOTIFYFORM_ROUTE,
+  NOTIFICATIONFORM_ROUTE,
   PROFILE_ROUTE,
   ROOT_ROUTE,
   WELCOME_ROUTE,
@@ -30,9 +30,9 @@ export const AppRouter = (): JSX.Element => {
           <Redirect to={LOGIN_ROUTE} />
         </PublicRoute>
         <PublicRoute exact path={LOGIN_ROUTE}>
-          <LoginPage onLogin={() => history.push(NOTIFYFORM_ROUTE)} />
+          <LoginPage onLogin={() => history.push(NOTIFICATIONFORM_ROUTE)} />
         </PublicRoute>
-        <PrivateRoute exact path={NOTIFYFORM_ROUTE}>
+        <PrivateRoute exact path={NOTIFICATIONFORM_ROUTE}>
           <ProfileGuard>
             <CallForm />
           </ProfileGuard>
@@ -41,7 +41,7 @@ export const AppRouter = (): JSX.Element => {
           <WelcomePage />
         </PrivateRoute>
         <PrivateRoute exact path={PROFILE_ROUTE}>
-          <ProfileForm onSubmit={() => history.push(NOTIFYFORM_ROUTE)} />
+          <ProfileForm onSubmit={() => history.push(NOTIFICATIONFORM_ROUTE)} />
         </PrivateRoute>
         {/* TODO: add 404 page */}
         <Route path="*">404</Route>

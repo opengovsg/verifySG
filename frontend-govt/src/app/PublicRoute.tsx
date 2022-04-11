@@ -1,7 +1,7 @@
 import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom'
 import { Location } from 'history'
 
-import { NOTIFYFORM_ROUTE } from '../constants/routes'
+import { NOTIFICATIONFORM_ROUTE } from '../constants/routes'
 import { useAuth } from '../contexts/auth/AuthContext'
 
 export interface PublicRouteProps extends Omit<RouteProps, 'render'> {
@@ -28,7 +28,7 @@ export const PublicRoute = ({
         !!isAuthenticated && strict ? (
           <Redirect
             to={{
-              pathname: state?.from?.pathname ?? NOTIFYFORM_ROUTE,
+              pathname: state?.from?.pathname ?? NOTIFICATIONFORM_ROUTE,
               state: { from: location },
             }}
           />

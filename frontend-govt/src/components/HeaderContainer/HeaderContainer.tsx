@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Flex } from '@chakra-ui/react'
 
-import { NOTIFYFORM_ROUTE } from '../../constants/routes'
+import { NOTIFICATIONFORM_ROUTE } from '../../constants/routes'
 import Header from '../Header'
 
 export const HeaderContainer: React.FC = ({ children }) => (
@@ -10,7 +10,7 @@ export const HeaderContainer: React.FC = ({ children }) => (
       navlinks={[
         {
           label: 'CALL DASHBOARD',
-          route: NOTIFYFORM_ROUTE,
+          route: NOTIFICATIONFORM_ROUTE,
         },
       ]}
     />
