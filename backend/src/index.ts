@@ -15,7 +15,7 @@ async function bootstrap() {
   app.set('trust proxy', 1)
   const config = app.get(ConfigService)
   app.enableCors({
-    origin: [config.get('frontend_urls.frontend_govt_base')],
+    origin: [config.get('frontendUrls.frontendGovtBase')],
     credentials: true,
   })
   await app.listen(config.get('port'))
