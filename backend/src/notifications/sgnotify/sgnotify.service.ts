@@ -33,11 +33,14 @@ export interface SGNotifyParams {
   requestId?: string
 }
 
+export type Key = Uint8Array | jose.KeyLike
+
 @Injectable()
 export class SGNotifyService {
   private client: AxiosInstance
-  private SGNotifyPublicKey: Uint8Array | jose.KeyLike
-  private ecPrivateKey: Uint8Array | jose.KeyLike
+  private SGNotifyPublicKeySig: Key
+  private SGNotifyPublicKeyEnc: Key
+  private ecPrivateKey: Key
   private readonly config: ConfigSchema['sgNotify']
 
   constructor(private configService: ConfigService, private logger: Logger) {
@@ -50,24 +53,35 @@ export class SGNotifyService {
       baseURL: baseUrl,
       timeout,
     })
-    this.SGNotifyPublicKey = await this.getPublicKey()
+    const [SGNotifyPublicKeySig, SGNotifyPublicKeyEnc] =
+      await this.getPublicKeysSigEnc()
+    this.SGNotifyPublicKeySig = SGNotifyPublicKeySig
+    this.SGNotifyPublicKeyEnc = SGNotifyPublicKeyEnc
     this.ecPrivateKey = await this.getPrivateKey()
   }
 
   /**
    * Function that gets public key from SGNotify discovery endpoint and returns it as a JWK
    */
-  async getPublicKey(): Promise<jose.KeyLike | Uint8Array> {
+  async getPublicKeysSigEnc(): Promise<[Key, Key]> {
     const url = '/.well-known/ntf-authz-keys'
     // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
     const { data } = await this.client.get<GetSGNotifyJwksDto>(url)
-    return await jose.importJWK(data.keys[0], 'ES256')
+    const publicKeySig = await jose.importJWK(
+      data.keys.filter((key) => key.use === 'sig')[0],
+      'ES256',
+    )
+    const publicKeyEnc = await jose.importJWK(
+      data.keys.filter((key) => key.use === 'enc')[0],
+      'ES256',
+    )
+    return [publicKeySig, publicKeyEnc]
   }
 
   /**
    * Function that gets private key from config schema and return it as JWK
    */
-  async getPrivateKey(): Promise<jose.KeyLike | Uint8Array> {
+  async getPrivateKey(): Promise<Key> {
     const { ecPrivateKey: ecPrivateKeyString, eServiceId } = this.config
     const ecPrivateKey = crypto.createPrivateKey(
       insertECPrivateKeyHeaderAndFooter(ecPrivateKeyString),
@@ -188,7 +202,10 @@ export class SGNotifyService {
       this.ecPrivateKey,
     )
     const signedJWT = new TextDecoder().decode(plaintext)
-    const { payload } = await jose.jwtVerify(signedJWT, this.SGNotifyPublicKey)
+    const { payload } = await jose.jwtVerify(
+      signedJWT,
+      this.SGNotifyPublicKeySig,
+    )
     return payload
   }
 
@@ -213,7 +230,7 @@ export class SGNotifyService {
         enc: 'A256GCM',
         cty: 'JWT',
       })
-      .encrypt(this.SGNotifyPublicKey)
+      .encrypt(this.SGNotifyPublicKeyEnc)
   }
 
   hydrateSgNotifyTemplate(sgNotifyParams: SGNotifyParams): JWTPayload {
