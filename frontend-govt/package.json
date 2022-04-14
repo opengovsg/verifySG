@@ -25,14 +25,14 @@
     "nric": "^1.2.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-hook-form": "^7.27.1",
+    "react-hook-form": "^7.29.0",
     "react-icons": "^4.3.1",
-    "react-markdown": "^8.0.0",
+    "react-markdown": "^8.0.2",
     "react-query": "^3.34.16",
     "react-router-dom": "^5.3.0"
   },
   "devDependencies": {
-    "@types/node": "17.0.10",
+    "@types/node": "17.0.24",
     "@types/react": "17.0.38",
     "@types/react-dom": "^17.0.2",
     "@types/react-router-dom": "^5.1.7",
