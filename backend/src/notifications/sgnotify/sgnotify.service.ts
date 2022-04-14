@@ -21,20 +21,8 @@ import {
 import {
   convertSGNotifyParamsToJWTPayload,
   insertECPrivateKeyHeaderAndFooter,
-  SGNotifyMessageTemplateId,
+  SGNotifyParams,
 } from './utils'
-
-export interface SGNotifyParams {
-  agencyLogoUrl: string
-  agencyName: string
-  title: string
-  nric: string
-  shortMessage: string
-  templateId: SGNotifyMessageTemplateId
-  sgNotifyLongMessageParams: Record<string, string>
-  status: SGNotifyNotificationStatus
-  requestId?: string
-}
 
 export type Key = Uint8Array | jose.KeyLike
 

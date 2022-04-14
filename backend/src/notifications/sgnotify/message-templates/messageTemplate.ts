@@ -2,9 +2,20 @@ import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
-import { SGNotifyParams } from '../sgnotify.service'
 import { maskNric } from '../utils'
 import { JWTPayload } from 'jose'
+
+export interface SGNotifyParams {
+  agencyLogoUrl: string
+  agencyName: string
+  title: string
+  nric: string
+  shortMessage: string
+  templateId: SGNotifyMessageTemplateId
+  sgNotifyLongMessageParams: Record<string, string>
+  status: SGNotifyNotificationStatus
+  requestId?: string
+}
 
 export enum SGNotifyMessageTemplateId {
   GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
