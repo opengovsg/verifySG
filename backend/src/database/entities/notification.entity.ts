@@ -30,13 +30,6 @@ export enum SGNotifyNotificationStatus {
   READ_BY_USER = 'READ_BY_USER',
 }
 
-export enum SGNotifyMessageTemplateId {
-  GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
-  // last two enums unused for now; GENERIC_PHONE_CALL template might be subject to editing by GovTech CMG though
-  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
-  GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
-}
-
 export type ModalityParams = SGNotifyParams // to extend in future
 
 /**

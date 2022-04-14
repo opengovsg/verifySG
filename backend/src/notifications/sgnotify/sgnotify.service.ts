@@ -8,7 +8,6 @@ import { ConfigService, Logger } from '../../core/providers'
 import { ConfigSchema } from '../../core/config.schema'
 import {
   Notification,
-  SGNotifyMessageTemplateId,
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import {
@@ -19,13 +18,17 @@ import {
   PostSGNotifyJweDto,
   SGNotifyPayload,
 } from './dto'
-import { insertECPrivateKeyHeaderAndFooter } from './utils'
+import {
+  convertSGNotifyParamsToJWTPayload,
+  insertECPrivateKeyHeaderAndFooter,
+  SGNotifyMessageTemplateId,
+} from './utils'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
-  senderName: string
+  agencyName: string
   title: string
-  uin: string // NRIC
+  nric: string
   shortMessage: string
   templateId: SGNotifyMessageTemplateId
   sgNotifyLongMessageParams: Record<string, string>
@@ -104,7 +107,7 @@ export class SGNotifyService {
     const { modalityParams: sgNotifyParams } = notification
     const authzToken = await this.getAuthzToken()
     const jweObject = await this.signAndEncryptPayload(
-      this.hydrateSgNotifyTemplate(sgNotifyParams),
+      convertSGNotifyParamsToJWTPayload(sgNotifyParams),
     )
     try {
       const {
@@ -128,8 +131,8 @@ export class SGNotifyService {
         requestId: notificationPayload.request_id,
         sgNotifyLongMessageParams: {
           ...sgNotifyParams.sgNotifyLongMessageParams,
-          status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         },
+        status: SGNotifyNotificationStatus.SENT_BY_SERVER,
       }
     } catch (e) {
       if ((e as AxiosError).response?.status === 404) {
@@ -231,50 +234,5 @@ export class SGNotifyService {
         cty: 'JWT',
       })
       .encrypt(this.SGNotifyPublicKeyEnc)
-  }
-
-  hydrateSgNotifyTemplate(sgNotifyParams: SGNotifyParams): JWTPayload {
-    const {
-      agencyLogoUrl,
-      senderName,
-      templateId,
-      sgNotifyLongMessageParams,
-      title,
-      uin,
-    } = sgNotifyParams
-    // TODO: process different message templates programmatically (part 2/2)
-    const {
-      agency,
-      masked_nric,
-      officer_name,
-      position,
-      call_details,
-      callback_details,
-    } = sgNotifyLongMessageParams
-    return {
-      notification_req: {
-        category: 'MESSAGES',
-        channel_mode: 'SPM',
-        delivery: 'IMMEDIATE',
-        priority: 'HIGH',
-        sender_logo_small: agencyLogoUrl,
-        sender_name: senderName,
-        template_layout: [
-          {
-            template_id: templateId,
-            template_input: {
-              agency,
-              masked_nric,
-              officer_name,
-              position,
-              call_details,
-              callback_details,
-            },
-          },
-        ],
-        title,
-        uin,
-      },
-    }
   }
 }
