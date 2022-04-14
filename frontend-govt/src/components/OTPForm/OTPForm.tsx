@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
-import { FormControl, HStack, Text, VStack } from '@chakra-ui/react'
+import { FormControl, HStack, Input, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -10,8 +10,6 @@ import {
 
 import { useAuth } from '../../contexts/auth/AuthContext'
 import { AuthService } from '../../services/AuthService'
-
-import { OTPInput } from './OTPInput'
 
 interface OTPFormProps {
   email: string
@@ -28,10 +26,6 @@ const RESEND_WAIT_TIME = 30000 // 30 seconds
 export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const [canResend, setCanResend] = useState(false)
   const [resendTimer, setResendTimer] = useState(RESEND_WAIT_TIME / 1000)
-  const [isEditing, setIsEditing] = useState(false)
-
-  // specify OTP input ref for resetting focus on field reset
-  const otpInputRef = useRef<HTMLInputElement>(null)
 
   // import auth context
   const { getOfficer } = useAuth()
@@ -62,17 +56,10 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
 
   // react-hook-form controllers
   const {
-    setValue,
-    getValues,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<OTPFormData>()
-
-  // register token field on mount
-  useEffect(() => {
-    register('token', { required: true, pattern: /\d{6}/ })
-  }, [])
 
   // handle OTP resending
   const resendOTP = () => {
@@ -93,22 +80,10 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     const { token } = data
     verifyOtp.mutate({ email, token })
   }
-  const onSubmitInvalid = () => setIsEditing(false)
-  const triggerSubmit = handleSubmit(submissionHandler, onSubmitInvalid)
-
-  // otp input handlers
-  const handleChange = (token: string) => {
-    setValue('token', token, { shouldValidate: true })
-  }
-  const handleBlur = (token: string) => {
-    // if token is empty, user is likely still editing the otp
-    if (token !== '') setIsEditing(false)
-  }
-  const handleFocus = () => setIsEditing(true)
+  const triggerSubmit = handleSubmit(submissionHandler)
 
   // error handler stubs
   const hasError = (): boolean => !!errors.token || verifyOtp.isError
-  const showError = isEditing ? false : hasError()
   const getErrorMessage = (): string => {
     return errors && errors.token
       ? 'Please provide a valid OTP'
@@ -119,20 +94,22 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
         <FormControl id="token" isInvalid={hasError()}>
-          <FormLabel isRequired>One time password</FormLabel>
+          <FormLabel>One time password</FormLabel>
           <Text color="neutral.700" mb={3}>
             Please enter the OTP sent to <strong>{email}</strong>
           </Text>
-          <OTPInput
-            ref={otpInputRef}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onComplete={() => triggerSubmit()}
-            isInvalid={showError}
-            value={getValues('token')}
+          <Input
+            h="48px"
+            {...register('token', {
+              required: true,
+              minLength: 6,
+              maxLength: 6,
+              pattern: /^\d{6}/,
+            })}
+            autoComplete="one-time-code"
+            placeholder="e.g. 111111"
           />
-          {showError && <FormErrorMessage children={getErrorMessage()} />}
+          <FormErrorMessage children={getErrorMessage()} />
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
           <Button size="lg" colorScheme="primary" type="submit">

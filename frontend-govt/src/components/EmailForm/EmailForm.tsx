@@ -44,7 +44,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
   const hasError = (): boolean => !!errors.email || sendOtp.isError
   const getErrorMessage = (): string => {
     return errors && errors.email
-      ? 'Please provide a valid email address.'
+      ? 'Please provide a valid .gov.sg email address.'
       : `${sendOtp.error}`
   }
 
@@ -54,13 +54,16 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
         <FormControl id="email" isInvalid={hasError()}>
           <FormLabel isRequired>Login</FormLabel>
           <Text color="neutral.700" mb={3}>
-            For use by public officers with a <strong>gov.sg</strong> email{' '}
+            For use by public officers with a <strong>.gov.sg</strong> email{' '}
             address
           </Text>
           <Input
-            type="email"
-            {...register('email', { required: true })}
-            placeholder="e.g. jane@open.gov.sg"
+            {...register('email', {
+              required: true,
+              pattern:
+                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg$/,
+            })}
+            placeholder="e.g. benjamin_tan@spf.gov.sg"
           />
           {hasError() && (
             <FormErrorMessage>{getErrorMessage()}</FormErrorMessage>
