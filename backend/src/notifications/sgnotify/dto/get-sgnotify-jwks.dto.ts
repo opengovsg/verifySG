@@ -1,7 +1,10 @@
 export interface GetSGNotifyJwksDto {
   keys: Array<{
-    e: string
+    kty: string
+    use: string
+    crv: string
     kid: string
-    n: string
+    x: string
+    y: string
   }>
 }
