@@ -19,7 +19,7 @@ import {
   PostSGNotifyJweDto,
   SGNotifyPayload,
 } from './dto'
-import { insertECPrivateKeyHeaderAndFooter } from './utils/keys'
+import { insertECPrivateKeyHeaderAndFooter } from './utils'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string

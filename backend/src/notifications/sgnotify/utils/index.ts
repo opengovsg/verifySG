@@ -1,2 +1,3 @@
+export * from './keys'
 export * from './maskNric'
-export * from './messageTemplate'
+export * from '../message-templates/messageTemplate'
