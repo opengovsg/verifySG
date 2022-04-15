@@ -15,7 +15,7 @@ import { ConfigService } from 'core/providers'
 import { Logger } from 'core/providers'
 import { Request, Response } from 'express'
 
-import { OtpAuthVerify } from './dto/otp-auth-verify'
+import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from 'officers/officers.service'
 
@@ -42,7 +42,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpAuthVerify,
+    @Body() body: OtpAuthVerifyDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, token } = body
