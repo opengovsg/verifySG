@@ -104,8 +104,9 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           }}
         >
           When you click the ‘Notify call recipient’ button, they will receive a
-          notification that you will be calling them shortly. The notification
-          will also show your name, and the purpose of your call.
+          Singpass push notification that you will be calling them shortly. The
+          notification will also show your name, your position, and the purpose
+          of your call.
         </InlineMessage>
         <form onSubmit={handleSubmit(submissionHandler)}>
           <VStack spacing="32px" w="448px">
@@ -131,7 +132,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={!!errors.callScope}>
+            {/* <FormControl isInvalid={!!errors.callScope}>
               <FormLabel>Purpose for call</FormLabel>
               <Input
                 {...register('callScope')}
@@ -140,7 +141,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
               {errors.callScope && (
                 <FormErrorMessage>{errors.callScope.message}</FormErrorMessage>
               )}
-            </FormControl>
+            </FormControl> */}
             {/* <FormControl isInvalid={!!errors.phoneNumber}>
             <FormLabel isRequired>Phone number</FormLabel>
             <PhoneNumberInput
