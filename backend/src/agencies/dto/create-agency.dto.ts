@@ -1,12 +1,12 @@
 import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  IsUppercase,
-  Matches,
-  IsOptional,
-  IsUrl,
   ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsUppercase,
+  IsString,
+  IsUrl,
+  Matches,
 } from 'class-validator'
 export class CreateAgencyDto {
   @IsNotEmpty()
