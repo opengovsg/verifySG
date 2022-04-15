@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import convict, { Config, Path } from 'convict'
-import { GetParametersByPathCommand, SSMClient } from '@aws-sdk/client-ssm'
+import {
+  GetParametersByPathCommand,
+  GetParametersByPathCommandOutput,
+  SSMClient,
+} from '@aws-sdk/client-ssm'
 import fs from 'fs'
 import dotenv = require('dotenv')
 
@@ -31,10 +35,11 @@ export class ConfigService {
    * Example:
    *  A parameter with the file path on SSM /staging-checkwho-gov/DB_NAME will be echoed to .env file with the format DB_NAME={}
    */
-  static async createEnvFileFromSystemsManager() {
+  static async createEnvFileFromSystemsManager(): Promise<void> {
     dotenv.config()
     const client = new SSMClient({ region: 'ap-southeast-1' })
     const ENV = process.env.ENV ?? 'develop'
+    // eslint-disable-next-line no-console
     console.log({
       message: 'Initializing config for',
       environment: ENV,
@@ -48,7 +53,7 @@ export class ConfigService {
 
     do {
       // Handle pagination (max 10 params per call)
-      const res: any = await client.send(
+      const res: GetParametersByPathCommandOutput = await client.send(
         new GetParametersByPathCommand({
           Path: filePathPrefix,
           Recursive: true,
@@ -58,11 +63,13 @@ export class ConfigService {
       )
 
       for (const parameter of res.Parameters ?? []) {
-        const paramName = parameter.Name.slice(filePathPrefix.length)
-        const isStringList = parameter.Type === 'StringList'
-        params[paramName] = isStringList
-          ? `[${parameter.Value.split(',').map((x: string) => `"${x}"`)}]`
-          : parameter.Value
+        if (parameter.Name && parameter.Value) {
+          const paramName = parameter.Name.slice(filePathPrefix.length)
+          const isStringList = parameter.Type === 'StringList'
+          params[paramName] = isStringList
+            ? `[${parameter.Value.split(',').map((x: string) => `"${x}"`)}]`
+            : parameter.Value
+        }
       }
 
       nextToken = res.NextToken
@@ -80,6 +87,7 @@ export class ConfigService {
       .join('\n')
       .concat(`\nNODE_ENV=${ENV}`)
 
+    // eslint-disable-next-line no-console
     console.log({
       message: 'Succesfully fetched environment variables from SSM',
       keys: Object.keys(params),
