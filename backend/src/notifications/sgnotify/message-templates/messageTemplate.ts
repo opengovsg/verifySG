@@ -27,9 +27,9 @@ export enum SGNotifyMessageTemplateId {
 export const sgNotifyParamsStatusToNotificationStatusMapper = (
   params: SGNotifyParams,
 ): NotificationStatus => {
-  if (params.status === SGNotifyNotificationStatus.NOT_SENT)
-    return NotificationStatus.NOT_SENT
-  else return NotificationStatus.SENT
+  return params.status === SGNotifyNotificationStatus.NOT_SENT
+    ? NotificationStatus.NOT_SENT
+    : NotificationStatus.SENT
 }
 
 export const generateNewSGNotifyParams = (
@@ -46,11 +46,11 @@ export const generateNewSGNotifyParams = (
     title: 'Upcoming Phone Call',
     nric,
     shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
-    templateId: SGNotifyMessageTemplateId.GENERIC_PHONE_CALL,
+    templateId: SGNotifyMessageTemplateId.GENERIC_PHONE_CALL, // current strategy is to use generic template for all messages
     sgNotifyLongMessageParams: {
       agency: agencyShortName,
-      officer_name: officerName,
-      position: officerPosition,
+      officer_name: `<u>${officerName}</u>`,
+      position: `<u>${officerPosition}</u>`,
       masked_nric: `(${maskNric(nric)})`,
       call_details: generateCallDetails(agencyShortName),
       callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
@@ -59,16 +59,22 @@ export const generateNewSGNotifyParams = (
   }
 }
 
+// TODO: modify this method to support different call details
+// currently, content of call details based on agencyShortName only; to include "use case id"?
 export const generateCallDetails = (agencyId: string): string => {
+  const standardClosing =
+    "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
   switch (agencyId) {
     case 'SPF':
-      // TODO: mention police report
-      return 'This call will be made in the next 10 minutes. Please verify the person calling you is indeed a public officer using the name and position provided in this message.'
+      return `The purpose of the call is to follow up on a police report that you have lodged recently.
+      <br><br>
+      ${standardClosing}`
     case 'OGP':
-      // TODO: mention collecting feedback
-      return 'This call will be made in the next 10 minutes. Please verify the person calling you is indeed a public officer using the name and position provided in this message.'
+      return `Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
+      <br><br>
+      ${standardClosing}`
     default:
-      return 'This call will be made in the next 10 minutes. Please verify the person calling you is indeed a public officer using the name and position provided in this message.'
+      return standardClosing
   }
 }
 
@@ -117,7 +123,7 @@ export const convertSGNotifyParamsToJWTPayload = (
     },
   }
 }
-// TODO: create class/functions/template that will automatically populate params based on MessageTemplateId
+// TODO: create class/functions/template that will automatically populate params based on MessageTemplateId?
 // import { MessageTemplateId } from '../../database/entities'
 //
 // export class MessageTemplate {
