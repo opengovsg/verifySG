@@ -6,7 +6,7 @@ export type NotificationDto = {
   officer: OfficerDto
 }
 
-export type CreateNotificationDto = {
+export type sendNotificationDto = {
   nric: string
   callScope?: string
 }

@@ -1,9 +1,9 @@
-import { CreateNotificationDto, NotificationDto } from '../types'
+import { NotificationDto, sendNotificationDto } from '../types'
 
 import { ApiService } from './ApiService'
 
-const createNotification = async (
-  notificationDetails: CreateNotificationDto,
+const sendNotification = async (
+  notificationDetails: sendNotificationDto,
 ): Promise<NotificationDto> => {
   return ApiService.post('/notifications', notificationDetails).then(
     (res) => res.data,
@@ -11,5 +11,5 @@ const createNotification = async (
 }
 
 export const NotificationService = {
-  createNotification,
+  sendNotification,
 }
