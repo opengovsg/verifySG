@@ -154,7 +154,13 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
             )}
           </FormControl> */}
             <VStack spacing="16px">
-              <Button type="submit">Notify call recipient</Button>
+              <Button
+                type="submit"
+                isLoading={createNotification.isLoading}
+                loadingText="Notifying..."
+              >
+                Notify call recipient
+              </Button>
               <Button variant="link" onClick={() => reset()} type="reset">
                 Clear details
               </Button>
