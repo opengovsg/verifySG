@@ -40,7 +40,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
-    createNotification.mutate(data)
+    sendNotification.mutate(data)
   }
 
   // register phone number input programmatically
@@ -56,23 +56,20 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
   // }, [register])
 
   // query hook to mutate data
-  const createNotification = useMutation(
-    NotificationService.createNotification,
-    {
-      onSuccess: () => {
-        toast({
-          status: 'success',
-          description: `Notification sent to ${watch('nric')}`,
-        })
-      },
-      onError: (err) => {
-        toast({
-          status: 'warning',
-          description: `${err}` || 'Something went wrong',
-        })
-      },
+  const sendNotification = useMutation(NotificationService.sendNotification, {
+    onSuccess: () => {
+      toast({
+        status: 'success',
+        description: `Notification sent to ${watch('nric')}`,
+      })
     },
-  )
+    onError: (err) => {
+      toast({
+        status: 'warning',
+        description: `${err}` || 'Something went wrong',
+      })
+    },
+  })
 
   // handle change for phone number input
   // const handleChange = (newVal?: string) => {
@@ -154,7 +151,13 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
             )}
           </FormControl> */}
             <VStack spacing="16px">
-              <Button type="submit">Notify call recipient</Button>
+              <Button
+                type="submit"
+                isLoading={sendNotification.isLoading}
+                loadingText="Notifying..."
+              >
+                Notify call recipient
+              </Button>
               <Button variant="link" onClick={() => reset()} type="reset">
                 Clear details
               </Button>
