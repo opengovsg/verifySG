@@ -94,7 +94,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
         <FormControl id="token" isInvalid={hasError()}>
-          <FormLabel>One time password</FormLabel>
+          <FormLabel isRequired>One time password</FormLabel>
           <Text color="neutral.700" mb={3}>
             Please enter the OTP sent to <strong>{email}</strong>
           </Text>
