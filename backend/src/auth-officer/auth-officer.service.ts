@@ -8,6 +8,7 @@ import { AgenciesService } from 'agencies/agencies.service'
 import { OtpService } from './otp.service'
 
 import { Logger } from 'core/providers'
+import { normalizeEmail } from '../common/utils'
 
 @Injectable()
 export class AuthOfficerService {
@@ -21,6 +22,7 @@ export class AuthOfficerService {
 
   async sendOTP(email: string): Promise<void> {
     // check email whitelist
+    email = normalizeEmail(email)
     const agency = await this.agencyService.findByEmail(email)
     if (!agency) throw new Error(`Email '${email}' not whitelisted`)
 
@@ -34,6 +36,7 @@ export class AuthOfficerService {
   }
 
   async verifyOTP(email: string, token: string): Promise<Officer | undefined> {
+    email = normalizeEmail(email)
     const isVerified = this.otpService.verifyOtp(email, token)
     return isVerified
       ? await this.officerService.findOrInsert({ email })
