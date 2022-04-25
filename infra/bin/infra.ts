@@ -2,7 +2,7 @@
 import 'source-map-support/register'
 import * as cdk from 'aws-cdk-lib'
 import config from '../config'
-import { CoreStack } from '../lib/core.stack'
+import { NetworkingStack } from '../lib/networking.stack'
 import { DatabaseStack } from '../lib/database.stack'
 import { BeanstalkStack } from '../lib/beanstalk.stack'
 import { S3Stack } from '../lib/s3.stack'
@@ -22,7 +22,7 @@ const stackProps = {
   },
 }
 
-const coreStack = new CoreStack(
+const networkingStack = new NetworkingStack(
   app,
   `VPCStack-${config.get('environment')}`,
   stackProps,
@@ -32,27 +32,27 @@ const databaseStack = new DatabaseStack(
   `DBStack-${config.get('environment')}`,
   {
     ...stackProps,
-    vpc: coreStack.vpc,
-    databaseSg: coreStack.securityGroups.rds,
-    ec2Sg: coreStack.securityGroups.ec2,
+    vpc: networkingStack.vpc,
+    databaseSg: networkingStack.securityGroups.rds,
+    ec2Sg: networkingStack.securityGroups.ec2,
     databaseName: config.get('database.name'),
   },
 )
-databaseStack.addDependency(coreStack)
+databaseStack.addDependency(networkingStack)
 // beanstalk stuff
 const beanstalkStack = new BeanstalkStack(
   app,
   `BeanstalkStack-${config.get('environment')}`,
   {
     ...stackProps,
-    vpc: coreStack.vpc,
-    ec2SubnetIds: coreStack.privateSubnetsIds,
-    publicSubnetIds: coreStack.publicSubnetIds,
-    securityGroup: coreStack.securityGroups.ec2,
-    sslCert: coreStack.sslCert,
+    vpc: networkingStack.vpc,
+    ec2SubnetIds: networkingStack.privateSubnetsIds,
+    publicSubnetIds: networkingStack.publicSubnetIds,
+    securityGroup: networkingStack.securityGroups.ec2,
+    sslCert: networkingStack.sslCert,
   },
 )
-beanstalkStack.addDependency(coreStack)
+beanstalkStack.addDependency(networkingStack)
 const s3Stack = new S3Stack(
   app,
   `S3Stack-${config.get('environment')}`,
@@ -63,18 +63,18 @@ const bastionStack = new BastionStack(
   `BastionStack-${config.get('environment')}`,
   {
     ...stackProps,
-    vpc: coreStack.vpc,
-    bastionSecurityGroup: coreStack.securityGroups.bastion,
+    vpc: networkingStack.vpc,
+    bastionSecurityGroup: networkingStack.securityGroups.bastion,
   },
 )
-bastionStack.addDependency(coreStack)
+bastionStack.addDependency(networkingStack)
 
 const vpnStack = new VPNStack(app, `VPNStack-${config.get('environment')}`, {
   ...stackProps,
-  vpc: coreStack.vpc,
+  vpc: networkingStack.vpc,
   clientCertArn: config.get('clientCertArn'),
   serverCertArn: config.get('serverCertArn'),
   samlProviderArn: config.get('samlProviderArn'),
-  vpnSecurityGroup: coreStack.securityGroups.vpn,
+  vpnSecurityGroup: networkingStack.securityGroups.vpn,
 })
-vpnStack.addDependency(coreStack)
+vpnStack.addDependency(networkingStack)

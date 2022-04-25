@@ -5,7 +5,7 @@ import { BaseStackProps } from '../infra.types'
 import { Peer } from 'aws-cdk-lib/aws-ec2'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
-export class CoreStack extends Stack {
+export class NetworkingStack extends Stack {
   readonly vpc: ec2.Vpc
   readonly privateSubnetsIds: string[]
   readonly publicSubnetIds: string[]
