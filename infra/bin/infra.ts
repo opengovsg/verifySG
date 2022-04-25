@@ -2,6 +2,7 @@
 import 'source-map-support/register'
 import * as cdk from 'aws-cdk-lib'
 import config from '../config'
+import { AcmStack } from '../lib/acm.stack'
 import { NetworkingStack } from '../lib/networking.stack'
 import { DatabaseStack } from '../lib/database.stack'
 import { BeanstalkStack } from '../lib/beanstalk.stack'
@@ -22,6 +23,11 @@ const stackProps = {
   },
 }
 
+const acmStack = new AcmStack(
+  app,
+  `AcmStack-${config.get('environment')}`,
+  stackProps,
+)
 const networkingStack = new NetworkingStack(
   app,
   `VPCStack-${config.get('environment')}`,
@@ -49,7 +55,7 @@ const beanstalkStack = new BeanstalkStack(
     ec2SubnetIds: networkingStack.privateSubnetsIds,
     publicSubnetIds: networkingStack.publicSubnetIds,
     securityGroup: networkingStack.securityGroups.ec2,
-    sslCert: networkingStack.sslCert,
+    sslCert: acmStack.sslCert,
   },
 )
 beanstalkStack.addDependency(networkingStack)
