@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { BiLogOutCircle, BiUser } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
 import { Tab } from '@opengovsg/design-system-react'
 
@@ -22,6 +22,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
   const history = useHistory()
+  const location = useLocation()
   const [officerName, setOfficerName] = useState<string | undefined>()
 
   // attempt to retrieve officer name from profile
@@ -49,12 +50,16 @@ export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
         <Image src={Logo} w="150px" />
 
         {/* Tabs */}
-        <Tabs>
+        <Tabs
+          index={navlinks?.findIndex(
+            ({ route }) => route === location.pathname,
+          )}
+        >
           <TabList>
             {navlinks &&
-              navlinks.map((navlink, index) => (
-                <Link key={index} to={navlink.route}>
-                  <Tab>{navlink.label}</Tab>
+              navlinks.map(({ route, label }, index) => (
+                <Link key={index} to={route}>
+                  <Tab>{label}</Tab>
                 </Link>
               ))}
           </TabList>
