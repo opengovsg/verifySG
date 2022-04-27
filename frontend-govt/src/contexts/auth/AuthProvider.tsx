@@ -17,14 +17,9 @@ export const AuthProvider = ({ children }: AuthProps) => {
   const [officer, setOfficer] = useState<string>('')
 
   const getOfficer = async (): Promise<void> => {
-    try {
-      const retrievedOfficer = await AuthService.whoAmI()
-      setIsAuthenticated(!!retrievedOfficer)
-      if (retrievedOfficer) setOfficer(retrievedOfficer.email)
-    } catch (e) {
-      console.error(e)
-      throw e
-    }
+    const retrievedOfficer = await AuthService.whoAmI()
+    setIsAuthenticated(!!retrievedOfficer)
+    if (retrievedOfficer) setOfficer(retrievedOfficer.email)
   }
 
   useEffect(() => {
