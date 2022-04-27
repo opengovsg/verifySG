@@ -70,7 +70,12 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
           )}
         </FormControl>
         <Box>
-          <Button size="lg" colorScheme="primary" type="submit">
+          <Button
+            isLoading={sendOtp.isLoading}
+            size="lg"
+            colorScheme="primary"
+            type="submit"
+          >
             Log in
           </Button>
         </Box>
