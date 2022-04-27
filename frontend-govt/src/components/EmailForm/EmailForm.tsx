@@ -60,8 +60,10 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
           <Input
             {...register('email', {
               required: true,
-              pattern:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg$/,
+              // TODO: refactor regexp into shared directory (1/2)
+              pattern: new RegExp(
+                "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
+              ),
             })}
             placeholder="e.g. benjamin_tan@spf.gov.sg"
           />

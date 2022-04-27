@@ -1,2 +1,2 @@
 export * from './common'
-export * from './emailDomain'
+export * from './email'

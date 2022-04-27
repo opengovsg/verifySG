@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
-import { parseEmailDomain } from 'common/utils'
+import { normalizeEmail, parseEmailDomain } from 'common/utils'
 
 import { CreateAgencyDto, UpdateAgencyDto, GetAgencyDto } from './dto'
 
@@ -28,6 +28,7 @@ export class AgenciesService {
   }
 
   async findByEmail(email: string): Promise<Agency | undefined> {
+    email = normalizeEmail(email)
     return this.agencyRepository.findOne({
       where: `'${parseEmailDomain(email)}' = ANY (email_domains)`,
     })

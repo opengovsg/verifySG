@@ -9,6 +9,7 @@ import {
 } from './dto'
 
 import { AgenciesService } from 'agencies/agencies.service'
+import { normalizeEmail } from '../common/utils'
 
 @Injectable()
 export class OfficersService {
@@ -18,7 +19,7 @@ export class OfficersService {
   ) {}
 
   async findOrInsert(officer: OfficerDto): Promise<Officer> {
-    const { email } = officer
+    const email = normalizeEmail(officer.email)
     const foundOfficer = await this.findByEmail(email)
 
     if (foundOfficer) return foundOfficer
@@ -40,6 +41,7 @@ export class OfficersService {
   }
 
   async findByEmail(email: string): Promise<Officer | undefined> {
+    email = normalizeEmail(email)
     return this.officerRepository.findOne({
       where: { email },
       relations: ['agency'],
