@@ -1,22 +1,3 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsUppercase,
-  IsUrl,
-  Matches,
-} from 'class-validator'
+import { Agency } from 'database/entities'
 
-export class GetAgencyDto {
-  @IsNotEmpty()
-  @IsUppercase()
-  // Only allow alphanumeric and dash
-  @Matches(/^[A-Za-z0-9-]*$/)
-  id: string
-
-  @IsString()
-  @IsNotEmpty()
-  name: string
-
-  @IsUrl()
-  logoUrl: string
-}
+export type GetAgencyDto = Pick<Agency, 'id' | 'name' | 'logoUrl'>

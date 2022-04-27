@@ -1,24 +1,8 @@
+import { Officer } from 'database/entities'
 import { GetAgencyDto } from 'agencies/dto/get-agency.dto'
-import { IsEmail, IsNotEmptyObject, IsNumber, IsString } from 'class-validator'
 
-export class OfficerDto {
-  @IsEmail()
-  @IsString()
-  email: string
-}
+export type OfficerDto = Pick<Officer, 'email'>
 
-export class GetOfficerDto {
-  @IsNumber()
-  id: number
+export type GetOfficerDto = Pick<Officer, 'id' | 'name' | 'position'>
 
-  @IsString()
-  name: string
-
-  @IsString()
-  position: string
-}
-
-export class GetOfficerProfileDto extends GetOfficerDto {
-  @IsNotEmptyObject()
-  agency: GetAgencyDto
-}
+export type GetOfficerProfileDto = GetOfficerDto & { agency: GetAgencyDto }
