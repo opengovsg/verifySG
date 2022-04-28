@@ -1,6 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
+import { useHistory } from 'react-router-dom'
 import { FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
@@ -13,6 +14,8 @@ import {
 import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
+import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
+import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
 import { NotificationService } from '../../services/NotificationService'
 
 interface NotificationFormData {
@@ -36,11 +39,20 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<NotificationFormData>()
+  const { setTargetNRIC } = useNotificationData()
+
   const toast = useToast()
+  const history = useHistory()
 
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
-    sendNotification.mutate(data)
+    sendNotification.mutate(data, {
+      // only update notif context and send user to feedback form when notification is sent successfully
+      onSuccess: () => {
+        setTargetNRIC(data.nric)
+        history.push(FEEDBACKFORM_ROUTE)
+      },
+    })
   }
 
   // register phone number input programmatically
