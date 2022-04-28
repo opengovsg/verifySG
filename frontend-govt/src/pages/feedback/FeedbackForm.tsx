@@ -77,10 +77,10 @@ export const FeedbackForm: React.FC = () => {
               here
             </Link>
           </Text>
-          {/*<iframe height="608px" width="912px" src={embedLink} />*/}
-          <embed height="608px" width="912px" src={embedLink} />
+          <iframe height="608px" width="912px" src={embedLink} />
+          {/*<embed height="608px" width="912px" src={embedLink} />*/}
         </VStack>
-        <Button onClick={returnToDashboard}>Back to dashboard</Button>
+        <Button onClick={returnToDashboard}>Send another notification</Button>
       </VStack>
     </HeaderContainer>
   )

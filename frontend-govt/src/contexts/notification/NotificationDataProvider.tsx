@@ -1,13 +1,12 @@
-import { ReactChild, ReactChildren, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { NotificationDataContext } from './NotificationDataContext'
 
 // NotificationData provider props & declaration
 interface NotificationDataProps {
-  children: ReactChild | ReactChildren
+  children: ReactNode
 }
 
-// returns a
 export const NotificationDataProvider = ({
   children,
 }: NotificationDataProps) => {
