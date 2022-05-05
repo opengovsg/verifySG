@@ -6,9 +6,10 @@ on:
 env:
   PRODUCTION_BRANCH: refs/heads/master
   STAGING_BRANCH: refs/heads/staging
-  EB_APPLICATION: checkwho-staging-application
-  EB_PRODUCTION_ENVIRONMENT: ""
+  EB_STAGING_APPLICATION: checkwho-staging-application
   EB_STAGING_ENVIRONMENT: checkwho-staging-environment
+  EB_PRODUCTION_APPLICATION: checkwho-production-application
+  EB_PRODUCTION_ENVIRONMENT: checkwho-production-environment
 jobs:
   test:
     name: Lint and test
@@ -80,12 +81,12 @@ jobs:
     steps:
       - id: determine_proceed
         run: |
-          if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" || -z "$EB_APPLICATION" ]]; then
+          if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
             echo '::set-output name=proceed::false';
             echo '::set-output name=proceed::false';
-          elif [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" ]]; then
+          elif [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" && -n "$EB_STAGING_APPLICATION" ]]; then
             echo '::set-output name=proceed::true';
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" ]]; then
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" && -n "$EB_PRODUCTION_APPLICATION" ]]; then
             echo '::set-output name=proceed::true';
           else
             echo '::set-output name=proceed::false';
@@ -127,15 +128,18 @@ jobs:
           timestamp=$(TZ=Asia/Singapore date '+%Y%m%d%H%M%S')
           if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
             echo "EB_ENVIRONMENT=$EB_STAGING_ENVIRONMENT" >> $GITHUB_ENV
+            echo "EB_APPLICATION=$EB_STAGING_APPLICATION" >> $GITHUB_ENV
             echo "VERSION_LABEL=stg-$timestamp" >> $GITHUB_ENV
           elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
             echo "EB_ENVIRONMENT=$EB_PRODUCTION_ENVIRONMENT" >> $GITHUB_ENV
+            echo "EB_APPLICATION=$EB_PRODUCTION_APPLICATION" >> $GITHUB_ENV
             echo "VERSION_LABEL=prod-$timestamp" >> $GITHUB_ENV
           fi
 
       - name: Print branch specific env vars
         run: |
           echo EB_ENVIRONMENT=$EB_ENVIRONMENT
+          echo EB_APPLICATION=$EB_APPLICATION
           echo VERSION_LABEL=$VERSION_LABEL
 
       - name: Deploy to EB
