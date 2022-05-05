@@ -3,10 +3,15 @@ import { Construct } from 'constructs'
 import { BaseStackProps } from '../infra.types'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
+
+type AcmStackProps = BaseStackProps & {
+  domainName?: string
+}
+
 export class AcmStack extends Stack {
   readonly sslCert: acm.Certificate
 
-  constructor(scope: Construct, id: string, props: BaseStackProps) {
+  constructor(scope: Construct, id: string, props: AcmStackProps) {
     super(scope, id, props)
 
     // [!] ACM
@@ -14,7 +19,7 @@ export class AcmStack extends Stack {
       this,
       `${props.appNamePrefix}-ssl-certificate`,
       {
-        domainName: `${props.environment}.${props.app}.gov.sg`,
+        domainName: props.domainName ?? `${props.environment}.${props.appName}.gov.sg`,
         validation: acm.CertificateValidation.fromEmail(),
       },
     )
