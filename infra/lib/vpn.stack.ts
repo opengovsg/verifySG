@@ -21,6 +21,12 @@ type VPNStackProps = BaseStackProps & {
 export class VPNStack extends Stack {
   constructor(scope: Construct, id: string, props: VPNStackProps) {
     super(scope, id, props)
+    
+    if (!props.clientCertArn || !props.serverCertArn) {
+      console.log('skipping VPN launch as certificates not provided')
+      return
+    }
+    
     const logGroup = new logs.LogGroup(this, `${props.appNamePrefix}-ClientVpnLogGroup`, {
       retention: logs.RetentionDays.ONE_YEAR,
     })

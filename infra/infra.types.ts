@@ -1,7 +1,12 @@
 import { StackProps } from "aws-cdk-lib";
 
 export type BaseStackProps = StackProps & {
-    app: string,
-    environment: string,
-    appNamePrefix: string,
+  appName: string
+  environment: string
+  appNamePrefix: string
+  env: {
+    accountId: string
+    region: string
+  }
+}
 }

@@ -11,31 +11,32 @@ import { BastionStack } from '../lib/bastionHost.stack'
 import { VPNStack } from '../lib/vpn.stack'
 
 const app = new cdk.App()
+
+const appName = config.get('applicationName')
+const environment = config.get('environment')
+console.log(`launching ${appName} for ${environment}`)
+
 const stackProps = {
-  app: config.get('applicationName'),
-  environment: config.get('environment'),
-  appNamePrefix: `${config.get('applicationName')}-${config.get(
-    'environment',
-  )}`,
+  appName,
+  environment,
+  appNamePrefix: `${appName}-${environment}`,
   env: {
-    account: config.get('cdkAccountId'),
+    accountId: config.get('awsAccountId'),
     region: config.get('awsRegion'),
   },
 }
 
 const acmStack = new AcmStack(
   app,
-  `AcmStack-${config.get('environment')}`,
-  stackProps,
+  `AcmStack-${environment}`,
 )
 const networkingStack = new NetworkingStack(
   app,
-  `VPCStack-${config.get('environment')}`,
-  stackProps,
+  `VPCStack-${environment}`,
 )
 const databaseStack = new DatabaseStack(
   app,
-  `DBStack-${config.get('environment')}`,
+  `DBStack-${environment}`,
   {
     ...stackProps,
     vpc: networkingStack.vpc,
@@ -48,7 +49,7 @@ databaseStack.addDependency(networkingStack)
 // beanstalk stuff
 const beanstalkStack = new BeanstalkStack(
   app,
-  `BeanstalkStack-${config.get('environment')}`,
+  `BeanstalkStack-${environment}`,
   {
     ...stackProps,
     vpc: networkingStack.vpc,
@@ -61,12 +62,12 @@ const beanstalkStack = new BeanstalkStack(
 beanstalkStack.addDependency(networkingStack)
 const s3Stack = new S3Stack(
   app,
-  `S3Stack-${config.get('environment')}`,
+  `S3Stack-${environment}`,
   stackProps,
 )
 const bastionStack = new BastionStack(
   app,
-  `BastionStack-${config.get('environment')}`,
+  `BastionStack-${environment}`,
   {
     ...stackProps,
     vpc: networkingStack.vpc,
@@ -75,7 +76,7 @@ const bastionStack = new BastionStack(
 )
 bastionStack.addDependency(networkingStack)
 
-const vpnStack = new VPNStack(app, `VPNStack-${config.get('environment')}`, {
+const vpnStack = new VPNStack(app, `VPNStack-${environment}`, {
   ...stackProps,
   vpc: networkingStack.vpc,
   clientCertArn: config.get('clientCertArn'),
