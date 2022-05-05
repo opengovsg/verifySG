@@ -4,6 +4,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { BaseStackProps } from '../infra.types'
 import { Peer } from 'aws-cdk-lib/aws-ec2'
 
+type NetworkingStackProps = BaseStackProps &  {
+  numNatGateways?: number
+  cidr?: string
+}
+
 export class NetworkingStack extends Stack {
   readonly vpc: ec2.Vpc
   readonly privateSubnetsIds: string[]
@@ -12,16 +17,26 @@ export class NetworkingStack extends Stack {
     [key: string]: ec2.SecurityGroup
   }
 
-  constructor(scope: Construct, id: string, props: BaseStackProps) {
+  constructor(scope: Construct, id: string, props: NetworkingStackProps) {
     super(scope, id, props)
 
     // [!] VPC Configuration
     this.vpc = new ec2.Vpc(this, `${props.appNamePrefix}-vpc`, {
-      cidr: '172.31.0.0/16', // TODO: move to config
-      natGateways: 1,
+      cidr: props.cidr ?? '172.31.0.0/16', 
+      /**
+       * If undefined, defaults to one NAT Gateway per AZ
+       * Set NAT Gateway to 1 if not production as NAT Gateway is expensive.
+       * https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#natgateways
+       */
+      natGateways: props.numNatGateways ?? 1,
       enableDnsHostnames: true,
       enableDnsSupport: true,
       vpcName: `${props.appNamePrefix}-vpc`,
+      /**
+       * From AWS docs, to select all AZs in the region,
+       * select a high number for maxAzs such as 99.
+       * https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html#maxazs
+       */
       maxAzs: 99,
       /**
        * Each entry in this list configures a Subnet Group
@@ -33,6 +48,10 @@ export class NetworkingStack extends Stack {
       /**
        * IP address ranges are automatically assigned by
        * https://github.com/aws/aws-cdk/issues/3562
+       */
+      /**
+       * Internet Gateway is automatically setup and attached if public subnets are specified.
+       * https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.Vpc.html#maxazs
        */
       subnetConfiguration: [
         {
