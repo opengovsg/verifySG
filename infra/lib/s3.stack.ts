@@ -3,14 +3,25 @@ import { Construct } from 'constructs/lib/construct'
 import { BaseStackProps } from '../infra.types'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as cdk from 'aws-cdk-lib'
+import * as iam from 'aws-cdk-lib/aws-iam'
 
 export class S3Stack extends Stack {
+  readonly bucket: s3.Bucket
   constructor(scope: Construct, id: string, props: BaseStackProps) {
     super(scope, id, props)
-    new s3.Bucket(this, `${props.appNamePrefix}-bucket`, {
+    const bucketName = `${props.appName}-access-logs`
+    const bucketPrefix = `${props.environment}`
+    const awsAccountId = `${props.env.accountId}`
+    this.bucket = new s3.Bucket(this, bucketName, {
       versioned: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false,
     })
+    this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:PutObject'],
+      resources: [`arn:aws:s3:::${this.bucket.bucketName}/${bucketPrefix}/AWSLogs/${awsAccountId}/*`],
+      principals: [new iam.AccountRootPrincipal()],
+    }));
   }
 }

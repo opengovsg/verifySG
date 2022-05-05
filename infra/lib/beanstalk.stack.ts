@@ -15,7 +15,8 @@ type BeanstalkStackProps = BaseStackProps & {
   solutionStackName?: string
   minInstances?: string
   maxInstances?: string
-  sslCert: acm.Certificate,
+  accessLogsBucketName: string
+  sslCert: acm.Certificate
 }
 
 export class BeanstalkStack extends Stack {
@@ -116,6 +117,20 @@ export class BeanstalkStack extends Stack {
             value: 'true',
           },
           {
+            namespace: 'aws:elbv2:loadbalancer',
+            optionName: 'AccessLogsS3Bucket',
+            value: props.accessLogsBucketName,
+          },
+          {
+            namespace: 'aws:elbv2:loadbalancer',
+            optionName: 'AccessLogsS3Enabled',
+            value: 'true',
+          },
+          {
+            namespace: 'aws:elbv2:loadbalancer',
+            optionName: 'AccessLogsS3Prefix',
+            value: props.environment,
+          },
             namespace: 'aws:ec2:vpc',
             optionName: 'VPCId',
             value: props.vpc.vpcId,

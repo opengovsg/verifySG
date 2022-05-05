@@ -46,7 +46,13 @@ const databaseStack = new DatabaseStack(
   },
 )
 databaseStack.addDependency(networkingStack)
-// beanstalk stuff
+
+const s3Stack = new S3Stack(
+  app,
+  `S3Stack-${environment}`,
+  stackProps,
+)
+
 const beanstalkStack = new BeanstalkStack(
   app,
   `BeanstalkStack-${environment}`,
@@ -57,14 +63,11 @@ const beanstalkStack = new BeanstalkStack(
     publicSubnetIds: networkingStack.publicSubnetIds,
     securityGroup: networkingStack.securityGroups.ec2,
     sslCert: acmStack.sslCert,
+    accessLogsBucketName: s3Stack.bucket.bucketName,
   },
 )
 beanstalkStack.addDependency(networkingStack)
-const s3Stack = new S3Stack(
-  app,
-  `S3Stack-${environment}`,
-  stackProps,
-)
+
 const bastionStack = new BastionStack(
   app,
   `BastionStack-${environment}`,
