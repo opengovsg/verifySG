@@ -11,10 +11,10 @@ type BeanstalkStackProps = BaseStackProps & {
   publicSubnetIds: string[]
   ec2SubnetIds: string[]
   securityGroup: ec2.SecurityGroup
-  platform?: string
   solutionStackName?: string
   minInstances?: string
   maxInstances?: string
+  instanceType?: string
   accessLogsBucketName: string
   sslCert: acm.Certificate
 }
@@ -22,8 +22,6 @@ type BeanstalkStackProps = BaseStackProps & {
 export class BeanstalkStack extends Stack {
   constructor(scope: Construct, id: string, props: BeanstalkStackProps) {
     super(scope, id, props)
-
-    const platform = props.platform ?? this.node.tryGetContext('platform')
 
     const EbInstanceRole = new cdk.aws_iam.Role(
       this,
@@ -55,7 +53,6 @@ export class BeanstalkStack extends Stack {
       `${props.appNamePrefix}-environment`,
       {
         environmentName: `${props.appNamePrefix}-environment`,
-        platformArn: platform,
         solutionStackName:
           props.solutionStackName ??
           '64bit Amazon Linux 2 v5.5.0 running Node.js 14',
@@ -67,6 +64,12 @@ export class BeanstalkStack extends Stack {
             value: profileName,
           },
           {
+            namespace: 'aws:autoscaling:launchconfiguration',
+            optionName: 'SecurityGroups',
+            value: props.securityGroup.securityGroupId,
+          },
+          // [!] LOGS
+          {
             namespace: 'aws:elasticbeanstalk:cloudwatch:logs',
             optionName: 'StreamLogs',
             value: 'true',
@@ -76,20 +79,11 @@ export class BeanstalkStack extends Stack {
             optionName: 'RetentionInDays',
             value: '365',
           },
+          // [!] LOAD BALANCER
           {
             namespace: 'aws:elasticbeanstalk:environment',
             optionName: 'LoadBalancerType',
             value: 'application',
-          },
-          {
-            namespace: 'aws:autoscaling:asg',
-            optionName: 'MinSize',
-            value: props.minInstances ?? '1',
-          },
-          {
-            namespace: 'aws:autoscaling:asg',
-            optionName: 'MaxSize',
-            value: props.maxInstances ?? '10',
           },
           {
             namespace: 'aws:elbv2:listener:default',
@@ -131,6 +125,8 @@ export class BeanstalkStack extends Stack {
             optionName: 'AccessLogsS3Prefix',
             value: props.environment,
           },
+          // [!] NETWORKING
+          {
             namespace: 'aws:ec2:vpc',
             optionName: 'VPCId',
             value: props.vpc.vpcId,
@@ -145,10 +141,58 @@ export class BeanstalkStack extends Stack {
             optionName: 'Subnets',
             value: props.ec2SubnetIds.join(','),
           },
+          // [!] CAPACITY
           {
-            namespace: 'aws:autoscaling:launchconfiguration',
-            optionName: 'SecurityGroups',
-            value: props.securityGroup.securityGroupId,
+            namespace: 'aws:ec2:instances',
+            optionName: 'InstanceTypes',
+            value: props.instanceType ?? 't2.micro',
+          },
+          {
+            namespace: 'aws:autoscaling:asg',
+            optionName: 'MinSize',
+            value: props.minInstances ?? '1',
+          },
+          {
+            namespace: 'aws:autoscaling:asg',
+            optionName: 'MaxSize',
+            value: props.maxInstances ?? '1',
+          },
+          // [!] ROLLING UPDATES AND DEPLOYMENTS
+          {
+            namespace: 'aws:autoscaling:updatepolicy:rollingupdate',
+            optionName: 'RollingUpdateType',
+            value: 'Health',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:command',
+            optionName: 'DeploymentPolicy',
+            value: 'RollingWithAdditionalBatch',
+          },
+          // [!] MANAGED UPDATES
+          {
+            namespace: 'aws:elasticbeanstalk:managedactions',
+            optionName: 'ManagedActionsEnabled',
+            value: 'true',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:managedactions:platformupdate',
+            optionName: 'InstanceRefreshEnabled',
+            value: 'true',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:managedactions',
+            optionName: 'ServiceRoleForManagedUpdates',
+            value: 'AWSServiceRoleForElasticBeanstalkManagedUpdates',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:managedactions:platformupdate',
+            optionName: 'UpdateLevel',
+            value: 'minor',
+          },
+          {
+            namespace: 'aws:elasticbeanstalk:managedactions',
+            optionName: 'PreferredStartTime',
+            value: 'Tue:17:00', // UTC 17:00 is GMT+8 01:00
           },
         ],
       },
