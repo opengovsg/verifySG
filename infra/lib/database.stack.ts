@@ -6,14 +6,17 @@ import * as rds from 'aws-cdk-lib/aws-rds'
 import { StorageType } from 'aws-cdk-lib/aws-rds'
 import * as cdk from 'aws-cdk-lib'
 
-type DatabaseStackProps = BaseStackProps & {
-  vpc: ec2.Vpc
+export type DatabaseStackConfig = {
   databaseName?: string
   instanceType?: string 
   storageType?: StorageType
   allocatedStorage?: number
   maxAllocatedStorage?: number
   publiclyAccesible?: boolean
+}
+
+type DatabaseStackProps = BaseStackProps & DatabaseStackConfig & {
+  vpc: ec2.Vpc
   databaseSg: ec2.SecurityGroup
   ec2Sg: ec2.SecurityGroup
 }

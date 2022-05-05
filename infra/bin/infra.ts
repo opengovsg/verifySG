@@ -9,6 +9,7 @@ import { BeanstalkStack } from '../lib/beanstalk.stack'
 import { S3Stack } from '../lib/s3.stack'
 import { BastionStack } from '../lib/bastionHost.stack'
 import { VPNStack } from '../lib/vpn.stack'
+import { EnvConfig } from "../infra.types"
 
 const app = new cdk.App()
 
@@ -26,23 +27,58 @@ const stackProps = {
   },
 }
 
+const prodConfig : EnvConfig = {
+  acmStack: {
+    domainName: `checkwho.gov.sg`
+  },
+  beanstalkStack: { 
+    minInstances: '1',
+    maxInstances: '5',
+    instanceType: 't3.small'
+  },
+  databaseStack: {
+    instanceType: 't3.small'
+  },
+  networkingStack: {
+    numNatGateways: 3
+  },
+}
+
+const allEnvironmentConfigs : {
+  [key: string]: EnvConfig
+} = {
+  production: prodConfig,
+}
+
+const environmentConfig : EnvConfig = allEnvironmentConfigs[environment]
+
 const acmStack = new AcmStack(
   app,
   `AcmStack-${environment}`,
+  { 
+    ...stackProps,
+    ...environmentConfig?.acmStack,
+  }
 )
+
 const networkingStack = new NetworkingStack(
   app,
   `VPCStack-${environment}`,
+  {
+    ...stackProps,
+    ...environmentConfig?.networkingStack,
+  }
 )
+
 const databaseStack = new DatabaseStack(
   app,
   `DBStack-${environment}`,
   {
     ...stackProps,
+    ...environmentConfig?.databaseStack,
     vpc: networkingStack.vpc,
     databaseSg: networkingStack.securityGroups.rds,
     ec2Sg: networkingStack.securityGroups.ec2,
-    databaseName: config.get('database.name'),
   },
 )
 databaseStack.addDependency(networkingStack)
@@ -50,7 +86,10 @@ databaseStack.addDependency(networkingStack)
 const s3Stack = new S3Stack(
   app,
   `S3Stack-${environment}`,
-  stackProps,
+  { 
+    ...stackProps,
+    ...environmentConfig?.s3Stack,
+  }
 )
 
 const beanstalkStack = new BeanstalkStack(
@@ -58,6 +97,7 @@ const beanstalkStack = new BeanstalkStack(
   `BeanstalkStack-${environment}`,
   {
     ...stackProps,
+    ...environmentConfig?.beanstalkStack,
     vpc: networkingStack.vpc,
     ec2SubnetIds: networkingStack.privateSubnetsIds,
     publicSubnetIds: networkingStack.publicSubnetIds,
@@ -73,6 +113,7 @@ const bastionStack = new BastionStack(
   `BastionStack-${environment}`,
   {
     ...stackProps,
+    ...environmentConfig?.bastionStack,
     vpc: networkingStack.vpc,
     bastionSecurityGroup: networkingStack.securityGroups.bastion,
   },
@@ -81,6 +122,7 @@ bastionStack.addDependency(networkingStack)
 
 const vpnStack = new VPNStack(app, `VPNStack-${environment}`, {
   ...stackProps,
+  ...environmentConfig?.vpnStack,
   vpc: networkingStack.vpc,
   clientCertArn: config.get('clientCertArn'),
   serverCertArn: config.get('serverCertArn'),

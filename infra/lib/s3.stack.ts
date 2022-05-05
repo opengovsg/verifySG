@@ -5,9 +5,15 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as cdk from 'aws-cdk-lib'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
+export type S3StackConfig = {
+}
+
+type S3StackProps = BaseStackProps & S3StackConfig 
+
 export class S3Stack extends Stack {
   readonly bucket: s3.Bucket
-  constructor(scope: Construct, id: string, props: BaseStackProps) {
+
+  constructor(scope: Construct, id: string, props: S3StackProps) {
     super(scope, id, props)
     const bucketName = `${props.appName}-access-logs`
     const bucketPrefix = `${props.environment}`

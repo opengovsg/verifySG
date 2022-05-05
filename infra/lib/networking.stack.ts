@@ -4,10 +4,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { BaseStackProps } from '../infra.types'
 import { Peer } from 'aws-cdk-lib/aws-ec2'
 
-type NetworkingStackProps = BaseStackProps &  {
+export type NetworkingStackConfig = {
   numNatGateways?: number
   cidr?: string
 }
+
+type NetworkingStackProps = BaseStackProps & NetworkingStackConfig
 
 export class NetworkingStack extends Stack {
   readonly vpc: ec2.Vpc

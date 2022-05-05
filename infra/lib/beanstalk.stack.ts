@@ -6,15 +6,18 @@ import * as cdk from 'aws-cdk-lib'
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
-type BeanstalkStackProps = BaseStackProps & {
-  vpc: ec2.Vpc
-  publicSubnetIds: string[]
-  ec2SubnetIds: string[]
-  securityGroup: ec2.SecurityGroup
+export type BeanstalkStackConfig = {
   solutionStackName?: string
   minInstances?: string
   maxInstances?: string
   instanceType?: string
+}
+
+type BeanstalkStackProps = BaseStackProps & BeanstalkStackConfig & {
+  vpc: ec2.Vpc
+  publicSubnetIds: string[]
+  ec2SubnetIds: string[]
+  securityGroup: ec2.SecurityGroup
   accessLogsBucketName: string
   sslCert: acm.Certificate
 }
@@ -68,7 +71,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'SecurityGroups',
             value: props.securityGroup.securityGroupId,
           },
-          // [!] LOGS
+          // LOGS
           {
             namespace: 'aws:elasticbeanstalk:cloudwatch:logs',
             optionName: 'StreamLogs',
@@ -79,7 +82,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'RetentionInDays',
             value: '365',
           },
-          // [!] LOAD BALANCER
+          // LOAD BALANCER
           {
             namespace: 'aws:elasticbeanstalk:environment',
             optionName: 'LoadBalancerType',
@@ -125,7 +128,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'AccessLogsS3Prefix',
             value: props.environment,
           },
-          // [!] NETWORKING
+          // NETWORKING
           {
             namespace: 'aws:ec2:vpc',
             optionName: 'VPCId',
@@ -141,7 +144,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'Subnets',
             value: props.ec2SubnetIds.join(','),
           },
-          // [!] CAPACITY
+          // CAPACITY
           {
             namespace: 'aws:ec2:instances',
             optionName: 'InstanceTypes',
@@ -157,7 +160,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'MaxSize',
             value: props.maxInstances ?? '1',
           },
-          // [!] ROLLING UPDATES AND DEPLOYMENTS
+          // ROLLING UPDATES AND DEPLOYMENTS
           {
             namespace: 'aws:autoscaling:updatepolicy:rollingupdate',
             optionName: 'RollingUpdateType',
@@ -168,7 +171,7 @@ export class BeanstalkStack extends Stack {
             optionName: 'DeploymentPolicy',
             value: 'RollingWithAdditionalBatch',
           },
-          // [!] MANAGED UPDATES
+          // MANAGED UPDATES
           {
             namespace: 'aws:elasticbeanstalk:managedactions',
             optionName: 'ManagedActionsEnabled',

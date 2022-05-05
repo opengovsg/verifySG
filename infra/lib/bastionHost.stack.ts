@@ -3,7 +3,10 @@ import { Construct } from 'constructs/lib/construct'
 import { BaseStackProps } from '../infra.types'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 
-type BastionStackProps = BaseStackProps & {
+export type BastionStackConfig = {
+}
+
+type BastionStackProps = BaseStackProps & BastionStackConfig & {
   vpc: ec2.Vpc
   bastionSecurityGroup: ec2.SecurityGroup
 }

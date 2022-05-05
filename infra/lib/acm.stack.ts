@@ -3,10 +3,11 @@ import { Construct } from 'constructs'
 import { BaseStackProps } from '../infra.types'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 
-
-type AcmStackProps = BaseStackProps & {
+export type AcmStackConfig = {
   domainName?: string
 }
+
+type AcmStackProps = BaseStackProps & AcmStackConfig
 
 export class AcmStack extends Stack {
   readonly sslCert: acm.Certificate

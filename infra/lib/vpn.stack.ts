@@ -10,7 +10,10 @@ import {
   CfnClientVpnTargetNetworkAssociation,
 } from 'aws-cdk-lib/aws-ec2'
 
-type VPNStackProps = BaseStackProps & {
+export type VpnStackConfig = {
+}
+
+type VPNStackProps = BaseStackProps & VpnStackConfig & {
   vpc: ec2.Vpc
   serverCertArn: string
   clientCertArn: string
