@@ -8,7 +8,12 @@ import * as cdk from 'aws-cdk-lib'
 
 type DatabaseStackProps = BaseStackProps & {
   vpc: ec2.Vpc
-  databaseName: string
+  databaseName?: string
+  instanceType?: string 
+  storageType?: StorageType
+  allocatedStorage?: number
+  maxAllocatedStorage?: number
+  publiclyAccesible?: boolean
   databaseSg: ec2.SecurityGroup
   ec2Sg: ec2.SecurityGroup
 }
@@ -22,7 +27,7 @@ export class DatabaseStack extends Stack {
 
     // [!] KMS key
     this.storageEncryptionKey = new aws_kms.Key(this, 'kms', {
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       alias: `${props.appNamePrefix}-key`
     })
 
@@ -39,23 +44,26 @@ export class DatabaseStack extends Stack {
         engine: rds.DatabaseInstanceEngine.postgres({
           version: rds.PostgresEngineVersion.VER_14_1,
         }),
-        instanceType: ec2.InstanceType.of(
-          ec2.InstanceClass.BURSTABLE3,
-          ec2.InstanceSize.MICRO,
-        ),
-        databaseName: props.databaseName,
+        /**
+         * See https://aws.amazon.com/ec2/instance-types/ for 
+         * available instance types
+         */
+        instanceType: props.instanceType 
+          ? new ec2.InstanceType(props.instanceType) 
+          : new ec2.InstanceType('t3.micro'),
+        databaseName: props.databaseName ?? props.appName,
         credentials: rds.Credentials.fromGeneratedSecret('postgres'),
-        multiAz: false,
-        allocatedStorage: 100,
-        storageType: StorageType.STANDARD,
+        multiAz: true,
+        allocatedStorage: props.allocatedStorage ?? 100,
+        maxAllocatedStorage: props.maxAllocatedStorage ?? 1000,
+        storageType: props.storageType ?? StorageType.GP2,
         allowMajorVersionUpgrade: false,
         autoMinorVersionUpgrade: true,
         deleteAutomatedBackups: true,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        deletionProtection: false,
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
         securityGroups: [props.databaseSg],
         storageEncryptionKey: this.storageEncryptionKey,
-        publiclyAccessible: false,
+        publiclyAccessible: props.publiclyAccesible ?? false,
       },
     )
 
