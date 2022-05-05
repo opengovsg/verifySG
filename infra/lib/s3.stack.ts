@@ -15,9 +15,12 @@ export class S3Stack extends Stack {
 
   constructor(scope: Construct, id: string, props: S3StackProps) {
     super(scope, id, props)
+
     const bucketName = `${props.appName}-access-logs`
     const bucketPrefix = `${props.environment}`
     const awsAccountId = `${props.env.accountId}`
+    const elbAccountId = 114774131450 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
+
     this.bucket = new s3.Bucket(this, bucketName, {
       versioned: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -27,7 +30,7 @@ export class S3Stack extends Stack {
       effect: iam.Effect.ALLOW,
       actions: ['s3:PutObject'],
       resources: [`arn:aws:s3:::${this.bucket.bucketName}/${bucketPrefix}/AWSLogs/${awsAccountId}/*`],
-      principals: [new iam.AccountRootPrincipal()],
+      principals: [new iam.AccountPrincipal(elbAccountId)], 
     }));
   }
 }
