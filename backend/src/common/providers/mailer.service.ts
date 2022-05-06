@@ -35,7 +35,7 @@ export class MailerService {
       if (e instanceof Error) {
         this.logger.error(e.message)
       }
-      throw e
+      throw new Error('Email could not be sent, please try again.')
     }
   }
 }
