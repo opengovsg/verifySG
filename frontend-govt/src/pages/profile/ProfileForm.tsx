@@ -65,6 +65,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     updateProfile.mutate(data)
   }
 
+  const isAscii = (str: string) => {
+    return /^[\x00-\x7F]*$/.test(str)
+  }
+
   return (
     <HeaderContainer>
       <VStack mt="64px" spacing="32px">
@@ -101,8 +105,11 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('name', {
                   required: 'Please enter a valid name',
+                  validate: {
+                    valid: (v) => isAscii(v) || 'Please enter a valid name',
+                  },
                 })}
-                placeholder="e.g. Alex Tan"
+                placeholder="e.g. Benjamin Tan"
               />
               {errors.name && (
                 <FormErrorMessage>{errors.name.message}</FormErrorMessage>
@@ -113,6 +120,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('position', {
                   required: 'Please enter a valid position',
+                  validate: {
+                    valid: (v) => isAscii(v) || 'Please enter a valid position',
+                  },
                 })}
                 placeholder="e.g. Senior Manager"
               />
