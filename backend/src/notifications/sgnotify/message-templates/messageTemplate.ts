@@ -1,9 +1,10 @@
+import { JWTPayload } from 'jose'
+
 import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
 import { maskNric } from '../utils'
-import { JWTPayload } from 'jose'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -18,10 +19,10 @@ export interface SGNotifyParams {
 }
 
 export enum SGNotifyMessageTemplateId {
-  GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
-  // last two enums unused for now; GENERIC_PHONE_CALL template might be subject to editing by GovTech CMG though
-  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
-  GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
+  GENERIC_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
+  GENERIC_NOTIFICATION_DURING_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-02',
+  SPF_POLICE_REPORT_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
+  GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
 export const sgNotifyParamsStatusToNotificationStatusMapper = (
@@ -40,28 +41,53 @@ export const generateNewSGNotifyParams = (
   officerName: string,
   officerPosition: string,
 ): SGNotifyParams => {
-  return {
-    agencyLogoUrl,
-    agencyName,
-    title: 'Upcoming Phone Call',
-    nric,
-    shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
-    templateId: SGNotifyMessageTemplateId.GENERIC_PHONE_CALL, // current strategy is to use generic template for all messages
-    sgNotifyLongMessageParams: {
-      agency: agencyShortName,
-      officer_name: `<u>${officerName}</u>`,
-      position: `<u>${officerPosition}</u>`,
-      masked_nric: `(${maskNric(nric)})`,
-      call_details: generateCallDetails(agencyShortName),
-      callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
-    },
-    status: SGNotifyNotificationStatus.NOT_SENT,
+  // TODO: generalise this to support (1) different use cases (2) different notifications (before + during phone call)
+  switch (agencyShortName) {
+    case 'SPF':
+      return {
+        agencyLogoUrl,
+        agencyName,
+        title: 'Verify your phone call',
+        nric,
+        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
+        templateId:
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+        sgNotifyLongMessageParams: {
+          agency: agencyShortName,
+          officer_name: `<u>${officerName}</u>`,
+          position: `<u>${officerPosition}</u>`,
+          masked_nric: `(${maskNric(nric)})`,
+          call_details: generateCallDetailsNotifyDuringCall(agencyShortName),
+        },
+        status: SGNotifyNotificationStatus.NOT_SENT,
+      }
+    case 'OGP':
+      return {
+        agencyLogoUrl,
+        agencyName,
+        title: 'Upcoming Phone Call',
+        nric,
+        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
+        templateId:
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+        sgNotifyLongMessageParams: {
+          agency: agencyShortName,
+          officer_name: `<u>${officerName}</u>`,
+          position: `<u>${officerPosition}</u>`,
+          masked_nric: `(${maskNric(nric)})`,
+          call_details: generateCallDetailsNotifyBeforeCall(agencyShortName),
+          callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
+        },
+        status: SGNotifyNotificationStatus.NOT_SENT,
+      }
+    default:
+      throw new Error(`Unsupported agency: ${agencyShortName}`)
   }
 }
 
-// TODO: modify this method to support different call details
-// currently, content of call details based on agencyShortName only; to include "use case id"?
-export const generateCallDetails = (agencyId: string): string => {
+export const generateCallDetailsNotifyBeforeCall = (
+  agencyId: string,
+): string => {
   const standardClosing =
     "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
   switch (agencyId) {
@@ -75,6 +101,17 @@ export const generateCallDetails = (agencyId: string): string => {
       ${standardClosing}`
     default:
       return standardClosing
+  }
+}
+
+export const generateCallDetailsNotifyDuringCall = (
+  agencyId: string,
+): string => {
+  switch (agencyId) {
+    case 'SPF':
+      return 'The purpose of this call is to follow up on a police report that you have lodged recently.'
+    default:
+      return ' ' // should never reach here
   }
 }
 
