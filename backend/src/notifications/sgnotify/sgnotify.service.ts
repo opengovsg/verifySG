@@ -93,10 +93,12 @@ export class SGNotifyService {
    */
   async sendNotification(notification: Notification): Promise<SGNotifyParams> {
     const { modalityParams: sgNotifyParams } = notification
-    const authzToken = await this.getAuthzToken()
-    const jweObject = await this.signAndEncryptPayload(
-      convertSGNotifyParamsToJWTPayload(sgNotifyParams),
-    )
+    const [authzToken, jweObject] = await Promise.all([
+      this.getAuthzToken(),
+      this.signAndEncryptPayload(
+        convertSGNotifyParamsToJWTPayload(sgNotifyParams),
+      ),
+    ])
     try {
       const {
         data: { jwe },
