@@ -15,11 +15,11 @@ Each message template contains the following attributes:
 - List of parameters that must be included in the API call and substituted into the message
 - Whether HTML is enabled
 
-
 ## List of Approved Templates
 
 The following templates have been approved by the CMG team:
-- `GOVTECH-CHECKWHO-GEN-01`: this is the generic template for informing of phone calls in general.
+- `GOVTECH-CHECKWHO-GEN-01`: this is the generic template for notify MOPs _before_ phone calls.
+- `GOVTECH-CHECKWHO-GEN-02`: this is the generic template for notifying MOPs _during_ phone calls.
 - `GOVTECH-CHECKWHO-01`: this is the SPF police report-specific template.
 - `GOVTECH-CHECKWHO-GT-01`: this is the GovTech feedback-specific template.
 
@@ -31,7 +31,7 @@ Currently, the backend is only using the `GOVTECH-CHECKWHO-GEN-01` template as i
 Upcoming Phone Call
 
 #### Short Message
-A public officer from &lt;agency&gt will be calling you shortly.
+A public officer from &lt;agency&gt; will be calling you shortly.
 
 #### Long Message
 > Dear Sir/Madam <masked_NRIC>,
@@ -75,7 +75,7 @@ template_layout: [
 Upcoming Phone Call
 
 #### Short Message
-A police officer from SPF will be calling you shortly to follow up with your police report.
+A police officer from SPF will be following up with your police report.
 
 #### Long Message
 > Dear Sir/Madam <masked_NRIC>,
@@ -145,7 +145,48 @@ template_layout: [
 <br>
 <img src="./screenshots/govtech-long-message.jpeg" alt='govtech long message' width='500'>
 
-## Template
+### Template ID: `GOVTECH-CHECKWHO-GEN-02`
+
+#### Title
+Verify your phone call
+
+#### Short Message
+You are currently on a call with a public officer from <agency>
+
+#### Long Message
+```
+Dear Sir/Madam <masked_nric>,
+
+This is to verify that you are currently speaking to <officer_name>, <position> from the <agency>.
+
+<call_details>
+```
+
+#### HTML-enabled
+Yes
+
+#### Example API Call
+```
+template_layout: [
+  {
+    template_id: "GOVTECH-CHECKWHO-GEN-02",
+    template_input: {
+      masked_nric: "(SXXXX862G)",
+      officer_name: "<u>Louiz Kim-Chan</u>",
+      position: "<u>Potato Man</u>",
+      agency: "OGP",
+      call_details: `My favorite food is: potato!
+      <br><br>
+      Please ask the caller what his favorite food is to verify his/her identity.`,
+    },
+  },
+],
+```
+
+#### Screenshots
+TODO
+
+## Copy below for new template
 
 ### Template ID: ``
 
