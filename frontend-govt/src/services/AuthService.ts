@@ -19,6 +19,7 @@ const verifyOtp = async ({
   })
 }
 
+// TODO: use shared types to align service types with backend API types example (1/2)
 const whoAmI = async (): Promise<
   { email: string; agencyShortName: string } | undefined
 > => {

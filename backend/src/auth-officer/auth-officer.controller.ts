@@ -55,6 +55,7 @@ export class AuthOfficerController {
     }
   }
 
+  // TODO: use shared types to align service types with backend API types example (2/2)
   @Get('whoami')
   async whoami(
     @OfficerId() officerId: number,
