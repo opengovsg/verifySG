@@ -19,7 +19,9 @@ const verifyOtp = async ({
   })
 }
 
-const whoAmI = async (): Promise<{ email: string } | undefined> => {
+const whoAmI = async (): Promise<
+  { email: string; agencyShortName: string } | undefined
+> => {
   return await ApiService.get('/auth-officers/whoami').then((res) => res.data)
 }
 

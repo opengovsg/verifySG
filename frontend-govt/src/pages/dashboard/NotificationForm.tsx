@@ -15,6 +15,7 @@ import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
 import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
+import { useAuth } from '../../contexts/auth/AuthContext'
 import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
 import { NotificationService } from '../../services/NotificationService'
 
@@ -43,6 +44,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   const toast = useToast()
   const history = useHistory()
+  const { agency } = useAuth()
 
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
@@ -50,7 +52,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         setTargetNRIC(data.nric)
-        history.push(FEEDBACKFORM_ROUTE)
+        if (agency !== 'OGP') history.push(FEEDBACKFORM_ROUTE)
       },
     })
   }
