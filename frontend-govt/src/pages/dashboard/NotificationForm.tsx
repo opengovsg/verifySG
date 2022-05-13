@@ -136,6 +136,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   clearErrors('nric')
                 }}
                 placeholder="e.g. S1234567D"
+                autoFocus
               />
               {errors.nric && (
                 <FormErrorMessage>{errors.nric.message}</FormErrorMessage>

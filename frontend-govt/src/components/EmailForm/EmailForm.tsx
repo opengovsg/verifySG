@@ -66,6 +66,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
               ),
             })}
             placeholder="e.g. benjamin_tan@spf.gov.sg"
+            autoFocus
           />
           {hasError() && (
             <FormErrorMessage>{getErrorMessage()}</FormErrorMessage>
