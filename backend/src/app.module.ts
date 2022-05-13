@@ -17,30 +17,21 @@ import { SessionMiddleware } from 'common/middlewares/session.middleware'
 import { MorganMiddleware } from 'common/middlewares/morgan.middleware'
 import { AllExceptionsFilter } from 'common/filters/error-handler.filter'
 
-import { HealthModule } from 'health/health.module'
+import { ApiModule } from './api.module'
 import { CoreModule } from 'core/core.module'
 
 import { DatabaseConfigService } from 'database/db-config.service'
-import { NotificationsModule } from './notifications/notifications.module'
-import { OfficersModule } from './officers/officers.module'
-import { AuthOfficerModule } from './auth-officer/auth-officer.module'
-import { AgenciesModule } from './agencies/agencies.module'
 
 @Module({
   imports: [
     CoreModule,
-    HealthModule,
+    ApiModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend-govt', 'build'),
     }),
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigService,
     }),
-    NotificationsModule,
-    OfficersModule,
-    AuthOfficerModule,
-    AgenciesModule,
-    NotificationsModule,
   ],
   providers: [
     {
@@ -51,6 +42,7 @@ import { AgenciesModule } from './agencies/agencies.module'
       provide: APP_PIPE,
       useValue: new ValidationPipe({
         whitelist: true,
+        transform: true,
         exceptionFactory: (errors: ValidationError[]) => {
           const allErrors = errors.map((e) => values(e.constraints).join(', '))
           return new BadRequestException(allErrors.join(', '))
@@ -62,8 +54,7 @@ import { AgenciesModule } from './agencies/agencies.module'
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     // Apply global middlewares
-    consumer
-      .apply(HelmetMiddleware, SessionMiddleware, MorganMiddleware)
-      .forRoutes('*')
+    consumer.apply(HelmetMiddleware, MorganMiddleware).forRoutes('*')
+    consumer.apply(SessionMiddleware).forRoutes('/api/*')
   }
 }
