@@ -51,8 +51,17 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        setTargetNRIC(data.nric)
-        if (agency !== 'OGP') history.push(FEEDBACKFORM_ROUTE)
+        if (agency === 'OGP') {
+          reset(
+            { nric: '', callScope: '' },
+            {
+              keepValues: false,
+            },
+          )
+        } else {
+          setTargetNRIC(data.nric)
+          history.push(FEEDBACKFORM_ROUTE)
+        }
       },
     })
   }
