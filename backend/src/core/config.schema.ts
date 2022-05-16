@@ -140,7 +140,7 @@ export const schema: Schema<ConfigSchema> = {
         doc: 'The maximum age for a cookie, expressed in ms',
         env: 'COOKIE_MAX_AGE',
         format: 'int',
-        default: 7 * 24 * 60 * 60 * 1000, // 7 days
+        default: 24 * 60 * 60 * 1000, // 1 day
       },
     },
   },
