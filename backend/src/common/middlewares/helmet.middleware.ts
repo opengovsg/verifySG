@@ -21,6 +21,7 @@ export class HelmetMiddleware implements NestMiddleware {
           // for google fonts
           fontSrc: ["'self'", 'https://fonts.gstatic.com'],
           frameAncestors: ["'none'"],
+          frameSrc: ['https://form.gov.sg'],
           imgSrc: ["'self'", 'data:', 'https://file.go.gov.sg'],
           objectSrc: ["'none'"],
           // for google fonts
