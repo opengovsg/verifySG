@@ -21,10 +21,14 @@ export class HelmetMiddleware implements NestMiddleware {
           // for google fonts
           fontSrc: ["'self'", 'https://fonts.gstatic.com'],
           frameAncestors: ["'none'"],
-          imgSrc: ["'self'", 'data:'],
+          imgSrc: ["'self'", 'data:', 'https://file.go.gov.sg'],
           objectSrc: ["'none'"],
           // for google fonts
-          styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            'https://fonts.googleapis.com',
+          ],
           scriptSrcAttr: ["'none'"],
           scriptSrc: [
             "'self'",
