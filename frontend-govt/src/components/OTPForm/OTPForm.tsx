@@ -108,6 +108,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
             })}
             autoComplete="one-time-code"
             placeholder="e.g. 111111"
+            autoFocus
           />
           <FormErrorMessage children={getErrorMessage()} />
         </FormControl>
