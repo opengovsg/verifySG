@@ -13,6 +13,7 @@ import {
 
 import HeaderContainer from '../../components/HeaderContainer'
 import { OfficerService } from '../../services/OfficerService'
+import { isAscii } from '../../utils/isAscii'
 
 interface ProfileFormData {
   name: string
@@ -63,10 +64,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
   // handle submission logic
   const submissionHandler = (data: ProfileFormData) => {
     updateProfile.mutate(data)
-  }
-
-  const isAscii = (str: string) => {
-    return /^[\x00-\x7F]*$/.test(str)
   }
 
   return (
