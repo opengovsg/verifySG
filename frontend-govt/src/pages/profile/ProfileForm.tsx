@@ -13,7 +13,6 @@ import {
 
 import HeaderContainer from '../../components/HeaderContainer'
 import { OfficerService } from '../../services/OfficerService'
-import { isAscii } from '../../utils/isAscii'
 
 interface ProfileFormData {
   name: string
@@ -102,8 +101,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('name', {
                   required: 'Please enter a valid name',
-                  validate: {
-                    valid: (v) => isAscii(v) || 'Please enter a valid name',
+                  pattern: {
+                    value: /^[A-Za-z ,\.'-]+$/, // name validation
+                    message: 'Please enter a valid name',
                   },
                 })}
                 placeholder="e.g. Benjamin Tan"
@@ -117,8 +117,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('position', {
                   required: 'Please enter a valid position',
-                  validate: {
-                    valid: (v) => isAscii(v) || 'Please enter a valid position',
+                  pattern: {
+                    value: /^[\x00-\x7F]+$/, // ASCII validation
+                    message: 'Please enter a valid position',
                   },
                 })}
                 placeholder="e.g. Senior Manager"
