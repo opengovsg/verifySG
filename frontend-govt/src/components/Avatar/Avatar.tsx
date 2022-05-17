@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { Fragment, useMemo } from 'react'
 import {
   Circle,
   HStack,
@@ -65,12 +65,12 @@ export const Avatar: React.FC<AvatarProps> = ({
           <MenuList>
             {menuItems &&
               menuItems.map(({ label, hasDivider, ...itemProps }) => (
-                <>
+                <Fragment key={label}>
                   {hasDivider && <MenuDivider key={`${label}-divider`} />}
                   <MenuItem {...itemProps} key={label}>
                     {label}
                   </MenuItem>
-                </>
+                </Fragment>
               ))}
           </MenuList>
         </>
