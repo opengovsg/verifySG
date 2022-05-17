@@ -83,9 +83,9 @@ export class SGNotifyService {
       return [publicKeySig, publicKeyEnc]
     } catch (e) {
       if ((e as AxiosError).response?.status === 500) {
-        this.logger.log({
-          message: `Internal server error when getting public keys from SGNotify endpoint.\nError: ${e}`,
-        })
+        this.logger.error(
+          `Internal server error when getting public keys from SGNotify endpoint.\nError: ${e}`,
+        )
         throw new ServiceUnavailableException(
           'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
         )
@@ -149,17 +149,14 @@ export class SGNotifyService {
       }
     } catch (e) {
       if ((e as AxiosError).response?.status === 404) {
-        this.logger.log({
-          message: 'NRIC provided not found',
-          ...sgNotifyParams,
-        })
+        this.logger.error('NRIC provided not found.')
         throw new BadRequestException(
           'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
         )
       } else if ((e as AxiosError).response?.status === 500) {
-        this.logger.log({
-          message: `Internal server error when calling SGNotify notification endpoint.\nError: ${e}`,
-        })
+        this.logger.error(
+          `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+        )
         throw new ServiceUnavailableException(
           'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
         )
@@ -198,19 +195,15 @@ export class SGNotifyService {
       return authPayload.access_token
     } catch (e) {
       if ((e as AxiosError).response?.status === 400) {
-        this.logger.log({
-          message: `Bad request: ${e}`,
-          authJweObject,
-        })
+        this.logger.error(`Bad request: ${e}`)
       } else if ((e as AxiosError).response?.status === 401) {
-        this.logger.log({
-          message: `Unauthorized request: ${e}`,
-          authJweObject,
-        })
+        this.logger.error(
+          `Unauthorized: ${e}.\n authJweObject: ${authJweObject}`,
+        )
       } else if ((e as AxiosError).response?.status === 500) {
-        this.logger.log({
-          message: `Internal server error when calling SGNotify authz endpoint.\nError: ${e}`,
-        })
+        this.logger.error(
+          `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+        )
         throw new ServiceUnavailableException(
           'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
         )
