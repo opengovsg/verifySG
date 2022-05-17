@@ -9,7 +9,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common'
-import { OfficerDto } from 'officers/dto'
+import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService } from 'core/providers'
 import { Logger } from 'core/providers'
@@ -56,10 +56,10 @@ export class AuthOfficerController {
   }
 
   @Get('whoami')
-  async whoami(
-    @OfficerId() officerId: number,
-  ): Promise<OfficerDto | undefined> {
-    if (!officerId) throw new BadRequestException('No logged in officer')
+  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiDto> {
+    if (!officerId) {
+      return { message: 'No logged in officer' }
+    }
     const officer = await this.officersService.findById(officerId)
     if (!officer) {
       throw new NotFoundException('No officer with this officer ID found')
