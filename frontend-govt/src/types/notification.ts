@@ -1,12 +1,13 @@
 import { OfficerDto } from './officer'
 
-export type NotificationDto = {
+// TODO refactor notification DTOs into shared folder 1/2
+export type SendNotificationResponseDto = {
   id: number
   createdAt: Date
   officer: OfficerDto
 }
 
-export type sendNotificationDto = {
+export type SendNotificationDto = {
   nric: string
   callScope?: string
 }

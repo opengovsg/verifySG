@@ -9,7 +9,7 @@ import {
   SGNotifyNotificationStatus,
   ModalityParams,
 } from 'database/entities'
-import { GetNotificationDto, SendNotificationDto } from './dto'
+import { SendNotificationResponseDto, SendNotificationDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
 import {
   maskNric,
@@ -113,7 +113,7 @@ export class NotificationsService {
   async sendNotification(
     officerId: number,
     body: SendNotificationDto,
-  ): Promise<GetNotificationDto> {
+  ): Promise<SendNotificationResponseDto> {
     const inserted = await this.createNotification(officerId, body)
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
@@ -126,7 +126,7 @@ export class NotificationsService {
     return this.mapToDto(updated)
   }
 
-  mapToDto(notification: Notification): GetNotificationDto {
+  mapToDto(notification: Notification): SendNotificationResponseDto {
     const { id, officer, createdAt, callScope } = notification
     return {
       id,
