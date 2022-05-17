@@ -146,7 +146,9 @@ export class SGNotifyService {
       }
     } catch (e) {
       if ((e as AxiosError).response?.status === 404) {
-        this.logger.error('NRIC provided not found.')
+        this.logger.error(
+          `NRIC ${notification.recipientId} provided not found.`,
+        )
         throw new BadRequestException(
           'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
         )
