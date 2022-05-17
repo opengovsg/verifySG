@@ -11,7 +11,6 @@ async function bootstrap() {
   })
   app.useLogger(app.get(Logger))
 
-  app.setGlobalPrefix('/api')
   app.set('trust proxy', 1)
   const config = app.get(ConfigService)
   app.enableCors({
