@@ -102,7 +102,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                 {...register('name', {
                   required: 'Please enter a valid name',
                   pattern: {
-                    value: /^[A-Za-z ,\.'-]+$/, // name validation
+                    value: /^[A-Za-z ,.'-]+$/, // name validation
                     message: 'Please enter a valid name',
                   },
                 })}
