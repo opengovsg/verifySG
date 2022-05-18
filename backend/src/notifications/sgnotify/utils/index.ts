@@ -1,2 +1,3 @@
-export * from './maskNric'
-export * from './messageTemplate'
+export * from './keys'
+export * from './nric'
+export * from '../message-templates/messageTemplate'

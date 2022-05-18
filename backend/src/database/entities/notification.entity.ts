@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
-import { SGNotifyParams } from '../../notifications/sgnotify/sgnotify.service'
+import { SGNotifyParams } from '../../notifications/sgnotify/message-templates/messageTemplate'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
@@ -28,13 +28,6 @@ export enum SGNotifyNotificationStatus {
   // last two enums unused for now; can be obtained by consuming notification status endpoints
   RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
   READ_BY_USER = 'READ_BY_USER',
-}
-
-export enum SGNotifyMessageTemplateId {
-  GENERIC_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
-  // last two enums unused for now; GENERIC_PHONE_CALL template might be subject to editing by GovTech CMG though
-  SPF_POLICE_REPORT_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
-  GOVTECH_FEEDBACK_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
 export type ModalityParams = SGNotifyParams // to extend in future
