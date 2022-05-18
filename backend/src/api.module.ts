@@ -6,9 +6,11 @@ import { NotificationsModule } from './notifications/notifications.module'
 import { OfficersModule } from './officers/officers.module'
 import { AuthOfficerModule } from './auth-officer/auth-officer.module'
 import { AgenciesModule } from './agencies/agencies.module'
+import { SentryModule } from './sentry/sentry.module'
 
 const apiModules = [
   HealthModule,
+  SentryModule,
   NotificationsModule,
   OfficersModule,
   AuthOfficerModule,
