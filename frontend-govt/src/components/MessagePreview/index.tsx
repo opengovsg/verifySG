@@ -28,8 +28,10 @@ const SpfMessage: React.FC<{
   return (
     <Box>
       Dear Sir/Madam{' '}
-      <u style={{ fontWeight: 'bold' }}>({getMaskedNric(nric)})</u>, This is to
-      verify that you are currently speaking to{' '}
+      <u style={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
+        ({getMaskedNric(nric)})
+      </u>
+      , This is to verify that you are currently speaking to{' '}
       <u style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>
         {name}, {position}
       </u>{' '}
