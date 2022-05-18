@@ -101,8 +101,12 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('name', {
                   required: 'Please enter a valid name',
+                  pattern: {
+                    value: /^[A-Za-z ,.'-]+$/, // name validation
+                    message: 'Please enter a valid name',
+                  },
                 })}
-                placeholder="e.g. Alex Tan"
+                placeholder="e.g. Benjamin Tan"
               />
               {errors.name && (
                 <FormErrorMessage>{errors.name.message}</FormErrorMessage>
@@ -113,6 +117,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               <Input
                 {...register('position', {
                   required: 'Please enter a valid position',
+                  pattern: {
+                    value: /^[\x00-\x7F]+$/, // ASCII validation
+                    message: 'Please enter a valid position',
+                  },
                 })}
                 placeholder="e.g. Senior Manager"
               />
