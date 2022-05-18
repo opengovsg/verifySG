@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { FormControl, Text, VStack } from '@chakra-ui/react'
+import { FormControl, Heading, StackItem, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -14,6 +14,7 @@ import {
 import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
+import MessagePreview from '../../components/MessagePreview'
 import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
 import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
 import { NotificationService } from '../../services/NotificationService'
@@ -39,7 +40,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<NotificationFormData>()
-  const { setTargetNRIC } = useNotificationData()
+  const { targetNRIC, setTargetNRIC } = useNotificationData()
 
   const toast = useToast()
   const history = useHistory()
@@ -118,7 +119,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           of your call.
         </InlineMessage>
         <form onSubmit={handleSubmit(submissionHandler)}>
-          <VStack spacing="32px" w="448px">
+          <VStack spacing="16px" w="448px">
             <FormControl isInvalid={!!errors.nric}>
               <FormLabel isRequired>NRIC / FIN</FormLabel>
               <Input
@@ -134,6 +135,9 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 }}
                 onFocus={() => {
                   clearErrors('nric')
+                }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setTargetNRIC(event.target.value)
                 }}
                 placeholder="e.g. S1234567D"
                 autoFocus
@@ -164,7 +168,9 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
               <FormErrorMessage>{errors.phoneNumber.message}</FormErrorMessage>
             )}
           </FormControl> */}
-            <VStack spacing="16px">
+            <VStack spacing="16px" align="left">
+              <Text style={{ fontWeight: 500 }}>Message Preview</Text>
+              <MessagePreview nric={targetNRIC ?? ''} />
               <Button
                 type="submit"
                 isLoading={sendNotification.isLoading}
@@ -172,7 +178,14 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
               >
                 Notify call recipient
               </Button>
-              <Button variant="link" onClick={() => reset()} type="reset">
+              <Button
+                variant="link"
+                onClick={() => {
+                  reset()
+                  setTargetNRIC('')
+                }}
+                type="reset"
+              >
                 Clear details
               </Button>
             </VStack>
