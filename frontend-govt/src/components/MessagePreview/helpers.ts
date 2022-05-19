@@ -2,12 +2,12 @@ import { maskNric } from '../../utils/nric'
 
 export const getMaskedNric = (nric: string) => {
   if (nric === '') {
-    return 'PLEASE ENTER NRIC'
+    return 'PLEASE ENTER NRIC / FIN'
   }
   try {
     return maskNric(nric)
   } catch (e) {
-    return 'PLEASE ENTER VALID NRIC'
+    return 'PLEASE ENTER VALID NRIC / FIN'
   }
 }
 
