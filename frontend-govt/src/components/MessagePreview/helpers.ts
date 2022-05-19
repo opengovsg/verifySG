@@ -69,7 +69,7 @@ export const messageContentFactory = ({
         },
         {
           type: 'sentence',
-          content: 'from the',
+          content: 'from',
           isLineBreak: false,
         },
         {
