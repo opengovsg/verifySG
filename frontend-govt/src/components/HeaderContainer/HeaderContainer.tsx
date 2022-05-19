@@ -5,7 +5,7 @@ import { NOTIFICATIONFORM_ROUTE } from '../../constants/routes'
 import Header from '../Header'
 
 export const HeaderContainer: React.FC = ({ children }) => (
-  <Flex flexDir="column" w="100vw" h="100vh">
+  <Flex flexDir="column" w="100vw" h="100%">
     <Header
       navlinks={[
         {

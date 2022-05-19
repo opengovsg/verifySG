@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { FormControl, Heading, StackItem, Text, VStack } from '@chakra-ui/react'
+import { FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -40,7 +40,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<NotificationFormData>()
-  const { targetNRIC, setTargetNRIC } = useNotificationData()
+  const { setTargetNRIC } = useNotificationData()
 
   const toast = useToast()
   const history = useHistory()
@@ -136,9 +136,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 onFocus={() => {
                   clearErrors('nric')
                 }}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setTargetNRIC(event.target.value)
-                }}
                 placeholder="e.g. S1234567D"
                 autoFocus
               />
@@ -170,7 +167,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           </FormControl> */}
             <VStack spacing="16px" align="left">
               <Text style={{ fontWeight: 500 }}>Message Preview</Text>
-              <MessagePreview nric={targetNRIC ?? ''} />
+              <MessagePreview nric={watch('nric') ?? ''} />
               <Button
                 type="submit"
                 isLoading={sendNotification.isLoading}
@@ -182,7 +179,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 variant="link"
                 onClick={() => {
                   reset()
-                  setTargetNRIC('')
                 }}
                 type="reset"
               >
