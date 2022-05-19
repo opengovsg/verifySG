@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { FormControl, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -93,13 +93,13 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   return (
     <HeaderContainer>
-      <VStack mt="64px" spacing="32px">
-        <Text textStyle="h2" color="#1B3C87">
+      <VStack width={['100px', '500px']}>
+        <Text textStyle={['h3', 'h3', 'h2', 'h2']}>
           Enter the details of the person you need to call
         </Text>
         <InlineMessage
           variant="info"
-          w="440px"
+          w="100%"
           useMarkdown
           // override internal theme style
           //TODO: shift these into theme folder for cleanup refactor
@@ -117,67 +117,48 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           notification will also show your name, your position, and the purpose
           of your call.
         </InlineMessage>
-        <form onSubmit={handleSubmit(submissionHandler)}>
-          <VStack spacing="32px" w="448px">
-            <FormControl isInvalid={!!errors.nric}>
-              <FormLabel isRequired>NRIC / FIN</FormLabel>
-              <Input
-                {...register('nric', {
-                  required: 'Please enter a valid NRIC / FIN',
-                  validate: {
-                    valid: (v) =>
-                      nric.validate(v) || 'Please enter a valid NRIC / FIN',
-                  },
-                })}
-                onBlur={() => {
-                  trigger('nric')
-                }}
-                onFocus={() => {
-                  clearErrors('nric')
-                }}
-                placeholder="e.g. S1234567D"
-                autoFocus
-              />
-              {errors.nric && (
-                <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
-              )}
-            </FormControl>
-            {/* <FormControl isInvalid={!!errors.callScope}>
-              <FormLabel>Purpose for call</FormLabel>
-              <Input
-                {...register('callScope')}
-                placeholder="e.g. Police Report"
-              />
-              {errors.callScope && (
-                <FormErrorMessage>{errors.callScope.message}</FormErrorMessage>
-              )}
-            </FormControl> */}
-            {/* <FormControl isInvalid={!!errors.phoneNumber}>
-            <FormLabel isRequired>Phone number</FormLabel>
-            <PhoneNumberInput
-              isInvalid={!!errors.phoneNumber}
-              value={watch('phoneNumber', '')}
-              onChange={handleChange}
-              examplePlaceholder="polite"
-            />
-            {errors.phoneNumber && (
-              <FormErrorMessage>{errors.phoneNumber.message}</FormErrorMessage>
-            )}
-          </FormControl> */}
-            <VStack spacing="16px">
-              <Button
-                type="submit"
-                isLoading={sendNotification.isLoading}
-                loadingText="Notifying..."
-              >
-                Notify call recipient
-              </Button>
-              <Button variant="link" onClick={() => reset()} type="reset">
-                Clear details
-              </Button>
+        <Box width="100%">
+          <form onSubmit={handleSubmit(submissionHandler)}>
+            <VStack spacing={['16px', '16px', '20px', '20px']}>
+              <FormControl isInvalid={!!errors.nric}>
+                <FormLabel isRequired>NRIC / FIN</FormLabel>
+                <Input
+                  {...register('nric', {
+                    required: 'Please enter a valid NRIC / FIN',
+                    validate: {
+                      valid: (v) =>
+                        nric.validate(v) || 'Please enter a valid NRIC / FIN',
+                    },
+                  })}
+                  onBlur={() => {
+                    trigger('nric')
+                  }}
+                  onFocus={() => {
+                    clearErrors('nric')
+                  }}
+                  placeholder="e.g. S1234567D"
+                  autoFocus
+                />
+                {errors.nric && (
+                  <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
+                )}
+              </FormControl>
+
+              <VStack spacing={['16px', '16px', '20px', '20px']}>
+                <Button
+                  type="submit"
+                  isLoading={sendNotification.isLoading}
+                  loadingText="Notifying..."
+                >
+                  Notify call recipient
+                </Button>
+                <Button variant="link" onClick={() => reset()} type="reset">
+                  Clear details
+                </Button>
+              </VStack>
             </VStack>
-          </VStack>
-        </form>
+          </form>
+        </Box>
       </VStack>
     </HeaderContainer>
   )
