@@ -2,7 +2,11 @@ import axios, { AxiosError, AxiosInstance } from 'axios'
 import crypto from 'crypto'
 import * as jose from 'jose'
 import { JWTPayload } from 'jose'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common'
 
 import { ConfigService, Logger } from '../../core/providers'
 import { ConfigSchema } from '../../core/config.schema'
@@ -57,16 +61,25 @@ export class SGNotifyService {
   async getPublicKeysSigEnc(): Promise<[Key, Key]> {
     const url = '/.well-known/ntf-authz-keys'
     // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
-    const { data } = await this.client.get<GetSGNotifyJwksDto>(url)
-    const publicKeySig = await jose.importJWK(
-      data.keys.filter((key) => key.use === 'sig')[0],
-      'ES256',
-    )
-    const publicKeyEnc = await jose.importJWK(
-      data.keys.filter((key) => key.use === 'enc')[0],
-      'ES256',
-    )
-    return [publicKeySig, publicKeyEnc]
+    try {
+      const { data } = await this.client.get<GetSGNotifyJwksDto>(url)
+      const publicKeySig = await jose.importJWK(
+        data.keys.filter((key) => key.use === 'sig')[0],
+        'ES256',
+      )
+      const publicKeyEnc = await jose.importJWK(
+        data.keys.filter((key) => key.use === 'enc')[0],
+        'ES256',
+      )
+      return [publicKeySig, publicKeyEnc]
+    } catch (e) {
+      this.logger.error(
+        `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+      )
+      throw new ServiceUnavailableException(
+        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
+      )
+    }
   }
 
   /**
@@ -126,15 +139,19 @@ export class SGNotifyService {
       }
     } catch (e) {
       if ((e as AxiosError).response?.status === 404) {
-        this.logger.log({
-          message: 'NRIC provided not found',
-          ...sgNotifyParams,
-        })
+        this.logger.error(
+          `NRIC ${notification.recipientId} provided not found.`,
+        )
         throw new BadRequestException(
           'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
         )
       }
-      throw e
+      this.logger.error(
+        `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+      )
+      throw new ServiceUnavailableException(
+        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
+      )
     }
   }
 
@@ -167,18 +184,18 @@ export class SGNotifyService {
       )) as AuthPayload
       return authPayload.access_token
     } catch (e) {
-      if ((e as AxiosError).response?.status === 400) {
-        this.logger.log({
-          message: `Bad request: ${e}`,
-          authJweObject,
-        })
-      } else if ((e as AxiosError).response?.status === 401) {
-        this.logger.log({
-          message: `Unauthorized request: ${e}`,
-          authJweObject,
-        })
+      if ((e as AxiosError).response?.status === 401) {
+        this.logger.error(
+          `SGNotify credentials are invalid.\nError: ${e}.\nauthJweObject: ${authJweObject}`,
+        )
+      } else {
+        this.logger.error(
+          `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+        )
       }
-      throw e
+      throw new ServiceUnavailableException(
+        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
+      )
     }
   }
 
