@@ -18,9 +18,13 @@ interface NavlinkProps {
 
 interface HeaderProps {
   navlinks?: Array<NavlinkProps>
+  navbarHeight: string
 }
 
-export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
+export const Header: React.FC<HeaderProps> = ({
+  navlinks,
+  navbarHeight = '8vh',
+}) => {
   const history = useHistory()
   const [officerName, setOfficerName] = useState<string | undefined>()
 
@@ -35,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
 
   return (
     <Flex
-      h="72px"
+      h={navbarHeight}
       w="100vw"
       borderBottom="1px solid"
       borderBottomColor="#DADEE3"

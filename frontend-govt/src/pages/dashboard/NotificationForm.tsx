@@ -21,7 +21,6 @@ import { NotificationService } from '../../services/NotificationService'
 interface NotificationFormData {
   nric: string
   callScope?: string
-  // phoneNumber: string
 }
 
 interface NotificationFormProps {
@@ -55,18 +54,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     })
   }
 
-  // register phone number input programmatically
-  // useEffect(() => {
-  //   register('phoneNumber', {
-  //     required: 'Please enter a valid phone number',
-  //     pattern: {
-  //       // temporary validation regex adapted from https://ihateregex.io/expr/phone/
-  //       value: /[\+]?[0-9]{3}[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/,
-  //       message: 'Please enter a valid phone number',
-  //     },
-  //   })
-  // }, [register])
-
   // query hook to mutate data
   const sendNotification = useMutation(NotificationService.sendNotification, {
     onSuccess: () => {
@@ -83,23 +70,16 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     },
   })
 
-  // handle change for phone number input
-  // const handleChange = (newVal?: string) => {
-  //   // prevent infinite feedback loop
-  //   watch('phoneNumber')
-  //     ? setValue('phoneNumber', newVal || '')
-  //     : newVal && setValue('phoneNumber', newVal)
-  // }
-
   return (
     <HeaderContainer>
-      <VStack width={['100px', '500px']}>
-        <Text textStyle={['h3', 'h3', 'h2', 'h2']}>
+      <VStack width={'100%'} maxWidth="500px" px={[2, 2, 4, 4]}>
+        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary.700">
           Enter the details of the person you need to call
         </Text>
         <InlineMessage
           variant="info"
           w="100%"
+          fontSize={['sm', 'sm', 'md', 'md']}
           useMarkdown
           // override internal theme style
           //TODO: shift these into theme folder for cleanup refactor
@@ -109,7 +89,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
             p: '1rem',
             justifyContent: 'start',
             color: 'secondary.700',
-            bg: '#EBEFFE',
+            bg: 'primary.200',
           }}
         >
           When you click the ‘Notify call recipient’ button, they will receive a
@@ -119,9 +99,11 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack spacing={['16px', '16px', '20px', '20px']}>
+            <VStack spacing={[2, 2, 4, 4]} align="left">
               <FormControl isInvalid={!!errors.nric}>
-                <FormLabel isRequired>NRIC / FIN</FormLabel>
+                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                  NRIC / FIN
+                </FormLabel>
                 <Input
                   {...register('nric', {
                     required: 'Please enter a valid NRIC / FIN',
@@ -144,11 +126,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 )}
               </FormControl>
 
-              <VStack spacing={['16px', '16px', '20px', '20px']}>
+              <VStack spacing={[2, 2, 4, 4]} align="left">
                 <Button
                   type="submit"
                   isLoading={sendNotification.isLoading}
                   loadingText="Notifying..."
+                  bgColor="primary.700"
                 >
                   Notify call recipient
                 </Button>
