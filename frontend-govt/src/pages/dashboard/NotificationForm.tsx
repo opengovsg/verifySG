@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { Box, FormControl, Heading, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -133,8 +133,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
               </FormControl>
 
               <VStack spacing={[3, 3, 4, 4]} align="left">
-                <FormLabel>Message Preview</FormLabel>
-                <MessagePreview nric={watch('nric') ?? ''} />
+                <StackItem>
+                  <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                    Message Preview
+                  </FormLabel>
+                  <MessagePreview nric={watch('nric') ?? ''} />
+                </StackItem>
                 <Button
                   type="submit"
                   isLoading={sendNotification.isLoading}

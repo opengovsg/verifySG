@@ -22,8 +22,9 @@ const MessagePreview: React.FC<{ nric: string }> = ({ nric }) => {
   })
 
   return (
-    <Alert colorScheme={'gray'}>
+    <Alert colorScheme={'primary.200'}>
       <Box
+        fontSize={['sm', 'sm', 'md', 'md']}
         dangerouslySetInnerHTML={{
           __html: sanitizeHtml(messageContent, {
             allowedTags: ['b', 'u', 'br'],
