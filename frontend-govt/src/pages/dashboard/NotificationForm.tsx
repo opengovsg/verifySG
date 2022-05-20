@@ -72,7 +72,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   return (
     <HeaderContainer>
-      <VStack width={'100%'} maxWidth="500px" px={[3, 3, 4, 4]}>
+      <VStack
+        width={'100%'}
+        maxWidth="500px"
+        px={[3, 3, 4, 4]}
+        spacing={[5, 5, 6, 6]}
+      >
         <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Enter the details of the person you need to call
         </Heading>
