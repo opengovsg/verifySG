@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { Box, FormControl, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -72,10 +72,10 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   return (
     <HeaderContainer>
-      <VStack width={'100%'} maxWidth="500px" px={[2, 2, 4, 4]}>
-        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary">
+      <VStack width={'100%'} maxWidth="500px" px={[3, 3, 4, 4]}>
+        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Enter the details of the person you need to call
-        </Text>
+        </Heading>
         <InlineMessage
           variant="info"
           w="100%"
@@ -99,7 +99,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack spacing={[2, 2, 4, 4]} align="left">
+            <VStack spacing={[3, 3, 4, 4]} align="left">
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   NRIC / FIN
@@ -126,7 +126,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 )}
               </FormControl>
 
-              <VStack spacing={[2, 2, 4, 4]} align="left">
+              <VStack spacing={[3, 3, 4, 4]} align="left">
                 <Button
                   type="submit"
                   isLoading={sendNotification.isLoading}

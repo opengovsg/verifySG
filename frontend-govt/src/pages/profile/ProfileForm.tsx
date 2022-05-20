@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
-import { Box, FormControl, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, Text, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -69,13 +69,13 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     <HeaderContainer>
       <VStack
         width="100%"
-        px={[2, 2, 4, 4]}
-        spacing={[4, 4, 6, 6]}
+        px={[3, 3, 4, 4]}
+        spacing={[5, 5, 6, 6]}
         maxWidth="500px"
       >
-        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary">
+        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Fill in your details to create your caller profile
-        </Text>
+        </Heading>
         <InlineMessage
           variant="info"
           useMarkdown
@@ -97,7 +97,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack align="left" spacing={[2, 2, 4, 4]}>
+            <VStack align="left" spacing={[3, 3, 4, 4]}>
               <FormControl isDisabled>
                 <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
                   Your agency / organisation
