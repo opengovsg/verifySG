@@ -9,6 +9,7 @@ import { ThemeProvider } from '@opengovsg/design-system-react'
 
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
+import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'
 
@@ -19,7 +20,7 @@ export const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <BrowserRouter>
           <AuthProvider>
             <NotificationDataProvider>
