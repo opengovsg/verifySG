@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query'
 import { Alert, Box } from '@chakra-ui/react'
+import sanitizeHtml from 'sanitize-html'
 
 import { OfficerService } from '../../services/OfficerService'
 
@@ -22,7 +23,14 @@ const MessagePreview: React.FC<{ nric: string }> = ({ nric }) => {
 
   return (
     <Alert colorScheme={'gray'}>
-      <Box dangerouslySetInnerHTML={messageContent} />
+      <Box
+        dangerouslySetInnerHTML={{
+          __html: sanitizeHtml(messageContent, {
+            allowedTags: ['b', 'u', 'br'],
+            allowedAttributes: {},
+          }),
+        }}
+      />
     </Alert>
   )
 }
