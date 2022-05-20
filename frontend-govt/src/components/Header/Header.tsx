@@ -6,7 +6,7 @@ import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
 import { Tab } from '@opengovsg/design-system-react'
 
 import Logo from '../../assets/CheckWhoLogo.svg'
-import { PROFILE_ROUTE } from '../../constants/routes'
+import { NOTIFICATIONFORM_ROUTE, PROFILE_ROUTE } from '../../constants/routes'
 import { useAuth } from '../../contexts/auth/AuthContext'
 import { OfficerService } from '../../services/OfficerService'
 import Avatar from '../Avatar'
@@ -18,9 +18,13 @@ interface NavlinkProps {
 
 interface HeaderProps {
   navlinks?: Array<NavlinkProps>
+  navbarHeight: string
 }
 
-export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
+export const Header: React.FC<HeaderProps> = ({
+  navlinks,
+  navbarHeight = '8vh',
+}) => {
   const history = useHistory()
   const [officerName, setOfficerName] = useState<string | undefined>()
 
@@ -35,18 +39,20 @@ export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
 
   return (
     <Flex
-      h="72px"
+      h={navbarHeight}
       w="100vw"
       borderBottom="1px solid"
       borderBottomColor="#DADEE3"
       justifyContent="space-between"
       shrink={0}
-      px="56px"
+      px={['1.5em', '1.5em', '2em', '2em']}
     >
       {/** Left Cluster */}
       <HStack spacing="56px" align="center">
         {/* Logo */}
-        <Image src={Logo} w="150px" />
+        <Link key={'checkwho logo'} to={NOTIFICATIONFORM_ROUTE}>
+          <Image src={Logo} w="150px" />
+        </Link>
 
         {/* Tabs */}
         <Tabs>

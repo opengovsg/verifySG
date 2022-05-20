@@ -113,7 +113,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
           <FormErrorMessage children={getErrorMessage()} />
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
-          <Button size="lg" colorScheme="primary" type="submit">
+          <Button size="lg" bgColor="primary" type="submit">
             Log in
           </Button>
           <Button
