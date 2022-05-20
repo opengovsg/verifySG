@@ -22,7 +22,7 @@ const MessagePreview: React.FC<{ nric: string }> = ({ nric }) => {
 
   return (
     <Alert colorScheme={'gray'}>
-      <Box dangerouslySetInnerHTML={messageContent}></Box>
+      <Box dangerouslySetInnerHTML={messageContent} />
     </Alert>
   )
 }
