@@ -73,7 +73,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
   return (
     <HeaderContainer>
       <VStack width={'100%'} maxWidth="500px" px={[2, 2, 4, 4]}>
-        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary.700">
+        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary">
           Enter the details of the person you need to call
         </Text>
         <InlineMessage
@@ -131,7 +131,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   type="submit"
                   isLoading={sendNotification.isLoading}
                   loadingText="Notifying..."
-                  bgColor="primary.700"
+                  bgColor="primary"
                 >
                   Notify call recipient
                 </Button>

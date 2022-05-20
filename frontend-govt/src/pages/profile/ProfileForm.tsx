@@ -73,7 +73,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         spacing={[4, 4, 6, 6]}
         maxWidth="500px"
       >
-        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary.700">
+        <Text textStyle={['h3', 'h3', 'h2', 'h2']} color="primary">
           Fill in your details to create your caller profile
         </Text>
         <InlineMessage
@@ -138,7 +138,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                   <FormErrorMessage>{errors.position.message}</FormErrorMessage>
                 )}
               </FormControl>
-              <Button type="submit" bgColor={'primary.700'}>
+              <Button type="submit" bgColor={'primary'}>
                 Save
               </Button>
             </VStack>

@@ -24,7 +24,7 @@ export const WelcomePage: React.FC = () => {
         </VStack>
         <Image w="300px" h="300px" src={WelcomeSplash} />
         <Button
-          bgColor="primary.700"
+          bgColor="primary"
           leftIcon={<BiPlus size="24px" />}
           onClick={() => history.push(PROFILE_ROUTE)}
         >
