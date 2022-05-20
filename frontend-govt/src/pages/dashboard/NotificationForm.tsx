@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { Box, FormControl, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
