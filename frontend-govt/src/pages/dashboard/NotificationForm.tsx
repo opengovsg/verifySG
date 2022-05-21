@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { Box, FormControl, Heading, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -14,6 +14,7 @@ import {
 import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
+import MessagePreview from '../../components/MessagePreview'
 import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
 import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
 import { NotificationService } from '../../services/NotificationService'
@@ -132,6 +133,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
               </FormControl>
 
               <VStack spacing={[3, 3, 4, 4]} align="left">
+                <StackItem>
+                  <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                    Message Preview
+                  </FormLabel>
+                  <MessagePreview nric={watch('nric') ?? ''} />
+                </StackItem>
                 <Button
                   type="submit"
                   isLoading={sendNotification.isLoading}

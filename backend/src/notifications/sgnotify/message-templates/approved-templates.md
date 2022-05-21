@@ -9,6 +9,7 @@ Whenever SG-Notify team informs us of any changes to the message templates, we s
 ## Template Structure
 
 Each message template contains the following attributes:
+
 - Title (50 characters)
 - Short Message (100 characters)
 - Long Message (1000 characters)
@@ -18,6 +19,7 @@ Each message template contains the following attributes:
 ## List of Approved Templates
 
 The following templates have been approved by the CMG team:
+
 - `GOVTECH-CHECKWHO-GEN-01`: this is the generic template for notify MOPs _before_ phone calls.
 - `GOVTECH-CHECKWHO-GEN-02`: this is the generic template for notifying MOPs _during_ phone calls.
 - `GOVTECH-CHECKWHO-01`: this is the SPF police report-specific template.
@@ -28,12 +30,15 @@ Currently, the backend is only using the `GOVTECH-CHECKWHO-GEN-01` template as i
 ### Template ID: `GOVTECH-CHECKWHO-GEN-01`
 
 #### Title
+
 Upcoming Phone Call
 
 #### Short Message
+
 A public officer from &lt;agency&gt; will be calling you shortly.
 
 #### Long Message
+
 > Dear Sir/Madam <masked_NRIC>,
 >
 > <officer_name>, &lt;position&gt; at &lt;agency&gt; will be calling you shortly.
@@ -43,9 +48,11 @@ A public officer from &lt;agency&gt; will be calling you shortly.
 > <callback_details>
 
 #### HTML-enabled
+
 Yes
 
 #### Example API Call
+
 ```
 template_layout: [
   {
@@ -65,6 +72,7 @@ template_layout: [
 ```
 
 #### Screenshots
+
 <img src="./screenshots/generic-short-message.jpeg" alt='generic short message' width='500'>
 <br>
 <img src="./screenshots/generic-long-message.jpeg" alt='generic long message' width='500'>
@@ -72,12 +80,15 @@ template_layout: [
 ### Template ID: `GOVTECH-CHECKWHO-01`
 
 #### Title
+
 Upcoming Phone Call
 
 #### Short Message
+
 A police officer from SPF will be following up with your police report.
 
 #### Long Message
+
 > Dear Sir/Madam <masked_NRIC>,
 >
 > A police officer <officer_name>, &lt;position&gt; from the Singapore Police Force, will be calling you shortly. The purpose of the call is to follow up on a police report that you have lodged recently.
@@ -85,9 +96,11 @@ A police officer from SPF will be following up with your police report.
 > You may verify the caller's identity by asking for their name and designation, ensuring that it matches the information provided in this message.
 
 #### HTML-enabled
+
 Yes
 
 #### Example API Call
+
 ```
 template_layout: [
   {
@@ -102,6 +115,7 @@ template_layout: [
 ```
 
 #### Screenshots
+
 <img src="./screenshots/spf-short-message.jpeg" alt='spf short message' width='500'>
 <br>
 <img src="./screenshots/spf-long-message.jpeg" alt='spf long message' width='500'>
@@ -109,12 +123,15 @@ template_layout: [
 ### Template ID: `GOVTECH-CHECKWHO-GT-01`
 
 #### Title
+
 Upcoming Phone Call
 
 #### Short Message
+
 We would like to seek your feedback.
 
 #### Long Message
+
 > Dear Sir/Madam <masked_NRIC>,
 >
 > Thank you for agreeing to provide feedback on our products and services.
@@ -124,9 +141,11 @@ We would like to seek your feedback.
 > You may verify the caller's identity by asking for their name and designation, ensuring that it matches the information provided in this message.
 
 #### HTML-enabled
+
 Yes
 
 #### Example API Call
+
 ```
 template_layout: [
   {
@@ -141,6 +160,7 @@ template_layout: [
 ```
 
 #### Screenshots
+
 <img src="./screenshots/govtech-short-message.jpeg" alt='govtech short message' width='500'>
 <br>
 <img src="./screenshots/govtech-long-message.jpeg" alt='govtech long message' width='500'>
@@ -148,24 +168,29 @@ template_layout: [
 ### Template ID: `GOVTECH-CHECKWHO-GEN-02`
 
 #### Title
+
 Verify your phone call
 
 #### Short Message
+
 You are currently on a call with a public officer from <agency>
 
 #### Long Message
+
 ```
 Dear Sir/Madam <masked_nric>,
 
-This is to verify that you are currently speaking to <officer_name>, <position> from the <agency>.
+This is to verify that you are currently speaking to <officer_name>, <position> from <agency>.
 
 <call_details>
 ```
 
 #### HTML-enabled
+
 Yes
 
 #### Example API Call
+
 ```
 template_layout: [
   {
@@ -184,6 +209,7 @@ template_layout: [
 ```
 
 #### Screenshots
+
 TODO
 
 ## Copy below for new template
