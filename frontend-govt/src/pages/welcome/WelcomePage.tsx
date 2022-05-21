@@ -15,7 +15,7 @@ export const WelcomePage: React.FC = () => {
       <VStack mt="64px" spacing="32px">
         <VStack spacing="16px" maxW="460px">
           <Text textAlign="center" textStyle="h2" color="#1B3C87">
-            Welcome to your CheckWho dashboard!
+            Welcome to CheckWho!
           </Text>
           <Text textAlign="center" color="#2C3A4B">
             Start by creating your caller profile, so members of the public can
