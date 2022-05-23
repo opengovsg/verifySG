@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
-import { Box, FormControl, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,

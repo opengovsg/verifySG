@@ -15,7 +15,7 @@ interface FormFieldPrefill {
 }
 
 export const FeedbackForm: React.FC = () => {
-  const formLink = 'https://form.gov.sg/623d1734ae4ec70013f8a9f2'
+  const formLink = 'https://form.gov.sg/627a0dbe5fba010011ff832c'
   const nameFieldId = '623d285ee46e5c0012d70649'
   const positionFieldId = '623d286e012667001232b83f'
   const nricFieldId = '623d31820126670012345b40'
@@ -59,11 +59,11 @@ export const FeedbackForm: React.FC = () => {
     },
   })
 
-  const returnToDashboard = () => {
+  const returnToNotificationForm = () => {
     // clear nric in notificationDataContext
     setTargetNRIC(undefined)
 
-    // redirect to call dashboard
+    // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)
   }
 
@@ -80,7 +80,9 @@ export const FeedbackForm: React.FC = () => {
           <iframe height="608px" width="912px" src={embedLink} />
           {/*<embed height="608px" width="912px" src={embedLink} />*/}
         </VStack>
-        <Button onClick={returnToDashboard}>Send another notification</Button>
+        <Button onClick={returnToNotificationForm}>
+          Send another notification
+        </Button>
       </VStack>
     </HeaderContainer>
   )
