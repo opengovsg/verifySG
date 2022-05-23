@@ -131,26 +131,23 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
                 )}
               </FormControl>
-
-              <VStack spacing={[3, 3, 4, 4]} align="left">
-                <StackItem>
-                  <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                    Message Preview
-                  </FormLabel>
-                  <MessagePreview nric={watch('nric') ?? ''} />
-                </StackItem>
-                <Button
-                  type="submit"
-                  isLoading={sendNotification.isLoading}
-                  loadingText="Notifying..."
-                  bgColor="primary"
-                >
-                  Notify call recipient
-                </Button>
-                <Button variant="link" onClick={() => reset()} type="reset">
-                  Clear details
-                </Button>
-              </VStack>
+              <StackItem>
+                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                  Message Preview
+                </FormLabel>
+                <MessagePreview nric={watch('nric') ?? ''} />
+              </StackItem>
+              <Button
+                type="submit"
+                isLoading={sendNotification.isLoading}
+                loadingText="Notifying..."
+                bgColor="primary"
+              >
+                Notify call recipient
+              </Button>
+              <Button variant="link" onClick={() => reset()} type="reset">
+                Clear details
+              </Button>
             </VStack>
           </form>
         </Box>
