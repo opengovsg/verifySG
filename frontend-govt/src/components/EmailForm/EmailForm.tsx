@@ -50,7 +50,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
     <form onSubmit={handleSubmit(submissionHandler)}>
       <VStack spacing={8} align="stretch">
         <FormControl id="email" isInvalid={hasError()}>
-          <FormLabel isRequired>Login</FormLabel>
+          <FormLabel isRequired>Email</FormLabel>
           <Text color="neutral.700" mb={3}>
             For use by public officers with a <strong>.gov.sg</strong> email{' '}
             address
