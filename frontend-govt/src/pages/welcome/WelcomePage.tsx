@@ -15,7 +15,7 @@ export const WelcomePage: React.FC = () => {
       <VStack mt="64px" spacing="32px">
         <VStack spacing="16px" maxW="460px">
           <Text textAlign="center" textStyle="h2" color="#1B3C87">
-            Welcome to your CheckWho dashboard!
+            Welcome to CheckWho!
           </Text>
           <Text textAlign="center" color="#2C3A4B">
             Start by creating your caller profile, so members of the public can
@@ -24,7 +24,7 @@ export const WelcomePage: React.FC = () => {
         </VStack>
         <Image w="300px" h="300px" src={WelcomeSplash} />
         <Button
-          bg="#1B3C87"
+          bgColor="primary"
           leftIcon={<BiPlus size="24px" />}
           onClick={() => history.push(PROFILE_ROUTE)}
         >

@@ -11,8 +11,8 @@ import {
   ROOT_ROUTE,
   WELCOME_ROUTE,
 } from '../constants/routes'
-import NotificationForm from '../pages/dashboard'
 import FeedbackForm from '../pages/feedback'
+import NotificationForm from '../pages/notification'
 import ProfileForm from '../pages/profile'
 import WelcomePage from '../pages/welcome'
 

@@ -3,16 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import {
-  SGNotifyMessageTemplateId,
   Notification,
   NotificationType,
-  SGNotifyNotificationStatus,
   ModalityParams,
 } from 'database/entities'
-import { GetNotificationDto, SendNotificationDto } from './dto'
+import { SendNotificationResponseDto, SendNotificationDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
 import {
-  maskNric,
+  generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import { SGNotifyService } from './sgnotify/sgnotify.service'
@@ -52,25 +50,14 @@ export class NotificationsService {
       notificationType: NotificationType.SGNOTIFY,
       recipientId: nric,
       callScope,
-      // TODO: process different message templates programmatically (part 1/2)
-      modalityParams: {
-        agencyLogoUrl: logoUrl,
-        senderName: agencyName,
-        title: 'Upcoming Phone Call',
-        uin: nric,
-        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
-        templateId: SGNotifyMessageTemplateId.GENERIC_PHONE_CALL,
-        sgNotifyLongMessageParams: {
-          agency: agencyShortName,
-          officer_name: officer.name,
-          position: officer.position,
-          masked_nric: `(${maskNric(nric)})`,
-          call_details:
-            'This call will be made in the next 10 minutes. Please verify the person calling you is indeed a public officer using the name and position provided in this message.',
-          callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
-          status: SGNotifyNotificationStatus.NOT_SENT,
-        },
-      },
+      modalityParams: generateNewSGNotifyParams(
+        logoUrl,
+        agencyName,
+        nric,
+        agencyShortName,
+        officer.name,
+        officer.position,
+      ),
     })
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,
@@ -113,7 +100,7 @@ export class NotificationsService {
   async sendNotification(
     officerId: number,
     body: SendNotificationDto,
-  ): Promise<GetNotificationDto> {
+  ): Promise<SendNotificationResponseDto> {
     const inserted = await this.createNotification(officerId, body)
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
@@ -126,7 +113,7 @@ export class NotificationsService {
     return this.mapToDto(updated)
   }
 
-  mapToDto(notification: Notification): GetNotificationDto {
+  mapToDto(notification: Notification): SendNotificationResponseDto {
     const { id, officer, createdAt, callScope } = notification
     return {
       id,

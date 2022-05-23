@@ -1,10 +1,10 @@
-import { NotificationDto, sendNotificationDto } from '../types'
+import { SendNotificationDto, SendNotificationResponseDto } from '../types'
 
 import { ApiService } from './ApiService'
 
 const sendNotification = async (
-  notificationDetails: sendNotificationDto,
-): Promise<NotificationDto> => {
+  notificationDetails: SendNotificationDto,
+): Promise<SendNotificationResponseDto> => {
   return ApiService.post('/notifications', notificationDetails).then(
     (res) => res.data,
   )

@@ -108,11 +108,12 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
             })}
             autoComplete="one-time-code"
             placeholder="e.g. 111111"
+            autoFocus
           />
           <FormErrorMessage children={getErrorMessage()} />
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
-          <Button size="lg" colorScheme="primary" type="submit">
+          <Button size="lg" bgColor="primary" type="submit">
             Log in
           </Button>
           <Button

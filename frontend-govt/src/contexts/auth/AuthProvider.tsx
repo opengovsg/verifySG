@@ -18,8 +18,10 @@ export const AuthProvider = ({ children }: AuthProps) => {
 
   const getOfficer = async (): Promise<void> => {
     const retrievedOfficer = await AuthService.whoAmI()
-    setIsAuthenticated(!!retrievedOfficer)
-    if (retrievedOfficer) setOfficer(retrievedOfficer.email)
+    if ('email' in retrievedOfficer) {
+      setOfficer(retrievedOfficer.email)
+      setIsAuthenticated(true)
+    }
   }
 
   useEffect(() => {

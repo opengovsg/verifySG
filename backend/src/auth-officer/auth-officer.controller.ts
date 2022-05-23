@@ -9,13 +9,13 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common'
-import { OfficerDto } from 'officers/dto'
+import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService } from 'core/providers'
 import { Logger } from 'core/providers'
 import { Request, Response } from 'express'
 
-import { OtpAuthVerify } from './dto/otp-auth-verify'
+import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from 'officers/officers.service'
 
@@ -42,7 +42,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpAuthVerify,
+    @Body() body: OtpAuthVerifyDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, token } = body
@@ -56,10 +56,10 @@ export class AuthOfficerController {
   }
 
   @Get('whoami')
-  async whoami(
-    @OfficerId() officerId: number,
-  ): Promise<OfficerDto | undefined> {
-    if (!officerId) throw new BadRequestException('No logged in officer')
+  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiDto> {
+    if (!officerId) {
+      return { message: 'No logged in officer' }
+    }
     const officer = await this.officersService.findById(officerId)
     if (!officer) {
       throw new NotFoundException('No officer with this officer ID found')

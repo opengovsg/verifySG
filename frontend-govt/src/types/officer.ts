@@ -1,5 +1,6 @@
 import { AgencyDto } from './agency'
 
+// TODO: refactor Officer DTOs into shared types (1/3)
 export type OfficerDto = {
   id: number
   name?: string

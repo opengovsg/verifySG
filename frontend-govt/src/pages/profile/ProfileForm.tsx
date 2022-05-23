@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
-import { FormControl, Text, VStack } from '@chakra-ui/react'
+import { Box, FormControl, Heading, VStack } from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -67,14 +67,19 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
 
   return (
     <HeaderContainer>
-      <VStack mt="64px" spacing="32px">
-        <Text textStyle="h2" color="#1B3C87">
+      <VStack
+        width="100%"
+        px={[3, 3, 4, 4]}
+        spacing={[5, 5, 6, 6]}
+        maxWidth="500px"
+      >
+        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Fill in your details to create your caller profile
-        </Text>
+        </Heading>
         <InlineMessage
           variant="info"
-          w="440px"
           useMarkdown
+          fontSize={['sm', 'sm', 'md', 'md']}
           // override internal theme style
           //TODO: shift these into theme folder for cleanup refactor
           sx={{
@@ -83,46 +88,62 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
             p: '1rem',
             justifyContent: 'start',
             color: 'secondary.700',
-            bg: '#EBEFFE',
+            bg: 'primary.200',
           }}
         >
           Your **name**, **position**, and **agency** will be visible to the
           member of the public when they receive a notification that you will be
           calling them.
         </InlineMessage>
-        <form onSubmit={handleSubmit(submissionHandler)}>
-          <VStack spacing="32px" w="448px">
-            <FormControl isDisabled>
-              <FormLabel isRequired>Your agency / organisation</FormLabel>
-              <Input placeholder={profile?.agency.name} />
-            </FormControl>
-            <FormControl isInvalid={!!errors.name}>
-              <FormLabel isRequired>Your name</FormLabel>
-              <Input
-                {...register('name', {
-                  required: 'Please enter a valid name',
-                })}
-                placeholder="e.g. Alex Tan"
-              />
-              {errors.name && (
-                <FormErrorMessage>{errors.name.message}</FormErrorMessage>
-              )}
-            </FormControl>
-            <FormControl isInvalid={!!errors.position}>
-              <FormLabel isRequired>Your position</FormLabel>
-              <Input
-                {...register('position', {
-                  required: 'Please enter a valid position',
-                })}
-                placeholder="e.g. Senior Manager"
-              />
-              {errors.position && (
-                <FormErrorMessage>{errors.position.message}</FormErrorMessage>
-              )}
-            </FormControl>
-            <Button type="submit">Save</Button>
-          </VStack>
-        </form>
+        <Box width="100%">
+          <form onSubmit={handleSubmit(submissionHandler)}>
+            <VStack align="left" spacing={[3, 3, 4, 4]}>
+              <FormControl isDisabled>
+                <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
+                  Your agency / organisation
+                </FormLabel>
+                <Input placeholder={profile?.agency.name} />
+              </FormControl>
+              <FormControl isInvalid={!!errors.name}>
+                <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
+                  Your name
+                </FormLabel>
+                <Input
+                  {...register('name', {
+                    required: 'Please enter a valid name',
+                    pattern: {
+                      value: /^[A-Za-z ,.'-]+$/, // name validation
+                      message: 'Please enter a valid name',
+                    },
+                  })}
+                  placeholder="e.g. Benjamin Tan"
+                />
+                {errors.name && (
+                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
+                )}
+              </FormControl>
+              <FormControl isInvalid={!!errors.position}>
+                <FormLabel isRequired>Your position</FormLabel>
+                <Input
+                  {...register('position', {
+                    required: 'Please enter a valid position',
+                    pattern: {
+                      value: /^[\x00-\x7F]+$/, // ASCII validation
+                      message: 'Please enter a valid position',
+                    },
+                  })}
+                  placeholder="e.g. Senior Manager"
+                />
+                {errors.position && (
+                  <FormErrorMessage>{errors.position.message}</FormErrorMessage>
+                )}
+              </FormControl>
+              <Button type="submit" bgColor={'primary'}>
+                Save
+              </Button>
+            </VStack>
+          </form>
+        </Box>
       </VStack>
     </HeaderContainer>
   )
