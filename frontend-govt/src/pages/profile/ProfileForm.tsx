@@ -70,8 +70,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
       <VStack
         width="100%"
         px={[3, 3, 4, 4]}
-        spacing={[5, 5, 6, 6]}
+        spacing={[4, 4, 8, 8]}
         maxWidth="500px"
+        pb={20}
       >
         <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Fill in your details to create your caller profile
@@ -97,7 +98,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack align="left" spacing={[3, 3, 4, 4]}>
+            <VStack align="left" spacing={[4, 4, 8, 8]}>
               <FormControl isDisabled>
                 <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
                   Your agency / organisation

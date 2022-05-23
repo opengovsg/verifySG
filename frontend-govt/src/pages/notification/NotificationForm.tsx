@@ -77,7 +77,8 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         width={'100%'}
         maxWidth="500px"
         px={[3, 3, 4, 4]}
-        spacing={[5, 5, 6, 6]}
+        spacing={[4, 4, 8, 8]}
+        pb={20}
       >
         <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
           Enter the details of the person you need to call
@@ -105,7 +106,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack spacing={[3, 3, 4, 4]} align="left">
+            <VStack align="left" spacing={[4, 4, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   NRIC / FIN
