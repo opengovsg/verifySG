@@ -8,7 +8,7 @@ export const generateRandomSixDigitNumber = (): string => {
     .join('')
 }
 
-export const generateOtpWitHash = (
+export const generateOtpAndHash = (
   saltRounds: number,
 ): { otp: string; hash: string } => {
   const otp = generateRandomSixDigitNumber()
