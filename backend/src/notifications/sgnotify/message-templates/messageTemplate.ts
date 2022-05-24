@@ -42,7 +42,7 @@ export const generateNewSGNotifyParams = (
   officerPosition: string,
 ): SGNotifyParams => {
   // TODO: generalise this to support (1) different use cases (2) different notifications (before + during phone call)
-  switch (agencyShortName) {
+  switch (agencyShortName.toUpperCase()) {
     case 'SPF':
       return {
         agencyLogoUrl,
@@ -90,7 +90,7 @@ export const generateCallDetailsNotifyBeforeCall = (
 ): string => {
   const standardClosing =
     "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
-  switch (agencyId) {
+  switch (agencyId.toUpperCase()) {
     case 'SPF':
       return `The purpose of the call is to follow up on a police report that you have lodged recently.
       <br><br>
@@ -107,7 +107,7 @@ export const generateCallDetailsNotifyBeforeCall = (
 export const generateCallDetailsNotifyDuringCall = (
   agencyId: string,
 ): string => {
-  switch (agencyId) {
+  switch (agencyId.toUpperCase()) {
     case 'SPF':
       return 'The purpose of this call is to follow up on a police report that you have lodged recently.'
     default:

@@ -1,9 +1,9 @@
-import { Injectable, LoggerService } from '@nestjs/common'
+import { Injectable, LoggerService, Scope } from '@nestjs/common'
 import winston from 'winston'
 
 import { ConfigService } from './config.service'
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class Logger implements LoggerService {
   private logger: winston.Logger
 
@@ -21,6 +21,10 @@ export class Logger implements LoggerService {
       ),
       transports: [new winston.transports.Console()],
     })
+  }
+
+  setContext(context: string): void {
+    this.logger.defaultMeta = { ...this.logger.defaultMeta, context }
   }
 
   /**

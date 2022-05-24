@@ -12,6 +12,7 @@ export class MailerService {
 
   constructor(private configService: ConfigService, private logger: Logger) {
     this.config = this.configService.get('postman')
+    this.logger.setContext(MailerService.name)
   }
 
   sendMail = async (body: string, recipient: string): Promise<void> => {

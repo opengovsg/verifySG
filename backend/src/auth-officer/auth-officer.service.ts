@@ -18,7 +18,9 @@ export class AuthOfficerService {
     private agencyService: AgenciesService,
     private otpService: OtpService,
     private logger: Logger,
-  ) {}
+  ) {
+    this.logger.setContext(AuthOfficerService.name)
+  }
 
   async sendOTP(email: string): Promise<void> {
     // check email whitelist

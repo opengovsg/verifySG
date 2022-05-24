@@ -9,10 +9,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   })
-  app.useLogger(app.get(Logger))
 
   app.set('trust proxy', 1)
   const config = app.get(ConfigService)
+  app.useLogger(new Logger(config))
   app.enableCors({
     origin: [config.get('frontendUrls.frontendGovtBase')],
     credentials: true,

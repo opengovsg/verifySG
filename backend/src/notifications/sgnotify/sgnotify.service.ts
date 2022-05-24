@@ -40,6 +40,7 @@ export class SGNotifyService {
 
   constructor(private configService: ConfigService, private logger: Logger) {
     this.config = this.configService.get('sgNotify')
+    this.logger.setContext(SGNotifyService.name)
   }
 
   async initialize(): Promise<void> {
