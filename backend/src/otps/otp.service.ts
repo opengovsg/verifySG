@@ -88,8 +88,10 @@ export class OtpService {
     if (expiredAt.getTime() < Date.now()) {
       return VerificationResult.OTP_EXPIRED
     }
-    if (numOfAttempts >= this.config.numAllowedAttempts)
+    if (numOfAttempts >= this.config.numAllowedAttempts) {
+      await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
       return VerificationResult.MAX_ATTEMPTS_REACHED
+    }
     await this.incrementAttemptCount(id)
     const isValid = verifyOtpWithHash(otp, hash)
     if (!isValid) return VerificationResult.INCORRECT_OTP
