@@ -55,7 +55,7 @@ export class AuthOfficerController {
         return
       }
       // not sure whether to log additional info for failed verification
-      case OTPVerificationResult.OTP_EXPIRED: {
+      case OTPVerificationResult.EXPIRED_OTP: {
         this.logger.warn(`Unexpired OTP not found for email ${email}`)
         throw new UnauthorizedException(
           'This OTP has expired. Please request a new OTP.',
