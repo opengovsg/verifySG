@@ -1,15 +1,16 @@
 /**
  * OTP entity
- * @officer one officer can receive multiple OTPs
- * @recipientId allow us to identify who was the recipient of the notification; currently NRIC only; could be phone number in future
- * @status currently tracks whether given notification has been sent (enum for possible extension); SGNotify-specific statuses tracked in SGNotifyNotification
- * @callScope optional field for officer to track what call is about; currently merely recorded in database and not shown to MOP/officer on frontend (for future extension)
- * @modalityParams column to track modality-specific params (only SGNotify params for now; to support WhatsApp in future)
+ * @email user provided .gov.sg email to log in; precedes account creation, therefore not linked to Officer
+ * @hash hash of the OTP
+ * @numOfAttempts keep track and limit number of attempts per OTP
+ * @expiredAt when the OTP expires
+ * @createdAt when the OTP is created
+ * @updatedAt when the OTP is updated (currently only when numOfAttempts is incremented)
+ * no deletedAt as OTPs that are successfully logged in are hard deleted
  */
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,7 +38,4 @@ export class OTP {
 
   @UpdateDateColumn()
   updatedAt: Date
-
-  @DeleteDateColumn()
-  deletedAt: Date
 }
