@@ -79,7 +79,7 @@ export class OtpService {
     if (!otpFromDb) {
       this.logger.warn(
         // feel like we should log the IP address of the caller and potentially block it?
-        `Unable to find OTP corresponding to email '${email}'. This suggests API call is made from frontend.`,
+        `Unable to find OTP corresponding to email '${email}'. This suggests API call is NOT made from frontend.`,
       )
       // strictly not correct, but we don't want to expose this to frontend
       return OTPVerificationResult.INCORRECT_OTP
