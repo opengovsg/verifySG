@@ -30,6 +30,10 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.2"
   },
+  "engines" : {
+    "npm" : "^6.14.15",
+    "node" : "^14.18.0"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
