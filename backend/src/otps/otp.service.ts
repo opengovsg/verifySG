@@ -93,7 +93,8 @@ export class OtpService {
     await this.incrementAttemptCount(id)
     const isValid = verifyOtpWithHash(otp, hash)
     if (!isValid) return VerificationResult.INCORRECT_OTP
-    await this.otpRepository.delete(id) // delete OTP from db after verification to prevent reuse
+    // OTP is valid, hard delete OTP from db after verification to prevent reuse
+    await this.otpRepository.delete(id)
     return VerificationResult.SUCCESS
   }
 }
