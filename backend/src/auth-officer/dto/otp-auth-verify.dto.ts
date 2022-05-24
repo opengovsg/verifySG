@@ -1,5 +1,7 @@
 import { IsDefined, IsString } from 'class-validator'
 
+import { IsGovtEmail } from '../../common/decorators'
+
 export class OtpAuthVerifyDto {
   @IsDefined()
   @IsString()
@@ -7,5 +9,6 @@ export class OtpAuthVerifyDto {
 
   @IsDefined()
   @IsString()
+  @IsGovtEmail()
   email: string
 }

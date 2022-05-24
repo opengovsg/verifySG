@@ -7,7 +7,7 @@
  */
 export function normalizeEmail(email: string): string {
   const normalizedEmail = email.toLowerCase().trim()
-  // TODO: refactor regexp into shared directory (2/2)
+  // TODO: refactor regexp into shared directory (2/3)
   if (
     !normalizedEmail.match(
       "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
