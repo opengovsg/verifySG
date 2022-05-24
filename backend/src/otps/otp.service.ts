@@ -14,9 +14,9 @@ import { Repository } from 'typeorm'
 
 export enum OTPVerificationResult {
   SUCCESS = 'success',
-  OTP_EXPIRED = 'otp expired',
-  MAX_ATTEMPTS_REACHED = 'max attempts reached',
   INCORRECT_OTP = 'incorrect otp',
+  EXPIRED_OTP = 'expired otp',
+  MAX_ATTEMPTS_REACHED = 'max attempts reached',
 }
 
 @Injectable()
@@ -86,7 +86,7 @@ export class OtpService {
     }
     const { id, expiredAt, hash, numOfAttempts } = otpFromDb
     if (expiredAt.getTime() < Date.now()) {
-      return OTPVerificationResult.OTP_EXPIRED
+      return OTPVerificationResult.EXPIRED_OTP
     }
     if (numOfAttempts >= this.config.numAllowedAttempts) {
       await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
