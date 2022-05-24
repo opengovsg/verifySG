@@ -3,7 +3,7 @@ import { IsDefined, IsString } from 'class-validator'
 export class OtpAuthVerifyDto {
   @IsDefined()
   @IsString()
-  token: string
+  otp: string
 
   @IsDefined()
   @IsString()

@@ -17,7 +17,7 @@ interface OTPFormProps {
 }
 
 interface OTPFormData {
-  token: string
+  otp: string
 }
 
 // controls the OTP resend cooldown time
@@ -77,15 +77,15 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   })
 
   const submissionHandler = (data: OTPFormData) => {
-    const { token } = data
-    verifyOtp.mutate({ email, token })
+    const { otp } = data
+    verifyOtp.mutate({ email, otp })
   }
   const triggerSubmit = handleSubmit(submissionHandler)
 
   // error handler stubs
-  const hasError = (): boolean => !!errors.token || verifyOtp.isError
+  const hasError = (): boolean => !!errors.otp || verifyOtp.isError
   const getErrorMessage = (): string => {
-    return errors && errors.token
+    return errors && errors.otp
       ? 'Please provide a valid OTP'
       : `${verifyOtp.error}`
   }
@@ -93,14 +93,14 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   return (
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
-        <FormControl id="token" isInvalid={hasError()}>
+        <FormControl id="otp" isInvalid={hasError()}>
           <FormLabel isRequired>One time password</FormLabel>
           <Text color="neutral.700" mb={3}>
             Please enter the OTP sent to <strong>{email}</strong>
           </Text>
           <Input
             h="48px"
-            {...register('token', {
+            {...register('otp', {
               required: true,
               minLength: 6,
               maxLength: 6,
