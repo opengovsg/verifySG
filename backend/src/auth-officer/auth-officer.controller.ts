@@ -57,20 +57,24 @@ export class AuthOfficerController {
       // not sure whether to log additional info for failed verification
       case VerificationResult.OTP_EXPIRED: {
         this.logger.warn(`Unexpired OTP not found for email ${email}`)
-        throw new UnauthorizedException('Your OTP may have expired.')
+        throw new UnauthorizedException(
+          'This OTP has expired. Please request a new OTP.',
+        )
       }
       case VerificationResult.MAX_ATTEMPTS_REACHED: {
         this.logger.warn(`Max OTP attempt reached for ${email}`)
         throw new UnauthorizedException(
-          'You have reached the maximum number of attempts.',
+          'Incorrect OTP given too many times. Please try again later.',
         )
       }
       case VerificationResult.INCORRECT_OTP: {
         this.logger.warn(`Incorrect OTP given for ${email}`)
-        throw new UnauthorizedException('Incorrect OTP given')
+        throw new UnauthorizedException(
+          'Incorrect OTP given. Please try again.',
+        )
       }
       default:
-        throw new Error('Unhandled verification result')
+        throw new Error('Unhandled verification result') // should never happen
     }
   }
 
