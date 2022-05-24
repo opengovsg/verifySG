@@ -5,7 +5,7 @@ import { ConfigSchema } from 'core/config.schema'
 import { normalizeEmail } from '../common/utils'
 import {
   convertMillisecondsToMinutes,
-  generateOtpWitHash,
+  generateOtpAndHash,
   verifyOtpWithHash,
 } from './utils'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -59,7 +59,7 @@ export class OtpService {
   ): Promise<{ otp: string; timeLeftMinutes: string }> {
     email = normalizeEmail(email)
     const { expiryPeriod, numSaltRounds } = this.config
-    const { otp, hash } = generateOtpWitHash(numSaltRounds)
+    const { otp, hash } = generateOtpAndHash(numSaltRounds)
     const otpToAdd = this.otpRepository.create({
       email,
       hash,
