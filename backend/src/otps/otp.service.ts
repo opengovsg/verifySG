@@ -59,7 +59,7 @@ export class OtpService {
   ): Promise<{ otp: string; timeLeftMinutes: string }> {
     email = normalizeEmail(email)
     const { expiryPeriod, numSaltRounds } = this.config
-    const { otp, hash } = generateOtpAndHash(numSaltRounds)
+    const { otp, hash } = await generateOtpAndHash(numSaltRounds)
     const otpToAdd = this.otpRepository.create({
       email,
       hash,

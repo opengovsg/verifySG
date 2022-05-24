@@ -8,16 +8,19 @@ export const generateRandomSixDigitNumber = (): string => {
     .join('')
 }
 
-export const generateOtpAndHash = (
+export const generateOtpAndHash = async (
   saltRounds: number,
-): { otp: string; hash: string } => {
+): Promise<{ otp: string; hash: string }> => {
   const otp = generateRandomSixDigitNumber()
-  const hash = bcrypt.hashSync(otp, saltRounds)
+  const hash = await bcrypt.hash(otp, saltRounds)
   return { otp, hash }
 }
 
-export const verifyOtpWithHash = (otp: string, hash: string): boolean => {
-  return bcrypt.compareSync(otp, hash)
+export const verifyOtpWithHash = async (
+  otp: string,
+  hash: string,
+): Promise<boolean> => {
+  return await bcrypt.compare(otp, hash)
 }
 
 export const convertMillisecondsToMinutes = (milliseconds: number): number => {
