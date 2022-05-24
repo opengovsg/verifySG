@@ -17,7 +17,7 @@ import { Request, Response } from 'express'
 import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from 'officers/officers.service'
-import { OtpService, VerificationResult } from '../otps/otp.service'
+import { OtpService, OTPVerificationResult } from '../otps/otp.service'
 
 @Controller('auth-officers')
 export class AuthOfficerController {
@@ -49,25 +49,25 @@ export class AuthOfficerController {
     const { email, otp } = body
     const verificationResult = await this.otpService.verifyOtp(email, otp)
     switch (verificationResult) {
-      case VerificationResult.SUCCESS: {
+      case OTPVerificationResult.SUCCESS: {
         const officer = await this.officersService.findOrInsert({ email })
         req.session.officerId = officer.id
         return
       }
       // not sure whether to log additional info for failed verification
-      case VerificationResult.OTP_EXPIRED: {
+      case OTPVerificationResult.OTP_EXPIRED: {
         this.logger.warn(`Unexpired OTP not found for email ${email}`)
         throw new UnauthorizedException(
           'This OTP has expired. Please request a new OTP.',
         )
       }
-      case VerificationResult.MAX_ATTEMPTS_REACHED: {
+      case OTPVerificationResult.MAX_ATTEMPTS_REACHED: {
         this.logger.warn(`Max OTP attempt reached for ${email}`)
         throw new UnauthorizedException(
           'Incorrect OTP given too many times. Please try again later.',
         )
       }
-      case VerificationResult.INCORRECT_OTP: {
+      case OTPVerificationResult.INCORRECT_OTP: {
         this.logger.warn(`Incorrect OTP given for ${email}`)
         throw new UnauthorizedException(
           'Incorrect OTP given. Please try again.',

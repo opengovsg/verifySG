@@ -12,9 +12,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { OTP } from '../database/entities'
 import { Repository } from 'typeorm'
 
-export enum VerificationResult {
+export enum OTPVerificationResult {
   SUCCESS = 'success',
-  OTP_EXPIRED = 'otp may have expired',
+  OTP_EXPIRED = 'otp expired',
   MAX_ATTEMPTS_REACHED = 'max attempts reached',
   INCORRECT_OTP = 'incorrect otp',
 }
@@ -73,7 +73,7 @@ export class OtpService {
     }
   }
 
-  async verifyOtp(email: string, otp: string): Promise<VerificationResult> {
+  async verifyOtp(email: string, otp: string): Promise<OTPVerificationResult> {
     email = normalizeEmail(email)
     const otpFromDb = await this.findOTPByEmail(email)
     if (!otpFromDb) {
@@ -82,21 +82,21 @@ export class OtpService {
         `Unable to find OTP corresponding to email '${email}'. This suggests API call is made from frontend.`,
       )
       // strictly not correct, but we don't want to expose this to frontend
-      return VerificationResult.INCORRECT_OTP
+      return OTPVerificationResult.INCORRECT_OTP
     }
     const { id, expiredAt, hash, numOfAttempts } = otpFromDb
     if (expiredAt.getTime() < Date.now()) {
-      return VerificationResult.OTP_EXPIRED
+      return OTPVerificationResult.OTP_EXPIRED
     }
     if (numOfAttempts >= this.config.numAllowedAttempts) {
       await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
-      return VerificationResult.MAX_ATTEMPTS_REACHED
+      return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)
     const isValid = verifyOtpWithHash(otp, hash)
-    if (!isValid) return VerificationResult.INCORRECT_OTP
+    if (!isValid) return OTPVerificationResult.INCORRECT_OTP
     // OTP is valid, hard delete OTP from db after verification to prevent reuse
     await this.otpRepository.delete(id)
-    return VerificationResult.SUCCESS
+    return OTPVerificationResult.SUCCESS
   }
 }
