@@ -12,6 +12,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { OTP } from '../database/entities'
 import { Repository } from 'typeorm'
 
+const POSTGRES_MAX_SMALLINT = 32767
+
 export enum OTPVerificationResult {
   SUCCESS = 'success',
   INCORRECT_OTP = 'incorrect otp',
@@ -89,7 +91,8 @@ export class OtpService {
       return OTPVerificationResult.EXPIRED_OTP
     }
     if (numOfAttempts >= this.config.numAllowedAttempts) {
-      await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
+      if (numOfAttempts < POSTGRES_MAX_SMALLINT)
+        await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
       return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)
