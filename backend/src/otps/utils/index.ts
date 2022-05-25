@@ -1,1 +1,1 @@
-export * from './generate-and-verify-otp'
+export * from './otp-utils'

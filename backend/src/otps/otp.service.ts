@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 import { ConfigService, Logger } from 'core/providers'
 import { ConfigSchema } from 'core/config.schema'
-import { normalizeEmail } from '../common/utils'
-import {
-  convertMillisecondsToMinutes,
-  generateOtpAndHash,
-  verifyOtpWithHash,
-} from './utils'
-import { InjectRepository } from '@nestjs/typeorm'
 import { OTP } from '../database/entities'
-import { Repository } from 'typeorm'
+import { normalizeEmail, convertMillisecondsToMinutes } from '../common/utils'
+import { otpUtils } from './utils'
 
 const POSTGRES_MAX_SMALLINT = 32767
 
@@ -61,7 +57,7 @@ export class OtpService {
   ): Promise<{ otp: string; timeLeftMinutes: string }> {
     email = normalizeEmail(email)
     const { expiryPeriod, numSaltRounds } = this.config
-    const { otp, hash } = await generateOtpAndHash(numSaltRounds)
+    const { otp, hash } = await otpUtils.generateOtpAndHash(numSaltRounds)
     const otpToAdd = this.otpRepository.create({
       email,
       hash,
@@ -96,7 +92,7 @@ export class OtpService {
       return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)
-    const isValid = verifyOtpWithHash(otp, hash)
+    const isValid = otpUtils.verifyOtpWithHash(otp, hash)
     if (!isValid) return OTPVerificationResult.INCORRECT_OTP
     // OTP is valid, hard delete OTP from db after verification to prevent reuse
     await this.otpRepository.delete(id)
