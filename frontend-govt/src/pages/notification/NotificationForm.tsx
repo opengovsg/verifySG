@@ -110,7 +110,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack align="left" spacing={[4, 4, 8, 8]}>
+            <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   NRIC / FIN

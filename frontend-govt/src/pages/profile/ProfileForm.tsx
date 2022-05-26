@@ -102,7 +102,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack align="left" spacing={[4, 4, 8, 8]}>
+            <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isDisabled>
                 <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
                   Your agency / organisation
