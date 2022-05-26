@@ -54,8 +54,8 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             Email
           </FormLabel>
           <Text color="neutral.700" mb={3}>
-            For use by public officers with a <strong>.gov.sg</strong> email{' '}
-            address
+            Only whitelisted <strong>gov.sg</strong> emails can log in while
+            this product is in beta. Please contact us for access.
           </Text>
           <Input
             {...register('email', {
@@ -82,7 +82,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             bgColor="primary"
             type="submit"
           >
-            Log in
+            Get OTP
           </Button>
         </Box>
       </VStack>
