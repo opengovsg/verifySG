@@ -80,7 +80,7 @@ export const FeedbackForm: React.FC = () => {
           <iframe height="608px" width="912px" src={embedLink} />
           {/*<embed height="608px" width="912px" src={embedLink} />*/}
         </VStack>
-        <Button onClick={returnToNotificationForm}>
+        <Button size="auto" onClick={returnToNotificationForm}>
           Send another notification
         </Button>
       </VStack>

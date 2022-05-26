@@ -76,12 +76,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
           )}
         </FormControl>
         <Box>
-          <Button
-            isLoading={sendOtp.isLoading}
-            size="lg"
-            bgColor="primary"
-            type="submit"
-          >
+          <Button isLoading={sendOtp.isLoading} type="submit">
             Get OTP
           </Button>
         </Box>

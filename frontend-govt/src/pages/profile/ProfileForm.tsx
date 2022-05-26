@@ -143,7 +143,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                   <FormErrorMessage>{errors.position.message}</FormErrorMessage>
                 )}
               </FormControl>
-              <Button type="submit" bgColor={'primary'}>
+              <Button type="submit" width="100%" bgColor={'primary'}>
                 Save
               </Button>
             </VStack>

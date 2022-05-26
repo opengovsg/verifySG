@@ -142,17 +142,26 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                 </FormLabel>
                 <MessagePreview nric={watch('nric') ?? ''} />
               </StackItem>
-              <Button
-                type="submit"
-                isLoading={sendNotification.isLoading}
-                loadingText="Notifying..."
-                bgColor="primary"
-              >
-                Notify call recipient
-              </Button>
-              <Button variant="link" onClick={() => reset()} type="reset">
-                Clear details
-              </Button>
+              <StackItem>
+                <VStack spacing={[4, 4, 4, 4]}>
+                  <Button
+                    type="submit"
+                    isLoading={sendNotification.isLoading}
+                    loadingText="Notifying..."
+                    width="100%"
+                  >
+                    Notify call recipient
+                  </Button>
+                  <Button
+                    width="100%"
+                    variant="link"
+                    onClick={() => reset()}
+                    type="reset"
+                  >
+                    Clear details
+                  </Button>
+                </VStack>
+              </StackItem>
             </VStack>
           </form>
         </Box>
