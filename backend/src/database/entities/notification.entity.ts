@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
-import { SGNotifyParams } from '../../notifications/sgnotify/message-templates/messageTemplate'
+import { SGNotifyParams } from '../../notifications/sgnotify/utils'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
