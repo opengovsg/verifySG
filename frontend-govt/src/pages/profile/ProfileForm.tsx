@@ -67,6 +67,13 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
 
   return (
     <HeaderContainer>
+      <Heading
+        fontSize={['xl', 'xl', '2xl', '2xl']}
+        color="primary.500"
+        mb={[4, 4, 8, 8]}
+      >
+        Fill in your details to create your caller profile
+      </Heading>
       <VStack
         width="100%"
         px={[3, 3, 4, 4]}
@@ -74,9 +81,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         maxWidth="500px"
         pb={20}
       >
-        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
-          Fill in your details to create your caller profile
-        </Heading>
         <InlineMessage
           variant="info"
           useMarkdown
