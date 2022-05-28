@@ -3,7 +3,11 @@ import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { OTP } from '../database/entities'
-import { OtpService, OTPVerificationResult } from './otp.service'
+import {
+  OtpService,
+  OTPVerificationResult,
+  POSTGRES_MAX_SMALLINT,
+} from './otp.service'
 import { ConfigService, Logger } from '../core/providers'
 import { otpUtils } from './utils'
 import { CoreModule } from '../core/core.module'
@@ -165,6 +169,28 @@ describe('OtpService (mocked db)', () => {
       '123456',
     )
     expect(otpService.incrementAttemptCount).toHaveBeenCalled()
+    expect(otpVerificationResult).toBe(
+      OTPVerificationResult.MAX_ATTEMPTS_REACHED,
+    )
+  })
+  it('max attempts hit smallint limit', async () => {
+    /*
+     * User has hit smallint limit of attempts before expiry (impossible!?)
+     * User requests OTP
+     * User submits wrong OTP
+     * User fails with OTPVerificationResult.MAX_ATTEMPTS_REACHED
+     * otpService.incrementAttemptCount() should not be called
+     * */
+    jest.spyOn(otpService, 'findOTPByEmail').mockResolvedValue({
+      ...validOtpEntityMock,
+      numOfAttempts: POSTGRES_MAX_SMALLINT,
+    })
+    jest.spyOn(otpService, 'incrementAttemptCount')
+    const otpVerificationResult = await otpService.verifyOtp(
+      validOtpEntityMock.email,
+      '123456',
+    )
+    expect(otpService.incrementAttemptCount).not.toHaveBeenCalled()
     expect(otpVerificationResult).toBe(
       OTPVerificationResult.MAX_ATTEMPTS_REACHED,
     )
