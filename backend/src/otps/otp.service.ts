@@ -57,7 +57,7 @@ export class OtpService {
   ): Promise<{ otp: string; timeLeftMinutes: string }> {
     email = normalizeEmail(email)
     const { expiryPeriod, numSaltRounds } = this.config
-    const { otp, hash } = await otpUtils.generateOtpAndHash(numSaltRounds)
+    const { otp, hash } = await otpUtils.generateOtpAndHashAsync(numSaltRounds)
     const otpToAdd = this.otpRepository.create({
       email,
       hash,
@@ -92,7 +92,7 @@ export class OtpService {
       return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)
-    const isValid = otpUtils.verifyOtpWithHash(otp, hash)
+    const isValid = await otpUtils.verifyOtpWithHashAsync(otp, hash)
     if (!isValid) return OTPVerificationResult.INCORRECT_OTP
     // OTP is valid, hard delete OTP from db after verification to prevent reuse
     await this.otpRepository.delete(id)

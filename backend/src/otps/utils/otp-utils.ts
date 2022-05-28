@@ -8,7 +8,7 @@ const generateRandomSixDigitNumber = (): string => {
     .join('')
 }
 
-const generateOtpAndHash = async (
+const generateOtpAndHashAsync = async (
   saltRounds: number,
 ): Promise<{ otp: string; hash: string }> => {
   const otp = generateRandomSixDigitNumber()
@@ -16,7 +16,7 @@ const generateOtpAndHash = async (
   return { otp, hash }
 }
 
-const verifyOtpWithHash = async (
+const verifyOtpWithHashAsync = async (
   otp: string,
   hash: string,
 ): Promise<boolean> => {
@@ -25,6 +25,6 @@ const verifyOtpWithHash = async (
 
 export const otpUtils = {
   generateRandomSixDigitNumber,
-  generateOtpAndHash,
-  verifyOtpWithHash,
+  generateOtpAndHashAsync,
+  verifyOtpWithHashAsync,
 }
