@@ -34,9 +34,9 @@ export class Officer {
   @OneToMany(() => Notification, (notification) => notification.officer)
   notifications: Notification[]
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date
 }
