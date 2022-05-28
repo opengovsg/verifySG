@@ -29,7 +29,18 @@ describe('OtpService (mocked db)', () => {
           provide: getRepositoryToken(OTP),
           useFactory: repositoryMockFactory,
         },
-        ConfigService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: (_: string) => {
+              return {
+                expiryPeriod: MILLISECONDS_IN_MINUTE * 15,
+                numAllowedAttempts: 10,
+                numSaltRounds: 10,
+              }
+            },
+          },
+        },
       ],
       imports: [CoreModule],
     }).compile()
@@ -135,8 +146,6 @@ describe('OtpService (mocked db)', () => {
      * User has previously hit max attempts
      * User requests OTP
      * User submits correct OTP before expiry
-     * User fails with OTPVerificationResult.MAX_ATTEMPTS_REACHED
-     * User submits wrong OTP before expiry
      * User fails with OTPVerificationResult.MAX_ATTEMPTS_REACHED
      * */
     jest.spyOn(otpService, 'findOTPByEmail').mockResolvedValue({
