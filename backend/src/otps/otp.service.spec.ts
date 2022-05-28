@@ -112,6 +112,7 @@ describe('OtpService (mocked db)', () => {
      * */
     jest.spyOn(otpService, 'findOTPByEmail').mockResolvedValue({
       ...validOtpEntityMock,
+      createdAt: new Date(Date.now() - 25 * MILLISECONDS_IN_MINUTE),
       expiredAt: new Date(Date.now() - 10 * MILLISECONDS_IN_MINUTE), // mock expired OTP
     })
     jest.spyOn(otpService, 'incrementAttemptCount')
