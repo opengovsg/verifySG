@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Connection, createConnection, QueryRunner, Repository } from 'typeorm'
+import convict from 'convict'
+import { join } from 'path'
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
 import { OTP } from '../database/entities'
 import { OtpService, OTPVerificationResult } from './otp.service'
@@ -8,6 +11,10 @@ import { ConfigService } from '../core/providers'
 import { otpUtils } from './utils'
 import { CoreModule } from '../core/core.module'
 import { MockType, repositoryMockFactory } from '../types/testing'
+import { prepareDbConnections } from './dbConnection'
+import { schema } from 'core/config.schema'
+
+const config = convict(schema)
 
 const MILLISECONDS_IN_MINUTE = 60 * 1000
 
@@ -181,8 +188,38 @@ describe('OtpService (mocked db)', () => {
       OTPVerificationResult.MAX_ATTEMPTS_REACHED,
     )
   })
-  // TODO: not sure how to write the following tests; would be trivial if db methods are mocked
-  // found this: https://dev.to/walrusai/testing-database-interactions-with-jest-519n but couldn't get it to work
+})
+
+// modelled after https://dev.to/walrusai/testing-database-interactions-with-jest-519n but couldn't get it to work
+describe('OtpService (with db connection)', () => {
+  let connection: Connection
+  let queryRunner: QueryRunner
+
+  beforeAll(async () => {
+    await prepareDbConnections()
+    connection = await createConnection({
+      type: 'postgres',
+      host: config.get('database.host'),
+      port: config.get('database.port'),
+      username: config.get('database.username'),
+      password: config.get('database.password'),
+      database: `checkwho_test_${process.env.JEST_WORKER_ID}`,
+      logging: false,
+      entities: [join(__dirname, 'entities', '*.entity{.js,.ts}')],
+      namingStrategy: new SnakeNamingStrategy(),
+    })
+  })
+
+  afterAll(async () => {
+    await connection.close()
+  })
+  beforeEach(() => {
+    queryRunner.startTransaction()
+  })
+
+  afterEach(() => {
+    queryRunner.rollbackTransaction()
+  })
   it('OTP only valid once', async () => {
     /*
      * User requests OTP

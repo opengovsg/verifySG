@@ -17,6 +17,9 @@ export interface ConfigSchema {
     minPool: number
     maxPool: number
   }
+  jest: {
+    workers: number
+  }
   session: { name: string; secret: string; cookie: { maxAge: number } }
   otp: {
     expiryPeriod: number
@@ -118,6 +121,14 @@ export const schema: Schema<ConfigSchema> = {
     maxPool: {
       env: 'DB_MAX_POOL_SIZE',
       default: 200,
+    },
+  },
+  jest: {
+    workers: {
+      doc: 'The number of workers to use for running tests',
+      env: 'JEST_WORKERS',
+      format: 'int',
+      default: 1,
     },
   },
   session: {
