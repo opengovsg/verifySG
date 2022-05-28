@@ -8,7 +8,7 @@ import { OTP } from '../database/entities'
 import { normalizeEmail, convertMillisecondsToMinutes } from '../common/utils'
 import { otpUtils } from './utils'
 
-const POSTGRES_MAX_SMALLINT = 32767
+export const POSTGRES_MAX_SMALLINT = 32767
 
 export enum OTPVerificationResult {
   SUCCESS = 'success',
