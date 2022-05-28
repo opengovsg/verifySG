@@ -12,7 +12,7 @@
     "start": "node build/index.js",
     "dev": "nest start --watch",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --maxWorkers=1",
     "test:cov": "jest --coverage && sed -i.bak 's/SF:src/SF:backend\\/src/g' coverage/lcov.info",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
