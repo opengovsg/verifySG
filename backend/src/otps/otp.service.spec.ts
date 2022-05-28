@@ -4,7 +4,7 @@ import { Repository } from 'typeorm'
 
 import { OTP } from '../database/entities'
 import { OtpService, OTPVerificationResult } from './otp.service'
-import { ConfigService } from '../core/providers'
+import { ConfigService, Logger } from '../core/providers'
 import { otpUtils } from './utils'
 import { CoreModule } from '../core/core.module'
 import { MockType, repositoryMockFactory } from '../types/testing'
@@ -15,6 +15,7 @@ describe('OtpService (mocked db)', () => {
   let otpService: OtpService
   let configService: ConfigService
   let otpRepositoryMock: MockType<Repository<OTP>>
+  let logger: Logger
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +33,7 @@ describe('OtpService (mocked db)', () => {
     otpService = module.get<OtpService>(OtpService)
     configService = module.get<ConfigService>(ConfigService)
     otpRepositoryMock = module.get(getRepositoryToken(OTP))
+    logger = module.get<Logger>(Logger)
   })
   const validOtpEntityMock: OTP = {
     createdAt: new Date(Date.now() - 5 * MILLISECONDS_IN_MINUTE),
@@ -166,6 +168,24 @@ describe('OtpService (mocked db)', () => {
     expect(otpVerificationResult).toBe(
       OTPVerificationResult.MAX_ATTEMPTS_REACHED,
     )
+  })
+  it('cannot find OTP in db (should not happen)', async () => {
+    /* User submits OTP with no corresponding email in db
+     * only if email was not submitted in OTP request
+     * which suggests either "getOTP" or "findOTPByEmail" is not working
+     * or user is hitting the endpoint directly
+     * User fails with OTPVerificationResult.INCORRECT_OTP
+     */
+    jest.spyOn(otpService, 'findOTPByEmail').mockResolvedValue(undefined)
+    jest.spyOn(otpService, 'incrementAttemptCount')
+    jest.spyOn(logger, 'warn')
+    const otpVerificationResult = await otpService.verifyOtp(
+      'nonexistent_email@agency.gov.sg',
+      '123456',
+    )
+    expect(otpService.incrementAttemptCount).not.toHaveBeenCalled()
+    expect(otpVerificationResult).toBe(OTPVerificationResult.INCORRECT_OTP)
+    expect(logger.warn).toHaveBeenCalled()
   })
   // TODO: not sure how to write the following tests; would be trivial if db methods are mocked
   it('OTP only valid once', async () => {
