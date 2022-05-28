@@ -91,6 +91,7 @@ describe('OtpService (mocked db)', () => {
     )
     expect(otpRepositoryMock.findOne).toHaveBeenCalled()
     expect(otpService.incrementAttemptCount).toHaveBeenCalled()
+    expect(otpRepositoryMock.delete).toHaveBeenCalled()
     expect(otpVerificationResult).toBe(OTPVerificationResult.SUCCESS)
   })
   it('invalid OTP', async () => {
