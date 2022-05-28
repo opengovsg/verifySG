@@ -8,6 +8,7 @@ import { ConfigService } from '../core/providers'
 import { otpUtils } from './utils'
 import { CoreModule } from '../core/core.module'
 import { MockType, repositoryMockFactory } from '../types/testing'
+import connection from '../common/tests/connection'
 
 const MILLISECONDS_IN_MINUTE = 60 * 1000
 
@@ -16,7 +17,16 @@ describe('OtpService (mocked db)', () => {
   let configService: ConfigService
   let otpRepositoryMock: MockType<Repository<OTP>>
 
+  beforeAll(async () => {
+    await connection.create()
+  })
+
+  afterAll(async () => {
+    await connection.close()
+  })
+
   beforeEach(async () => {
+    await connection.clear()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OtpService,
