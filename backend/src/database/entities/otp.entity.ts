@@ -30,12 +30,12 @@ export class OTP {
   @Column('smallint', { nullable: false, default: 0 })
   numOfAttempts: number
 
-  @Column('timestamp', { nullable: false })
+  @Column('timestamptz', { nullable: false })
   expiredAt: Date
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date
 }
