@@ -75,10 +75,10 @@ export class OtpService {
     email = normalizeEmail(email)
     const otpFromDb = await this.findOTPByEmail(email)
     if (!otpFromDb) {
-      this.logger.warn(
-        // feel like we should log the IP address of the caller and potentially block it?
-        `Unable to find OTP corresponding to email '${email}'. This suggests API call is NOT made from frontend.`,
-      )
+      // possible scenarios:
+      // (1) user hitting endpoint directly without going through getOtp (suspicious)
+      // (2) user making duplicate request to verify otp (first one would've succeeded, second one failed) why would this happen?
+      this.logger.warn(`Unable to find OTP corresponding to email '${email}'.`)
       // strictly not correct, but we don't want to expose this to frontend
       return OTPVerificationResult.INCORRECT_OTP
     }
