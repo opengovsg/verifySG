@@ -14,9 +14,13 @@ import { ConfigSchema, schema } from '../config.schema'
 export class ConfigService {
   config: Config<ConfigSchema>
   constructor() {
-    dotenv.config()
     this.config = convict(schema)
-    this.config.validate()
+    // env vars not available in Jest
+    const isJestRunning = process.env.JEST_WORKER_ID !== undefined
+    if (!isJestRunning) {
+      dotenv.config()
+      this.config.validate()
+    }
   }
 
   // We want to implicitly use the return type of convict get method.
