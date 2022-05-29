@@ -58,7 +58,7 @@ export class AuthOfficerController {
       case OTPVerificationResult.EXPIRED_OTP: {
         this.logger.warn(`Unexpired OTP not found for email ${email}`)
         throw new UnauthorizedException(
-          'This OTP has expired. Please request a new OTP.',
+          'Your OTP may have expired. Please request a new OTP.',
         )
       }
       case OTPVerificationResult.MAX_ATTEMPTS_REACHED: {
