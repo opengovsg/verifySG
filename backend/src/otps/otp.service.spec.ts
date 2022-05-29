@@ -291,7 +291,6 @@ describe('OtpService (mocked db)', () => {
      * User submits correct OTP again
      * User fails with OTPVerificationResult.INCORRECT_OTP
      * */
-    jest.spyOn(otpService, 'incrementAttemptCount')
     jest.spyOn(logger, 'warn')
     const { otp } = await otpService.getOtp(dummyEmail)
     const firstOtpVerificationResult = await otpService.verifyOtp(
@@ -317,13 +316,11 @@ describe('OtpService (mocked db)', () => {
      * User submits OTP B
      * User succeeds with OTPVerificationResult.SUCCESS
      * */
-    jest.spyOn(otpService, 'incrementAttemptCount')
     jest.spyOn(logger, 'warn')
     const { otp: otpA } = await otpService.getOtp(dummyEmail)
     const { otp: otpB } = await otpService.getOtp(dummyEmail)
     const otpAVerificationResult = await otpService.verifyOtp(dummyEmail, otpA)
     expect(otpAVerificationResult).toBe(OTPVerificationResult.INCORRECT_OTP)
-    expect(otpService.incrementAttemptCount).toHaveBeenCalled()
     const otpBVerificationResult = await otpService.verifyOtp(dummyEmail, otpB)
     expect(otpBVerificationResult).toBe(OTPVerificationResult.SUCCESS)
   })
