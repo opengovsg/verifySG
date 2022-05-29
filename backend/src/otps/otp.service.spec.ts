@@ -17,7 +17,6 @@ const MILLISECONDS_IN_MINUTE = 60 * 1000
 
 describe('OtpService (mocked db)', () => {
   let otpService: OtpService
-  let configService: ConfigService
   let otpRepositoryMock: MockType<Repository<OTP>>
   let logger: Logger
 
@@ -46,7 +45,6 @@ describe('OtpService (mocked db)', () => {
     }).compile()
 
     otpService = module.get<OtpService>(OtpService)
-    configService = module.get<ConfigService>(ConfigService)
     otpRepositoryMock = module.get(getRepositoryToken(OTP))
     logger = module.get<Logger>(Logger)
   })
@@ -62,7 +60,6 @@ describe('OtpService (mocked db)', () => {
   const validOtpMock = '089282'
   it('should be defined', () => {
     expect(otpService).toBeDefined()
-    expect(configService).toBeDefined()
     expect(otpRepositoryMock).toBeDefined()
   })
   it('should verify hash and otp as correct', async () => {
