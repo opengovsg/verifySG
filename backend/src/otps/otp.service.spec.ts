@@ -148,6 +148,7 @@ describe('OtpService (mocked db)', () => {
   it('should be defined', () => {
     expect(otpService).toBeDefined()
     expect(otpRepositoryMock).toBeDefined()
+    expect(configService).toBeDefined()
     expect(logger).toBeDefined()
   })
   it('should verify hard-coded hash and otp as correct', async () => {
@@ -230,7 +231,9 @@ describe('OtpService (mocked db)', () => {
     for (let i = 0; i < numAllowedAttempts; i++) {
       await otpService.verifyOtp(dummyEmail, invalidOtp)
     }
-    expect(otpService.incrementAttemptCount).toHaveBeenCalledTimes(10)
+    expect(otpService.incrementAttemptCount).toHaveBeenCalledTimes(
+      numAllowedAttempts,
+    )
     const otpVerificationResultCorrectOtp = await otpService.verifyOtp(
       dummyEmail,
       otp,
