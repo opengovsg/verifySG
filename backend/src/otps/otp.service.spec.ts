@@ -319,7 +319,6 @@ describe('OtpService (mocked db)', () => {
      * User submits OTP B
      * User succeeds with OTPVerificationResult.SUCCESS
      * */
-    jest.spyOn(logger, 'warn')
     const { otp: otpA } = await otpService.getOtp(dummyEmail)
     const { otp: otpB } = await otpService.getOtp(dummyEmail)
     const otpAVerificationResult = await otpService.verifyOtp(dummyEmail, otpA)
