@@ -31,12 +31,14 @@ describe('OtpService (mocked db)', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: (_: string) => {
-              return {
-                expiryPeriod: MILLISECONDS_IN_MINUTE * 15,
-                numAllowedAttempts: 10,
-                numSaltRounds: 10,
-              }
+            get: (key: string) => {
+              if (key === 'otp')
+                return {
+                  expiryPeriod: MILLISECONDS_IN_MINUTE * 15,
+                  numAllowedAttempts: 10,
+                  numSaltRounds: 10,
+                }
+              return null
             },
           },
         },
@@ -61,6 +63,7 @@ describe('OtpService (mocked db)', () => {
   it('should be defined', () => {
     expect(otpService).toBeDefined()
     expect(otpRepositoryMock).toBeDefined()
+    expect(logger).toBeDefined()
   })
   it('should verify hash and otp as correct', async () => {
     const verificationBoolean = await otpUtils.verifyOtpWithHashAsync(
