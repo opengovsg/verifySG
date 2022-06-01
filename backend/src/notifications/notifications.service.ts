@@ -11,6 +11,7 @@ import { SendNotificationResponseDto, SendNotificationDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
 import {
   generateNewSGNotifyParams,
+  normalizeNric,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import { SGNotifyService } from './sgnotify/sgnotify.service'
@@ -41,6 +42,7 @@ export class NotificationsService {
     notificationBody: SendNotificationDto,
   ): Promise<Notification | undefined> {
     const { callScope, nric } = notificationBody
+    const normalizedNric = normalizeNric(nric)
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException('Officer not found')
     const { agency } = await this.officersService.mapToDto(officer)
@@ -48,12 +50,12 @@ export class NotificationsService {
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
       notificationType: NotificationType.SGNOTIFY,
-      recipientId: nric,
+      recipientId: normalizedNric,
       callScope,
       modalityParams: generateNewSGNotifyParams(
         logoUrl,
         agencyName,
-        nric,
+        normalizedNric,
         agencyShortName,
         officer.name,
         officer.position,

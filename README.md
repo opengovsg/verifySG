@@ -26,11 +26,18 @@
 ## Migrations
 
 ### Auto-generate migrations
+
 ```
-npm run on-backend migration:gen <migration-name>
+npm run on-backend migration:gen migration-name-in-kebab-case
 ```
+
 ### Run migrations
 
 ```
 npm run on-backend migration:run
+```
+
+### Revert last migration
+```
+npm run on-backend migration:revert
 ```
