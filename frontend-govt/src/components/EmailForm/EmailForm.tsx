@@ -25,7 +25,6 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     watch,
   } = useForm<EmailFormData>()
 
@@ -34,8 +33,6 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
   // login form handlers
   const sendOtp = useMutation(AuthService.getOtp, {
     onSuccess: () => onSubmit(email),
-    onError: (err: string) =>
-      setError('email', { type: 'custom', message: err }),
   })
 
   const submissionHandler = (data: EmailFormData) => {
@@ -44,7 +41,12 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
   }
 
   // error handler stubs
-  const hasError = (): boolean => !!errors.email?.message
+  const hasError = (): boolean => !!errors.email || sendOtp.isError
+  const getErrorMessage = (): string => {
+    return errors && errors.email
+      ? 'Please provide a valid .gov.sg email address.'
+      : `${sendOtp.error}`
+  }
 
   return (
     <form onSubmit={handleSubmit(submissionHandler)}>
@@ -61,18 +63,15 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             {...register('email', {
               required: true,
               // TODO: refactor regexp into shared directory (1/2)
-              pattern: {
-                value: new RegExp(
-                  "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
-                ),
-                message: 'Please provide a valid .gov.sg email address.',
-              },
+              pattern: new RegExp(
+                "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
+              ),
             })}
             placeholder="e.g. benjamin_tan@spf.gov.sg"
             autoFocus
           />
           {hasError() && (
-            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            <FormErrorMessage>{getErrorMessage()}</FormErrorMessage>
           )}
         </FormControl>
         <Box>
