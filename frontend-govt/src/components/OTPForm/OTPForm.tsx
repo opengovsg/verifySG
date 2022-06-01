@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { FormControl, HStack, Input, Text, VStack } from '@chakra-ui/react'
@@ -58,7 +58,8 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError,
   } = useForm<OTPFormData>()
 
   // handle OTP resending
@@ -68,11 +69,27 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     setCanResend(false)
   }
 
+  const INVALID_OTP = 'Please provide a valid OTP.'
+
+  const validateOTP = useCallback((otp: string) => {
+    return isValidSixDigitOTP(otp) || INVALID_OTP
+  }, [])
+
+  const isValidSixDigitOTP = (otp: string): boolean => {
+    return !!otp.match('^[0-9]{6}$')
+  }
+
   // login form handlers
   const verifyOtp = useMutation(AuthService.verifyOtp, {
     onSuccess: async () => {
       await getOfficer()
       onSubmit()
+    },
+    onError: (err: string) => {
+      setError('otp', {
+        type: 'server',
+        message: err,
+      })
     },
   })
 
@@ -82,18 +99,14 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   }
   const triggerSubmit = handleSubmit(submissionHandler)
 
-  // error handler stubs
-  const hasError = (): boolean => !!errors.otp || verifyOtp.isError
-  const getErrorMessage = (): string => {
-    return errors && errors.otp
-      ? 'Please provide a valid OTP'
-      : `${verifyOtp.error}`
-  }
-
   return (
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
-        <FormControl id="otp" isInvalid={hasError()}>
+        <FormControl
+          id="otp"
+          isInvalid={!!errors.otp}
+          isReadOnly={isSubmitting}
+        >
           <FormLabel isRequired>One time password</FormLabel>
           <Text color="neutral.700" mb={3}>
             Please enter the OTP sent to <strong>{email}</strong>
@@ -101,16 +114,14 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
           <Input
             h="48px"
             {...register('otp', {
-              required: true,
-              minLength: 6,
-              maxLength: 6,
-              pattern: /^\d{6}/,
+              required: INVALID_OTP,
+              validate: validateOTP,
             })}
             autoComplete="one-time-code"
             placeholder="e.g. 111111"
             autoFocus
           />
-          <FormErrorMessage children={getErrorMessage()} />
+          {errors.otp && <FormErrorMessage children={errors.otp.message} />}
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
           <Button size="lg" bgColor="primary" type="submit">
