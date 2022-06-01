@@ -180,7 +180,7 @@ You are currently on a call with a public officer from <agency>
 ```
 Dear Sir/Madam <masked_nric>,
 
-This is to verify that you are currently speaking to <officer_name>, <position> from <agency>.
+This message is to verify that you are currently speaking to <officer_name>, <position> from <agency>.
 
 <call_details>
 ```
