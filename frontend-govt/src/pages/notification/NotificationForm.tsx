@@ -41,7 +41,14 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
   } = useForm<NotificationFormData>()
   const { setTargetNRIC } = useNotificationData()
 
-  const toast = useToast()
+  const toast = useToast({
+    isClosable: true,
+    containerStyle: {
+      width: '680px',
+      maxWidth: '100%',
+    },
+    duration: 6000,
+  })
   const history = useHistory()
 
   // handle submission logic

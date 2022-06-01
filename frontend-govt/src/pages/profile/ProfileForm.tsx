@@ -31,7 +31,14 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     formState: { errors, isDirty },
     setValue,
   } = useForm<ProfileFormData>()
-  const toast = useToast()
+  const toast = useToast({
+    isClosable: true,
+    containerStyle: {
+      width: '680px',
+      maxWidth: '100%',
+    },
+    duration: 6000,
+  })
 
   // query hooks to retrieve and mutate data
   const { data: profile } = useQuery('profile', OfficerService.getOfficer, {
