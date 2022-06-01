@@ -8,14 +8,14 @@ const getOtp = async ({ email }: { email: string }): Promise<void> => {
 
 const verifyOtp = async ({
   email,
-  token,
+  otp,
 }: {
   email: string
-  token: string
+  otp: string
 }): Promise<void> => {
   await ApiService.post('/auth-officers/verify', {
     email,
-    token,
+    otp,
   })
 }
 
