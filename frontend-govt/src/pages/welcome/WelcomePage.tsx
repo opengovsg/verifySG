@@ -27,6 +27,7 @@ export const WelcomePage: React.FC = () => {
           bgColor="primary"
           leftIcon={<BiPlus size="24px" />}
           onClick={() => history.push(PROFILE_ROUTE)}
+          size="auto"
         >
           Create Caller Profile
         </Button>

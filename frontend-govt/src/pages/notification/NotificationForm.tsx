@@ -41,7 +41,14 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
   } = useForm<NotificationFormData>()
   const { setTargetNRIC } = useNotificationData()
 
-  const toast = useToast()
+  const toast = useToast({
+    isClosable: true,
+    containerStyle: {
+      width: '680px',
+      maxWidth: '100%',
+    },
+    duration: 6000,
+  })
   const history = useHistory()
 
   // handle submission logic
@@ -73,15 +80,20 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 
   return (
     <HeaderContainer>
+      <Heading
+        fontSize={['xl', 'xl', '2xl', '2xl']}
+        color="primary.500"
+        mb={[4, 4, 8, 8]}
+      >
+        Enter the details of the person you need to call
+      </Heading>
       <VStack
         width={'100%'}
         maxWidth="500px"
         px={[3, 3, 4, 4]}
-        spacing={[5, 5, 6, 6]}
+        spacing={[4, 4, 8, 8]}
+        pb={20}
       >
-        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
-          Enter the details of the person you need to call
-        </Heading>
         <InlineMessage
           variant="info"
           w="100%"
@@ -105,7 +117,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack spacing={[3, 3, 4, 4]} align="left">
+            <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   NRIC / FIN
@@ -131,26 +143,32 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
                 )}
               </FormControl>
-
-              <VStack spacing={[3, 3, 4, 4]} align="left">
-                <StackItem>
-                  <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                    Message Preview
-                  </FormLabel>
-                  <MessagePreview nric={watch('nric') ?? ''} />
-                </StackItem>
-                <Button
-                  type="submit"
-                  isLoading={sendNotification.isLoading}
-                  loadingText="Notifying..."
-                  bgColor="primary"
-                >
-                  Notify call recipient
-                </Button>
-                <Button variant="link" onClick={() => reset()} type="reset">
-                  Clear details
-                </Button>
-              </VStack>
+              <StackItem>
+                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                  Message Preview
+                </FormLabel>
+                <MessagePreview nric={watch('nric') ?? ''} />
+              </StackItem>
+              <StackItem>
+                <VStack spacing={[4, 4, 4, 4]}>
+                  <Button
+                    type="submit"
+                    isLoading={sendNotification.isLoading}
+                    loadingText="Notifying..."
+                    width="100%"
+                  >
+                    Notify call recipient
+                  </Button>
+                  <Button
+                    width="100%"
+                    variant="link"
+                    onClick={() => reset()}
+                    type="reset"
+                  >
+                    Clear details
+                  </Button>
+                </VStack>
+              </StackItem>
             </VStack>
           </form>
         </Box>
