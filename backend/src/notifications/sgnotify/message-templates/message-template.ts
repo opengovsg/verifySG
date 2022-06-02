@@ -92,7 +92,7 @@ export const generateCallDetailsNotifyBeforeCall = (
     "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
   switch (agencyId) {
     case 'SPF':
-      return `The purpose of the call is to follow up on a police report that you have lodged recently.
+      return `The purpose of this call is to follow up on your recent police report/feedback to the Police.
       <br><br>
       ${standardClosing}`
     case 'OGP':
@@ -109,7 +109,7 @@ export const generateCallDetailsNotifyDuringCall = (
 ): string => {
   switch (agencyId) {
     case 'SPF':
-      return 'The purpose of this call is to follow up on a police report that you have lodged recently.'
+      return 'The purpose of this call is to follow up on your recent police report/feedback to the Police.'
     default:
       return ' ' // should never reach here
   }
