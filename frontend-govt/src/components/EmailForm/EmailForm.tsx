@@ -56,7 +56,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             Email
           </FormLabel>
           <Text color="neutral.700" mb={3}>
-            Only whitelisted <strong>gov.sg</strong> emails can log in while
+            Only whitelisted <strong>.gov.sg</strong> emails can log in while
             this product is in beta. Please contact us for access.
           </Text>
           <Input
