@@ -94,9 +94,11 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
         <FormControl id="otp" isInvalid={hasError()}>
-          <FormLabel isRequired>One time password</FormLabel>
+          <FormLabel mb={0} isRequired>
+            One-time password
+          </FormLabel>
           <Text color="neutral.700" mb={3}>
-            Please enter the OTP sent to <strong>{email}</strong>
+            Enter OTP sent to {email}
           </Text>
           <Input
             h="48px"
@@ -113,16 +115,14 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
           <FormErrorMessage children={getErrorMessage()} />
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
-          <Button size="lg" bgColor="primary" type="submit">
-            Log in
-          </Button>
+          <Button type="submit">Log in</Button>
           <Button
             variant="link"
             disabled={!canResend}
             //TODO: add otp resend logic and call otp resend function on logic completion
             onClick={resendOTP}
           >
-            {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
+            {canResend ? 'Resend OTP?' : `Resend in ${resendTimer}s`}
           </Button>
         </HStack>
       </VStack>

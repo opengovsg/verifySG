@@ -31,7 +31,14 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     formState: { errors, isDirty },
     setValue,
   } = useForm<ProfileFormData>()
-  const toast = useToast()
+  const toast = useToast({
+    isClosable: true,
+    containerStyle: {
+      width: '680px',
+      maxWidth: '100%',
+    },
+    duration: 6000,
+  })
 
   // query hooks to retrieve and mutate data
   const { data: profile } = useQuery('profile', OfficerService.getOfficer, {
@@ -67,15 +74,20 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
 
   return (
     <HeaderContainer>
+      <Heading
+        fontSize={['xl', 'xl', '2xl', '2xl']}
+        color="primary.500"
+        mb={[4, 4, 8, 8]}
+      >
+        Fill in your details to create your caller profile
+      </Heading>
       <VStack
         width="100%"
         px={[3, 3, 4, 4]}
-        spacing={[5, 5, 6, 6]}
+        spacing={[4, 4, 8, 8]}
         maxWidth="500px"
+        pb={20}
       >
-        <Heading fontSize={['xl', 'xl', '2xl', '2xl']} color="primary.500">
-          Fill in your details to create your caller profile
-        </Heading>
         <InlineMessage
           variant="info"
           useMarkdown
@@ -97,7 +109,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
-            <VStack align="left" spacing={[3, 3, 4, 4]}>
+            <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isDisabled>
                 <FormLabel fontSize={['md', 'md', 'lg', 'lg']} isRequired>
                   Your agency / organisation
@@ -138,7 +150,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                   <FormErrorMessage>{errors.position.message}</FormErrorMessage>
                 )}
               </FormControl>
-              <Button type="submit" bgColor={'primary'}>
+              <Button type="submit" width="100%" bgColor={'primary'}>
                 Save
               </Button>
             </VStack>

@@ -52,10 +52,12 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
     <form onSubmit={handleSubmit(submissionHandler)}>
       <VStack spacing={8} align="stretch">
         <FormControl id="email" isInvalid={hasError()}>
-          <FormLabel isRequired>Login</FormLabel>
+          <FormLabel mb={0} isRequired>
+            Email
+          </FormLabel>
           <Text color="neutral.700" mb={3}>
-            For use by public officers with a <strong>.gov.sg</strong> email{' '}
-            address
+            Only whitelisted <strong>.gov.sg</strong> emails can log in while
+            this product is in beta. Please contact us for access.
           </Text>
           <Input
             {...register('email', {
@@ -73,13 +75,8 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
           )}
         </FormControl>
         <Box>
-          <Button
-            isLoading={sendOtp.isLoading}
-            size="lg"
-            bgColor="primary"
-            type="submit"
-          >
-            Log in
+          <Button isLoading={sendOtp.isLoading} type="submit">
+            Get OTP
           </Button>
         </Box>
       </VStack>
