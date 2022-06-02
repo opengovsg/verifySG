@@ -24,8 +24,9 @@ export class useTimestamptzInEntities1653729236994
     await queryRunner.query(
       `ALTER TABLE "notification" ALTER "updated_at" TYPE timestamptz USING "updated_at" AT TIME ZONE 'UTC', ALTER "updated_at" SET DEFAULT now()`,
     )
+    // be sure to avoid using now() as a default for deleted_at
     await queryRunner.query(
-      `ALTER TABLE "notification" ALTER "deleted_at" TYPE timestamptz USING "deleted_at" AT TIME ZONE 'UTC', ALTER "deleted_at" SET DEFAULT now()`,
+      `ALTER TABLE "notification" ALTER "deleted_at" TYPE timestamptz USING "deleted_at" AT TIME ZONE 'UTC'`,
     )
   }
 
@@ -48,8 +49,9 @@ export class useTimestamptzInEntities1653729236994
     await queryRunner.query(
       `ALTER TABLE "notification" ALTER "updated_at" TYPE timestamp without time zone USING "updated_at", ALTER "updated_at" SET DEFAULT now()`,
     )
+    // be sure to avoid using now() as a default for deleted_at
     await queryRunner.query(
-      `ALTER TABLE "notification" ALTER "deleted_at" TYPE timestamp without time zone USING "deleted_at", ALTER "deleted_at" SET DEFAULT now()`,
+      `ALTER TABLE "notification" ALTER "deleted_at" TYPE timestamp without time zone USING "deleted_at"`,
     )
   }
 }
