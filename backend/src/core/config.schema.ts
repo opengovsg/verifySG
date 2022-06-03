@@ -18,11 +18,10 @@ export interface ConfigSchema {
     maxPool: number
   }
   session: { name: string; secret: string; cookie: { maxAge: number } }
-  totp: {
-    expiry: number
-    numValidPastWindows: number
-    numValidFutureWindows: number
-    secret: string
+  otp: {
+    expiryPeriod: number
+    numAllowedAttempts: number
+    numSaltRounds: number
   }
   postman: {
     apiUrl: string
@@ -40,6 +39,10 @@ export interface ConfigSchema {
     clientId: string
     clientSecret: string
     ecPrivateKey: string
+  }
+  sentry: {
+    frontendDsn: string
+    backendDsn: string
   }
 }
 
@@ -144,30 +147,24 @@ export const schema: Schema<ConfigSchema> = {
       },
     },
   },
-  totp: {
-    expiry: {
-      doc: 'Time step (seconds)',
-      env: 'OTP_EXPIRY_IN_SECONDS',
-      default: 60 * 15,
+  otp: {
+    expiryPeriod: {
+      doc: 'Validity of OTP, expressed in ms',
+      env: 'OTP_EXPIRY_PERIOD',
+      default: 15 * 60 * 1000, // 15 minutes to account for SGMail slowness
       format: Number,
     },
-    numValidPastWindows: {
-      doc: 'Tokens in the previous x-windows that should be considered valid',
-      env: 'OTP_PAST_WINDOWS',
-      default: 1,
+    numAllowedAttempts: {
+      doc: 'Number of allowed attempts',
+      env: 'OTP_NUM_ALLOWED_ATTEMPTS',
+      default: 10,
       format: Number,
     },
-    numValidFutureWindows: {
-      doc: 'Tokens in the future x-windows that should be considered valid',
-      env: 'OTP_FUTURE_WINDOWS',
-      default: 0,
+    numSaltRounds: {
+      doc: 'Number of rounds to hash the OTP + email',
+      env: 'OTP_NUM_SALT_ROUNDS',
+      default: 10,
       format: Number,
-    },
-    secret: {
-      doc: 'Secret for otp govt auth',
-      env: 'OTP_SECRET',
-      default: 'secretsecret',
-      format: String,
     },
   },
   postman: {
@@ -239,6 +236,20 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'Our elliptic curve private key used as part of JOSE implementation',
       env: 'SGNOTIFY_EC_PRIVATE_KEY',
       format: 'required-string',
+      default: '',
+    },
+  },
+  sentry: {
+    frontendDsn: {
+      doc: 'Frontend DSN url for Sentry',
+      env: 'SENTRY_FRONTEND_DSN',
+      format: String,
+      default: '',
+    },
+    backendDsn: {
+      doc: 'Backend DSN url for Sentry',
+      env: 'SENTRY_BACKEND_DSN',
+      format: String,
       default: '',
     },
   },

@@ -36,7 +36,10 @@ export const messageContentFactory = ({
       return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
         <br/>
         <br/>
-        This is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agency.toUpperCase()}</u></b>`
+        This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agency.toUpperCase()}</u></b>.
+        <br/>
+        <br/>
+        The purpose of this call is to follow up on your recent police report/feedback to the Police.`
 
     case 'ogp':
       return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,

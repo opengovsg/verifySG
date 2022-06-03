@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { FormControl, HStack, Input, Text, VStack } from '@chakra-ui/react'
@@ -17,7 +17,7 @@ interface OTPFormProps {
 }
 
 interface OTPFormData {
-  token: string
+  otp: string
 }
 
 // controls the OTP resend cooldown time
@@ -58,7 +58,8 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError,
   } = useForm<OTPFormData>()
 
   // handle OTP resending
@@ -68,61 +69,71 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
     setCanResend(false)
   }
 
+  const INVALID_OTP = 'Please provide a valid OTP.'
+
+  const validateOTP = useCallback((otp: string) => {
+    return isValidSixDigitOTP(otp) || INVALID_OTP
+  }, [])
+
+  const isValidSixDigitOTP = (otp: string): boolean => {
+    return !!otp.match('^[0-9]{6}$')
+  }
+
   // login form handlers
   const verifyOtp = useMutation(AuthService.verifyOtp, {
     onSuccess: async () => {
       await getOfficer()
       onSubmit()
     },
+    onError: (err: string) => {
+      setError('otp', {
+        type: 'server',
+        message: err,
+      })
+    },
   })
 
   const submissionHandler = (data: OTPFormData) => {
-    const { token } = data
-    verifyOtp.mutate({ email, token })
+    const { otp } = data
+    verifyOtp.mutate({ email, otp })
   }
   const triggerSubmit = handleSubmit(submissionHandler)
-
-  // error handler stubs
-  const hasError = (): boolean => !!errors.token || verifyOtp.isError
-  const getErrorMessage = (): string => {
-    return errors && errors.token
-      ? 'Please provide a valid OTP'
-      : `${verifyOtp.error}`
-  }
 
   return (
     <form onSubmit={triggerSubmit}>
       <VStack spacing={8} align="stretch">
-        <FormControl id="token" isInvalid={hasError()}>
-          <FormLabel isRequired>One time password</FormLabel>
+        <FormControl
+          id="otp"
+          isInvalid={!!errors.otp}
+          isReadOnly={isSubmitting}
+        >
+          <FormLabel mb={0} isRequired>
+            One-time password
+          </FormLabel>
           <Text color="neutral.700" mb={3}>
-            Please enter the OTP sent to <strong>{email}</strong>
+            Enter OTP sent to {email}
           </Text>
           <Input
             h="48px"
-            {...register('token', {
-              required: true,
-              minLength: 6,
-              maxLength: 6,
-              pattern: /^\d{6}/,
+            {...register('otp', {
+              required: INVALID_OTP,
+              validate: validateOTP,
             })}
             autoComplete="one-time-code"
             placeholder="e.g. 111111"
             autoFocus
           />
-          <FormErrorMessage children={getErrorMessage()} />
+          {errors.otp && <FormErrorMessage children={errors.otp.message} />}
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
-          <Button size="lg" bgColor="primary" type="submit">
-            Log in
-          </Button>
+          <Button type="submit">Log in</Button>
           <Button
             variant="link"
             disabled={!canResend}
             //TODO: add otp resend logic and call otp resend function on logic completion
             onClick={resendOTP}
           >
-            {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
+            {canResend ? 'Resend OTP?' : `Resend in ${resendTimer}s`}
           </Button>
         </HStack>
       </VStack>

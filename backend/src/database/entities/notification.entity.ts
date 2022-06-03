@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
-import { SGNotifyParams } from '../../notifications/sgnotify/message-templates/messageTemplate'
+import { SGNotifyParams } from '../../notifications/sgnotify/utils'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
@@ -75,12 +75,12 @@ export class Notification {
   @Column({ type: 'jsonb' })
   modalityParams: ModalityParams
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date
 }

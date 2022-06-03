@@ -1,4 +1,4 @@
-import { APP_FILTER, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core'
 import {
   Module,
   NestModule,
@@ -22,6 +22,11 @@ import { CoreModule } from 'core/core.module'
 
 import { DatabaseConfigService } from 'database/db-config.service'
 
+import {
+  SentryModule as NestSentryModule,
+  SentryInterceptor as NestSentryInterceptor,
+} from '@ntegral/nestjs-sentry'
+
 @Module({
   imports: [
     CoreModule,
@@ -31,6 +36,16 @@ import { DatabaseConfigService } from 'database/db-config.service'
     }),
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfigService,
+    }),
+    NestSentryModule.forRoot({
+      dsn: process.env.SENTRY_BACKEND_DSN,
+      debug: true,
+      environment: process.env.NODE_ENV || 'development',
+      tracesSampleRate: 1.0,
+      close: {
+        enabled: true,
+        timeout: 1000,
+      },
     }),
   ],
   providers: [
@@ -48,6 +63,10 @@ import { DatabaseConfigService } from 'database/db-config.service'
           return new BadRequestException(allErrors.join(', '))
         },
       }),
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new NestSentryInterceptor(),
     },
   ],
 })

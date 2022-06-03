@@ -1,23 +1,21 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
-  Body,
   Req,
   Res,
-  UnauthorizedException,
-  BadRequestException,
-  NotFoundException,
 } from '@nestjs/common'
-import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
-import { AuthOfficerService } from './auth-officer.service'
-import { ConfigService } from 'core/providers'
-import { Logger } from 'core/providers'
 import { Request, Response } from 'express'
 
+import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
+import { AuthOfficerService } from './auth-officer.service'
+import { ConfigService, Logger } from 'core/providers'
 import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
-import { OfficersService } from 'officers/officers.service'
+import { OfficersService } from '../officers/officers.service'
 
 @Controller('auth-officers')
 export class AuthOfficerController {
@@ -32,7 +30,7 @@ export class AuthOfficerController {
   async sendOTP(@Body() body: OfficerDto): Promise<void> {
     const { email } = body
     try {
-      return await this.authOfficerService.sendOTP(email)
+      return await this.authOfficerService.sendOtp(email)
     } catch (err) {
       throw new BadRequestException(
         err instanceof Error ? err.message : 'Failed to send OTP',
@@ -45,14 +43,9 @@ export class AuthOfficerController {
     @Body() body: OtpAuthVerifyDto,
     @Req() req: Request,
   ): Promise<void> {
-    const { email, token } = body
-    const officer = await this.authOfficerService.verifyOTP(email, token)
-    if (officer) {
-      req.session.officerId = officer.id
-    } else {
-      this.logger?.warn(`Incorrect OTP given for ${email}`)
-      throw new UnauthorizedException(`Incorrect OTP given`)
-    }
+    const { email, otp } = body
+    const officer = await this.authOfficerService.verifyOtp(email, otp)
+    if (officer) req.session.officerId = officer.id
   }
 
   @Get('whoami')

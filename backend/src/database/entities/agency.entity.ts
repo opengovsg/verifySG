@@ -26,9 +26,9 @@ export class Agency {
   @Column('varchar', { array: true, length: 255, default: [] })
   emailDomains: string[]
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date
 }
