@@ -27,7 +27,7 @@ export class PurposesService {
       relations: ['agency'],
     })
   }
-  mapToAllPurposeDto(purposes: Purpose[]): AllPurposesDto {
+  mapToAllPurposesDto(purposes: Purpose[]): AllPurposesDto {
     return {
       purposes: purposes.map((purposeEntity) => {
         const { purposeId, menuDescription, sgNotifyTemplateParams } =

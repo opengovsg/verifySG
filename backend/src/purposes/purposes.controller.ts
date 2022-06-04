@@ -24,7 +24,7 @@ export class PurposesController {
     }
     const { agency } = officer
     const purposes = await this.purposesService.getPurposesByAgencyId(agency.id)
-    return this.purposesService.mapToAllPurposeDto(purposes)
+    return this.purposesService.mapToAllPurposesDto(purposes)
   }
   // TODO: POST endpoint
   /*

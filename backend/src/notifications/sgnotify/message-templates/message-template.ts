@@ -87,6 +87,7 @@ export const generateNewSGNotifyParams = (
         title: 'Upcoming Phone Call',
         shortMessage: `A public officer from ${agencyShortName} will be calling you shortly`,
         sgNotifyLongMessageParams: {
+          // DANGER: be careful about these params; they are template-specific and not typed
           ...genericSGNotifyParams.sgNotifyLongMessageParams,
           call_details: templatePurposeParams.call_details,
           callback_details: templatePurposeParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
@@ -99,6 +100,7 @@ export const generateNewSGNotifyParams = (
         title: 'Verify your phone call',
         shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
         sgNotifyLongMessageParams: {
+          // DANGER: be careful about these params; they are template-specific and not typed
           ...genericSGNotifyParams.sgNotifyLongMessageParams,
           call_details: templatePurposeParams.call_details,
         },
