@@ -6,6 +6,7 @@ import {
   Notification,
   NotificationType,
   ModalityParams,
+  Officer,
 } from 'database/entities'
 import { SendNotificationResponseDto, SendNotificationDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
@@ -14,6 +15,7 @@ import {
   normalizeNric,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
+import { PurposesService } from '../purposes/purposes.service'
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 
 @Injectable()
@@ -22,6 +24,7 @@ export class NotificationsService {
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
     private officersService: OfficersService,
+    private purposesService: PurposesService,
     private sgNotifyService: SGNotifyService,
   ) {}
 
@@ -41,30 +44,61 @@ export class NotificationsService {
     officerId: number,
     notificationBody: SendNotificationDto,
   ): Promise<Notification | undefined> {
-    const { callScope, nric } = notificationBody
+    const officer = await this.validateCreateNotificationArgs(
+      officerId,
+      notificationBody,
+    )
+    const { purposeId, nric } = notificationBody
     const normalizedNric = normalizeNric(nric)
-    const officer = await this.officersService.findById(officerId)
-    if (!officer) throw new BadRequestException('Officer not found')
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
+    const templateParams = await this.purposesService.getSGNotifyTemplateParams(
+      purposeId,
+    )
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
+      purpose: { purposeId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      callScope,
       modalityParams: generateNewSGNotifyParams(
-        logoUrl,
-        agencyName,
         normalizedNric,
-        agencyShortName,
-        officer.name,
-        officer.position,
+        {
+          agencyShortName,
+          agencyName,
+          agencyLogoUrl: logoUrl,
+        },
+        {
+          officerName: officer.name,
+          officerPosition: officer.position,
+        },
+        templateParams,
       ),
     })
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,
     )
     return this.findById(addedNotification.id)
+  }
+  // return Officer to save one db query
+  async validateCreateNotificationArgs(
+    officerId: number,
+    notificationBody: SendNotificationDto,
+  ): Promise<Officer> {
+    const { purposeId } = notificationBody
+    const officer = await this.officersService.findById(officerId)
+    if (!officer) throw new BadRequestException('Officer not found')
+    const { agency } = await this.officersService.mapToDto(officer)
+    const { id: agencyId } = agency
+    const purposeIdValid =
+      await this.purposesService.getPurposeValidityByAgencyId(
+        purposeId,
+        agencyId,
+      )
+    if (!purposeIdValid) {
+      // either purposeId does not exist OR belongs to a different agency
+      throw new BadRequestException('Purpose ID not valid')
+    }
+    return officer
   }
 
   /**
@@ -104,7 +138,10 @@ export class NotificationsService {
     body: SendNotificationDto,
   ): Promise<SendNotificationResponseDto> {
     const inserted = await this.createNotification(officerId, body)
-    if (!inserted) throw new BadRequestException('Notification not created')
+    if (!inserted)
+      throw new BadRequestException(
+        'An error has occurred in NotificationsService.createNotification',
+      )
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
       inserted,
     )
@@ -116,11 +153,10 @@ export class NotificationsService {
   }
 
   mapToDto(notification: Notification): SendNotificationResponseDto {
-    const { id, officer, createdAt, callScope } = notification
+    const { id, officer, createdAt } = notification
     return {
       id,
       createdAt,
-      callScope,
       officer: this.officersService.mapToDto(officer),
     }
   }

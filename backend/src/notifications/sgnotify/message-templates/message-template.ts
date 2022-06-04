@@ -3,6 +3,7 @@ import { JWTPayload } from 'jose'
 import {
   NotificationStatus,
   SGNotifyNotificationStatus,
+  SGNotifyTemplateParams,
 } from '../../../database/entities'
 import { maskNric } from '../utils'
 
@@ -33,85 +34,78 @@ export const sgNotifyParamsStatusToNotificationStatusMapper = (
     : NotificationStatus.SENT
 }
 
-export const generateNewSGNotifyParams = (
-  agencyLogoUrl: string,
-  agencyName: string,
+export interface AgencyParams {
+  agencyShortName: string
+  agencyName: string
+  agencyLogoUrl: string
+}
+
+export interface OfficerParams {
+  officerName: string
+  officerPosition: string
+}
+
+const generateGenericSGNotifyParams = (
   nric: string,
-  agencyShortName: string,
-  officerName: string,
-  officerPosition: string,
+  agencyParams: AgencyParams,
+  officerParams: OfficerParams,
+): Omit<SGNotifyParams, 'templateId' | 'title' | 'shortMessage'> => {
+  const { agencyShortName, agencyName, agencyLogoUrl } = agencyParams
+  const { officerName, officerPosition } = officerParams
+  return {
+    agencyLogoUrl,
+    agencyName,
+    nric,
+    sgNotifyLongMessageParams: {
+      agency: agencyShortName,
+      officer_name: `<u>${officerName}</u>`,
+      position: `<u>${officerPosition}</u>`,
+      masked_nric: `(${maskNric(nric)})`,
+    },
+    status: SGNotifyNotificationStatus.NOT_SENT,
+  }
+}
+
+export const generateNewSGNotifyParams = (
+  nric: string,
+  agencyParams: AgencyParams,
+  officerParams: OfficerParams,
+  templateParams: SGNotifyTemplateParams,
 ): SGNotifyParams => {
-  // TODO: generalise this to support (1) different use cases (2) different notifications (before + during phone call)
-  switch (agencyShortName) {
-    case 'SPF':
+  const genericSGNotifyParams = generateGenericSGNotifyParams(
+    nric,
+    agencyParams,
+    officerParams,
+  )
+  const { agencyShortName } = agencyParams
+  const { templateId, templatePurposeParams } = templateParams
+  switch (templateId) {
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return {
-        agencyLogoUrl,
-        agencyName,
-        title: 'Verify your phone call',
-        nric,
-        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
-        templateId:
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
-        sgNotifyLongMessageParams: {
-          agency: agencyShortName,
-          officer_name: `<u>${officerName}</u>`,
-          position: `<u>${officerPosition}</u>`,
-          masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetailsNotifyDuringCall(agencyShortName),
-        },
-        status: SGNotifyNotificationStatus.NOT_SENT,
-      }
-    case 'OGP':
-      return {
-        agencyLogoUrl,
-        agencyName,
+        ...genericSGNotifyParams,
+        templateId,
         title: 'Upcoming Phone Call',
-        nric,
-        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
-        templateId:
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly`,
         sgNotifyLongMessageParams: {
-          agency: agencyShortName,
-          officer_name: `<u>${officerName}</u>`,
-          position: `<u>${officerPosition}</u>`,
-          masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetailsNotifyBeforeCall(agencyShortName),
-          callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
+          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          call_details: templatePurposeParams.call_details,
+          callback_details: templatePurposeParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
-        status: SGNotifyNotificationStatus.NOT_SENT,
+      }
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
+      return {
+        ...genericSGNotifyParams,
+        templateId,
+        title: 'Verify your phone call',
+        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
+        sgNotifyLongMessageParams: {
+          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          call_details: templatePurposeParams.call_details,
+        },
       }
     default:
-      throw new Error(`Unsupported agency: ${agencyShortName}`)
-  }
-}
-
-export const generateCallDetailsNotifyBeforeCall = (
-  agencyId: string,
-): string => {
-  const standardClosing =
-    "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
-  switch (agencyId) {
-    case 'SPF':
-      return `The purpose of this call is to follow up on your recent police report/feedback to the Police.
-      <br><br>
-      ${standardClosing}`
-    case 'OGP':
-      return `Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
-      <br><br>
-      ${standardClosing}`
-    default:
-      return standardClosing
-  }
-}
-
-export const generateCallDetailsNotifyDuringCall = (
-  agencyId: string,
-): string => {
-  switch (agencyId) {
-    case 'SPF':
-      return 'The purpose of this call is to follow up on your recent police report/feedback to the Police.'
-    default:
-      return ' ' // should never reach here
+      // strictly speaking untrue; wei wish to avoid supporting specific templates as far as possible
+      throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
 }
 
@@ -160,20 +154,3 @@ export const convertSGNotifyParamsToJWTPayload = (
     },
   }
 }
-// TODO: create class/functions/template that will automatically populate params based on MessageTemplateId?
-// import { MessageTemplateId } from '../../database/entities'
-//
-// export class MessageTemplate {
-//   constructor(
-//     private readonly id: MessageTemplateId,
-//     private readonly params: string[],
-//   ) {}
-// }
-//
-// export interface MessageTemplate {
-//   id: MessageTemplateId
-//   shortMessage: string
-//   longMessage: string
-//   messageParams: string[]
-//   supportsHTML: boolean
-// }

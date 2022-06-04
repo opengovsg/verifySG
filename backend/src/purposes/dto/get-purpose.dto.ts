@@ -1,9 +1,9 @@
-import { SGNotifyPurposeParams } from '../../database/entities'
+import { SGNotifyTemplateParams } from '../../database/entities'
 
 export interface PurposeDto {
   purposeId: string
   menuDescription: string
-  sgNotifyPurposeParams: SGNotifyPurposeParams
+  sgNotifyTemplateParams: SGNotifyTemplateParams
 }
 
 export interface AllPurposesDto {
