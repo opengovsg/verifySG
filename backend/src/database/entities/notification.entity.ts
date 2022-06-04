@@ -10,6 +10,7 @@ import {
 
 import { Officer } from './officer.entity'
 import { SGNotifyParams } from '../../notifications/sgnotify/utils'
+import { Purpose } from './purpose.entity'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
@@ -53,6 +54,16 @@ export class Notification {
   })
   officer: Officer
 
+  @ManyToOne(
+    () => Purpose,
+    (messageTemplate) => messageTemplate.notifications,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  purpose: Purpose
+
   @Column({
     type: 'enum',
     enum: NotificationType,
@@ -68,9 +79,6 @@ export class Notification {
     default: NotificationStatus.NOT_SENT,
   })
   status: NotificationStatus
-
-  @Column('text', { nullable: true, default: null })
-  callScope: string
 
   @Column({ type: 'jsonb' })
   modalityParams: ModalityParams

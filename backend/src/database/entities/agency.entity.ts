@@ -8,6 +8,7 @@ import {
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
+import { Purpose } from './purpose.entity'
 
 @Entity({ name: 'agency' })
 export class Agency {
@@ -22,6 +23,9 @@ export class Agency {
 
   @OneToMany(() => Officer, (officer) => officer.agency)
   officers: Officer[]
+
+  @OneToMany(() => Purpose, (purpose) => purpose.agency)
+  purposes: Purpose[]
 
   @Column('varchar', { array: true, length: 255, default: [] })
   emailDomains: string[]
