@@ -12,7 +12,7 @@ import { Notification } from './notification.entity'
 import { Agency } from './agency.entity'
 import { SGNotifyMessageTemplateId } from '../../notifications/sgnotify/message-templates/message-template'
 
-export interface SGNotifyPurposeParams {
+export interface SGNotifyTemplateParams {
   templateId: SGNotifyMessageTemplateId
   templatePurposeParams: Record<string, string> // exclude non-purpose params like agency and officer info
 }
@@ -27,7 +27,7 @@ export class Purpose {
 
   // set at the SGNotify level, so if WhatsApp support, just add another column
   @Column('jsonb', { nullable: false })
-  sgNotifyPurposeParams: SGNotifyPurposeParams
+  sgNotifyTemplateParams: SGNotifyTemplateParams
 
   @OneToMany(() => Notification, (notification) => notification.purpose)
   notifications: Notification[]

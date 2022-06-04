@@ -8,7 +8,7 @@ export class addPurposeEntity1654324422142 implements MigrationInterface {
       `ALTER TABLE "notification" RENAME COLUMN "call_scope" TO "purpose_purpose_id"`,
     )
     await queryRunner.query(
-      `CREATE TABLE "purpose" ("purpose_id" character varying(255) NOT NULL, "menu_description" character varying(255) NOT NULL, "sg_notify_purpose_params" jsonb NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "agency_id" character varying(255), CONSTRAINT "PK_9e4a5e409d6c30401f949c3b9f9" PRIMARY KEY ("purpose_id"))`,
+      `CREATE TABLE "purpose" ("purpose_id" character varying(255) NOT NULL, "menu_description" character varying(255) NOT NULL, "sg_notify_template_params" jsonb NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "agency_id" character varying(255), CONSTRAINT "PK_9e4a5e409d6c30401f949c3b9f9" PRIMARY KEY ("purpose_id"))`,
     )
     await queryRunner.query(
       `ALTER TABLE "notification" DROP COLUMN "purpose_purpose_id"`,
