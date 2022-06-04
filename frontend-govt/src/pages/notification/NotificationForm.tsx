@@ -21,7 +21,7 @@ import { NotificationService } from '../../services/NotificationService'
 
 interface NotificationFormData {
   nric: string
-  callScope?: string
+  purposeId: string
 }
 
 interface NotificationFormProps {

@@ -1,13 +1,13 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator'
+import { IsString, IsNotEmpty } from 'class-validator'
 import { IsNric } from '../../common/decorators'
-import { Notification } from 'database/entities'
+import { Notification, Purpose } from 'database/entities'
 import { GetOfficerProfileDto } from '../../officers/dto'
 
 // TODO refactor notification DTOs into shared folder 2/2
 export class SendNotificationDto {
   @IsString()
-  @IsOptional()
-  callScope: string
+  @IsNotEmpty()
+  purposeId: string
 
   @IsString()
   @IsNric()
@@ -17,7 +17,9 @@ export class SendNotificationDto {
 
 export type SendNotificationResponseDto = Pick<
   Notification,
-  'id' | 'createdAt' | 'callScope'
+  'id' | 'createdAt'
 > & {
   officer: GetOfficerProfileDto
+} & {
+  purpose: Pick<Purpose, 'purposeId' | 'menuDescription'>
 }

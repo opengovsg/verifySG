@@ -30,7 +30,7 @@ export class NotificationsService {
 
   async findById(id: number): Promise<Notification | undefined> {
     return this.notificationRepository.findOne(id, {
-      relations: ['officer', 'officer.agency'],
+      relations: ['officer', 'officer.agency', 'purpose'],
     })
   }
 
@@ -153,11 +153,12 @@ export class NotificationsService {
   }
 
   mapToDto(notification: Notification): SendNotificationResponseDto {
-    const { id, officer, createdAt } = notification
+    const { id, officer, createdAt, purpose } = notification
     return {
       id,
       createdAt,
       officer: this.officersService.mapToDto(officer),
+      purpose: this.purposesService.mapToDto(purpose),
     }
   }
 }
