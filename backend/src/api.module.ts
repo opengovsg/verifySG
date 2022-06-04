@@ -7,6 +7,7 @@ import { OfficersModule } from './officers/officers.module'
 import { AuthOfficerModule } from './auth-officer/auth-officer.module'
 import { AgenciesModule } from './agencies/agencies.module'
 import { SentryModule } from './sentry/sentry.module'
+import { PurposesModule } from './purposes/purposes.module'
 
 const apiModules = [
   HealthModule,
@@ -16,6 +17,7 @@ const apiModules = [
   AuthOfficerModule,
   AgenciesModule,
   NotificationsModule,
+  PurposesModule,
 ]
 
 @Module({
