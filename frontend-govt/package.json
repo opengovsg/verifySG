@@ -32,6 +32,7 @@
     "react-markdown": "^8.0.2",
     "react-query": "^3.34.16",
     "react-router-dom": "^5.3.0",
+    "react-select": "^5.3.2",
     "sanitize-html": "^2.7.0"
   },
   "devDependencies": {
