@@ -12,6 +12,7 @@ import { Notification } from './notification.entity'
 import { Agency } from './agency.entity'
 import { SGNotifyMessageTemplateId } from '../../notifications/sgnotify/message-templates/message-template'
 
+// TODO: refactor into shared folders SGNotifyTemplateParams 2/2
 export interface SGNotifyTemplateParams {
   templateId: SGNotifyMessageTemplateId
   templatePurposeParams: Record<string, string> // exclude non-purpose params like agency and officer info

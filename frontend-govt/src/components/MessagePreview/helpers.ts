@@ -11,6 +11,13 @@ export const getMaskedNric = (nric: string) => {
   }
 }
 
+// TODO: refactor into shared folders SGNotifyMessageTemplateId 1/2
+export enum SGNotifyMessageTemplateId {
+  GENERIC_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
+  GENERIC_NOTIFICATION_DURING_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-02',
+  SPF_POLICE_REPORT_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
+  GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
+}
 /**
  * Generates message content based on different agencies. If agency is not supported, will default to unsupported message.
  *

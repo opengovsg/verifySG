@@ -19,6 +19,7 @@ export interface SGNotifyParams {
   requestId?: string
 }
 
+// TODO: refactor into shared folders SGNotifyMessageTemplateId 2/2
 export enum SGNotifyMessageTemplateId {
   GENERIC_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
   GENERIC_NOTIFICATION_DURING_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-02',

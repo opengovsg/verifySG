@@ -28,7 +28,6 @@ export const ApiService = axios.create({
 ApiService.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const transformedError = getApiErrorMessage(error)
-    throw transformedError
+    throw getApiErrorMessage(error) // transformed error
   },
 )
