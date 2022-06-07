@@ -1,7 +1,8 @@
 import React from 'react'
-import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
+import { Controller, useForm } from 'react-hook-form'
+import { useMutation, useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
+import Select, { SingleValue } from 'react-select'
 import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
 import {
   Button,
@@ -16,8 +17,9 @@ import nric from 'nric'
 import HeaderContainer from '../../components/HeaderContainer'
 import MessagePreview from '../../components/MessagePreview'
 import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
-import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
+import { useNotificationData } from '../../contexts/notification/NotificationDataProvider'
 import { NotificationService } from '../../services/NotificationService'
+import { PurposeService } from '../../services/PurposeService'
 
 interface NotificationFormData {
   nric: string
@@ -28,19 +30,24 @@ interface NotificationFormProps {
   onSubmit?: (data: NotificationFormData) => void
 }
 
+interface PurposeOption {
+  // shape for React Select options
+  value: string // purposeId
+  label: string // menuDescription
+}
+
 export const NotificationForm: React.FC<NotificationFormProps> = () => {
-  // use form hooks
   const {
     register,
     watch,
-    trigger,
-    clearErrors,
     reset,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<NotificationFormData>()
-  const { setTargetNRIC } = useNotificationData()
-
+  } = useForm<NotificationFormData>({
+    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
+  })
+  const { setTargetNRIC, setPurposeDescription } = useNotificationData()
   const toast = useToast({
     isClosable: true,
     containerStyle: {
@@ -50,19 +57,35 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     duration: 6000,
   })
   const history = useHistory()
+  const { data: purposes } = useQuery('purposes', PurposeService.getAllPurposes)
 
-  // handle submission logic
+  const purposeOptions = // convert purposes to purposeOptions for React Select
+    purposes?.map((purpose) => {
+      return {
+        value: purpose.purposeId,
+        label: purpose.menuDescription,
+      }
+    }) ?? []
+  const getPurposeOptionByValue = (
+    comparisonValue: string,
+  ): PurposeOption | undefined => {
+    return purposeOptions.find((option) => option.value === comparisonValue)
+  }
+  const isPurposeChosen = (selectedOption: string): boolean => {
+    return getPurposeOptionByValue(selectedOption) !== undefined
+  }
+
   const submissionHandler = (data: NotificationFormData) => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         setTargetNRIC(data.nric)
+        setPurposeDescription(getPurposeOptionByValue(data.purposeId)?.label)
         history.push(FEEDBACKFORM_ROUTE)
       },
     })
   }
 
-  // query hook to mutate data
   const sendNotification = useMutation(NotificationService.sendNotification, {
     onSuccess: () => {
       toast({
@@ -130,12 +153,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                         nric.validate(v) || 'Please enter a valid NRIC / FIN',
                     },
                   })}
-                  onBlur={() => {
-                    trigger('nric')
-                  }}
-                  onFocus={() => {
-                    clearErrors('nric')
-                  }}
                   placeholder="e.g. S1234567D"
                   autoFocus
                 />
@@ -143,6 +160,52 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
                 )}
               </FormControl>
+              {purposeOptions.length > 0 && (
+                <FormControl isInvalid={!!errors.purposeId}>
+                  <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                    Purpose of Call
+                  </FormLabel>
+                  <Controller
+                    name="purposeId"
+                    control={control}
+                    rules={{
+                      validate: (v: string) =>
+                        isPurposeChosen(v) || 'Please select a purpose',
+                    }}
+                    defaultValue={
+                      // provide default value if only one option
+                      purposeOptions.length === 1
+                        ? purposeOptions[0].value
+                        : undefined
+                    }
+                    render={({ field: { onChange, value } }) => (
+                      <Select
+                        options={purposeOptions}
+                        value={getPurposeOptionByValue(value)}
+                        onChange={(option: SingleValue<PurposeOption>) =>
+                          onChange(option?.value)
+                        }
+                        // TODO: refactor theme somewhere else
+                        theme={(theme) => {
+                          return {
+                            ...theme,
+                            colors: {
+                              ...theme.colors,
+                              primary: '#1B3C87',
+                            },
+                          }
+                        }}
+                        placeholder="Type to search"
+                      />
+                    )}
+                  />
+                  {errors.purposeId && (
+                    <FormErrorMessage>
+                      {errors.purposeId.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              )}
               <StackItem>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   Message Preview

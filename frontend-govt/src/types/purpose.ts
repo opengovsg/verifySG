@@ -7,9 +7,7 @@ export interface SGNotifyTemplateParams {
 }
 
 // TODO: refactor purpose DTOs into shared types (1/2)
-export interface AllPurposesDto {
-  purposes: PurposeDto[]
-}
+export type AllPurposesDto = PurposeDto[]
 
 export interface PurposeDto extends PurposeResponseDto {
   sgNotifyTemplateParams: SGNotifyTemplateParams
