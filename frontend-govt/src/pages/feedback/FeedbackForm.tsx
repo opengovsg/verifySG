@@ -6,7 +6,7 @@ import { Button } from '@opengovsg/design-system-react'
 
 import HeaderContainer from '../../components/HeaderContainer'
 import { NOTIFICATIONFORM_ROUTE } from '../../constants/routes'
-import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
+import { useNotificationData } from '../../contexts/notification/NotificationDataProvider'
 import { OfficerService } from '../../services/OfficerService'
 
 interface FormFieldPrefill {
@@ -19,9 +19,15 @@ export const FeedbackForm: React.FC = () => {
   const nameFieldId = '623d285ee46e5c0012d70649'
   const positionFieldId = '623d286e012667001232b83f'
   const nricFieldId = '623d31820126670012345b40'
+  const purposeFieldId = '' // TODO
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
-  const { targetNRIC, setTargetNRIC } = useNotificationData()
+  const {
+    targetNRIC,
+    setTargetNRIC,
+    purposeDescription,
+    setPurposeDescription,
+  } = useNotificationData()
   const history = useHistory()
 
   const getPrefillLink = (ogLink: string, prefills: FormFieldPrefill[]) =>
@@ -54,6 +60,10 @@ export const FeedbackForm: React.FC = () => {
           fieldId: nricFieldId,
           value: targetNRIC,
         },
+        {
+          fieldId: purposeFieldId,
+          value: purposeDescription,
+        },
       ]
       setEmbedLink(getPrefillLink(formLink, prefills))
     },
@@ -62,6 +72,7 @@ export const FeedbackForm: React.FC = () => {
   const returnToNotificationForm = () => {
     // clear nric in notificationDataContext
     setTargetNRIC(undefined)
+    setPurposeDescription(undefined)
 
     // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)

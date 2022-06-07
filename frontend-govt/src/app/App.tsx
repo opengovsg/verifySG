@@ -11,7 +11,7 @@ import { Integrations } from '@sentry/tracing'
 import axios from 'axios'
 
 import AuthProvider from '../contexts/auth/AuthProvider'
-import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
+import { NotificationDataProvider } from '../contexts/notification/NotificationDataProvider'
 import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'

@@ -1,29 +1,49 @@
-import { ReactNode, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
-import { NotificationDataContext } from './NotificationDataContext'
+interface NotificationDataContext {
+  targetNRIC: string | undefined
+  setTargetNRIC: (nric: string | undefined) => void
+  purposeDescription: string | undefined
+  setPurposeDescription: (purposeDescription: string | undefined) => void
+}
 
-// NotificationData provider props & declaration
 interface NotificationDataProps {
   children: ReactNode
+}
+
+// specify defaults for notification context
+export const NotificationDataContext = createContext<
+  NotificationDataContext | undefined
+>(undefined)
+
+// convenience notification hook
+export const useNotificationData = (): NotificationDataContext => {
+  const notificationData = useContext(NotificationDataContext)
+  if (!notificationData)
+    throw new Error(
+      'useNotificationData must be used within an NotificationDataProvider',
+    )
+  return notificationData
 }
 
 export const NotificationDataProvider = ({
   children,
 }: NotificationDataProps) => {
   const [targetNRIC, setTargetNRIC] = useState<string | undefined>()
+  const [purposeDescription, setPurposeDescription] = useState<
+    string | undefined
+  >()
 
   return (
     <NotificationDataContext.Provider
       value={{
         targetNRIC,
-        setTargetNRIC: (nric) => {
-          setTargetNRIC(nric)
-        },
+        setTargetNRIC,
+        purposeDescription,
+        setPurposeDescription,
       }}
     >
       {children}
     </NotificationDataContext.Provider>
   )
 }
-
-export default NotificationDataProvider
