@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { Purpose, SGNotifyTemplateParams } from '../database/entities'
-import { AllPurposesDto, PurposeResponseDto } from './dto'
+import { PurposeResponseDto } from './dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
@@ -26,19 +26,6 @@ export class PurposesService {
       where: { agency: { id: agencyId } },
       relations: ['agency'],
     })
-  }
-  mapToAllPurposesDto(purposes: Purpose[]): AllPurposesDto {
-    return {
-      purposes: purposes.map((purposeEntity) => {
-        const { purposeId, menuDescription, sgNotifyTemplateParams } =
-          purposeEntity
-        return {
-          purposeId,
-          menuDescription,
-          sgNotifyTemplateParams,
-        }
-      }),
-    }
   }
 
   async getSGNotifyTemplateParams(

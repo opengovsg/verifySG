@@ -23,8 +23,7 @@ export class PurposesController {
       throw new NotFoundException('No officer with this officer ID found')
     }
     const { agency } = officer
-    const purposes = await this.purposesService.getPurposesByAgencyId(agency.id)
-    return this.purposesService.mapToAllPurposesDto(purposes)
+    return await this.purposesService.getPurposesByAgencyId(agency.id)
   }
   // TODO: POST endpoint
   /*
