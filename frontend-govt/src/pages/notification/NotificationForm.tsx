@@ -171,7 +171,7 @@ export const NotificationForm = (): JSX.Element => {
   return (
     <HeaderContainer>
       <Heading
-        fontSize={{ base: 'xl', md: '2xl' }}
+        fontSize={{ base: 'xl', md: '2xl' }} // suggested by Kar Rui; useful for subsequent refactoring
         color="primary.500"
         mb={[4, 4, 8, 8]}
       >
@@ -255,7 +255,7 @@ export const NotificationForm = (): JSX.Element => {
                               ...theme,
                               colors: {
                                 ...theme.colors,
-                                primary: '#1B3C87',
+                                primary: '#1B3C87', // ideally should refer back to theme, rather than hardcoding
                               },
                             }
                           }}
