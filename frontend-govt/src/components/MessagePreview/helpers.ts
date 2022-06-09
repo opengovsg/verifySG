@@ -1,3 +1,4 @@
+import { SGNotifyTemplateParams } from '../../types/purpose'
 import { maskNric } from '../../utils/nric'
 
 export const getMaskedNric = (nric: string) => {
@@ -25,40 +26,62 @@ export enum SGNotifyMessageTemplateId {
  * - OGP
  * - SPF
  */
-export const messageContentFactory = ({
-  nric,
-  name,
-  agency,
-  position,
-}: {
-  nric: string
-  name: string
-  agency: string
-  position: string
-}): string => {
+// note similarity with interfaces in message-template.ts on frontend 2/2; TODO refactor into shared types
+export interface AgencyParams {
+  agencyShortName: string
+  agencyName: string
+}
+
+export interface OfficerParams {
+  officerName: string
+  officerPosition: string
+}
+
+export type SelectedPurposePreviewParams = SGNotifyTemplateParams // to extend if other modalities supported
+
+export const messageContentFactory = (
+  nric: string,
+  agencyParams: AgencyParams,
+  officerParams: OfficerParams,
+  selectedPurpose: SelectedPurposePreviewParams | undefined,
+): string => {
+  if (!selectedPurpose)
+    return '<b>Select purpose of call to see message preview</b>'
+
   const maskedNric = getMaskedNric(nric.toUpperCase())
+  const { templateId, templatePurposeParams } = selectedPurpose
+  const { agencyShortName, agencyName } = agencyParams
+  const { officerName, officerPosition } = officerParams
 
-  switch (agency.toLowerCase()) {
-    case 'spf':
-      return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
-        <br/>
-        <br/>
-        This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agency.toUpperCase()}</u></b>.
-        <br/>
-        <br/>
-        The purpose of this call is to follow up on your recent police report/feedback to the Police.`
-
-    case 'ogp':
-      return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
-        <br/>
-        <br/>
-        <u><b>${name}, ${position}</u></b> at <u><b>${agency}</u></b> will be calling you shortly.
-        <br/>
-        <br/>
-        Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
-        <br/>
-        <br/>
-        This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their name and designation, ensuring that it matches the information provided in this message.`
+  switch (templateId) {
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
+      // DANGER: be careful about this destructuring; they are template-specific and not typed
+      const callDetailsNotifyBeforeCall = templatePurposeParams.call_details
+      const callbackDetailsNotifyBeforeCall =
+        templatePurposeParams.callback_details || ' '
+      return `<b>Title:</b> Upcoming phone call
+        <br><br>
+        <b>Agency:</b> ${agencyName}
+        <br><br>
+        Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
+        <br><br>
+        <u><b>${officerName}, ${officerPosition}</u></b> at <u><b>${agencyShortName}</u></b> will be calling you shortly.
+        <br><br>
+        ${callDetailsNotifyBeforeCall}
+        <br><br>
+        ${callbackDetailsNotifyBeforeCall}`
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
+      // DANGER: be careful about this destructuring; they are template-specific and not typed
+      const callDetailsNotifyDuringCall = templatePurposeParams.call_details
+      return `<b>Title:</b> Verify your phone call
+        <br><br>
+        <b>Agency:</b> ${agencyName}
+        <br><br>
+        Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
+        <br><br>
+        This message is to verify that you are currently speaking to <u><b>${officerName}, ${officerPosition}</u></b> from <b><u>${agencyShortName}</u></b>.
+        <br><br>
+        ${callDetailsNotifyDuringCall}`
     default:
       return 'Your agency is not currently supported by CheckWho. Please contact our administrators for support'
   }

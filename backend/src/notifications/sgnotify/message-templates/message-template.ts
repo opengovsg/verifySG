@@ -35,6 +35,7 @@ export const sgNotifyParamsStatusToNotificationStatusMapper = (
     : NotificationStatus.SENT
 }
 
+// note similarity with interfaces in messageContentFactory in Message Preview 1/2; TODO refactor into shared types
 export interface AgencyParams {
   agencyShortName: string
   agencyName: string
@@ -46,6 +47,7 @@ export interface OfficerParams {
   officerPosition: string
 }
 
+// note similarity with interfaces in messageContentFactory in Message Preview 2/2; TODO refactor into shared types
 const generateGenericSGNotifyParams = (
   nric: string,
   agencyParams: AgencyParams,

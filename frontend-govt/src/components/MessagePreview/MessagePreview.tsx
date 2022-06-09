@@ -4,22 +4,34 @@ import sanitizeHtml from 'sanitize-html'
 
 import { OfficerService } from '../../services/OfficerService'
 
-import { messageContentFactory } from './helpers'
+import { messageContentFactory, SelectedPurposePreviewParams } from './helpers'
 
-export const MessagePreview: React.FC<{ nric: string }> = ({ nric }) => {
+interface MessagePreviewProps {
+  nric: string
+  selectedPurposePreviewParams: SelectedPurposePreviewParams | undefined
+}
+
+export const MessagePreview: React.FC<MessagePreviewProps> = ({
+  nric,
+  selectedPurposePreviewParams,
+}) => {
   // query hooks to retrieve and mutate data
   const { data: profile } = useQuery('profile', OfficerService.getOfficer)
 
-  const name = profile?.name ?? '<NO PROFILE NAME ENTERED>'
-  const position = profile?.position ?? '<NO POSITION ENTERED>'
-  const agency = profile?.agency.id ?? '<NO AGENCY ENTERED>'
+  const officerName = profile?.name ?? '<NO PROFILE NAME ENTERED>'
+  const officerPosition = profile?.position ?? '<NO POSITION ENTERED>'
+  const agencyShortName = profile?.agency.id ?? '<NO AGENCY ENTERED>'
+  const agencyName = profile?.agency.name ?? '<NO AGENCY ENTERED>'
 
-  const messageContent = messageContentFactory({
+  const messageContent = messageContentFactory(
     nric,
-    name,
-    position,
-    agency,
-  })
+    {
+      agencyShortName,
+      agencyName,
+    },
+    { officerName, officerPosition },
+    selectedPurposePreviewParams,
+  )
 
   return (
     <Alert colorScheme={'primary.200'}>
