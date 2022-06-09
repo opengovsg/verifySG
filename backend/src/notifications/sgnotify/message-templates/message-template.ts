@@ -106,7 +106,7 @@ export const generateNewSGNotifyParams = (
         },
       }
     default:
-      // strictly speaking untrue; wei wish to avoid supporting specific templates as far as possible
+      // strictly speaking untrue; we wish to avoid supporting specific templates as far as possible
       throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
 }
