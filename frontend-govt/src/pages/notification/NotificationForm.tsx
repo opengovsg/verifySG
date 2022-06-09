@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import Select, { SingleValue } from 'react-select'
-import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  FormControl,
+  Heading,
+  Skeleton,
+  StackItem,
+  VStack,
+} from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -20,14 +27,11 @@ import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
 import { useNotificationData } from '../../contexts/notification/NotificationDataProvider'
 import { NotificationService } from '../../services/NotificationService'
 import { PurposeService } from '../../services/PurposeService'
+import { SGNotifyTemplateParams } from '../../types/purpose'
 
 interface NotificationFormData {
   nric: string
   purposeId: string
-}
-
-interface NotificationFormProps {
-  onSubmit?: (data: NotificationFormData) => void
 }
 
 interface PurposeOption {
@@ -36,17 +40,13 @@ interface PurposeOption {
   label: string // menuDescription
 }
 
-export const NotificationForm: React.FC<NotificationFormProps> = () => {
-  const {
-    register,
-    watch,
-    reset,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<NotificationFormData>({
+const useNotificationForm = () => {
+  const formMethods = useForm<NotificationFormData>({
     mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
   })
+
+  const { watch, reset, setValue, handleSubmit } = formMethods
+
   const { setTargetNRIC, setPurposeDescription } = useNotificationData()
   const toast = useToast({
     isClosable: true,
@@ -57,26 +57,47 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     duration: 6000,
   })
   const history = useHistory()
-  const { data: purposes } = useQuery('purposes', PurposeService.getAllPurposes)
+  const { data: purposes, isLoading } = useQuery(
+    ['purposes'], // query key must be in array in React 18
+    PurposeService.getAllPurposes,
+  )
 
-  const purposeOptions = // convert purposes to purposeOptions for React Select
+  // load default value if response only contains a single purpose
+  useEffect(() => {
+    if (!isLoading && purposes?.length === 1) {
+      // load default value on query load
+      setValue('purposeId', purposes[0].purposeId)
+    }
+  }, [isLoading, purposes])
+
+  const watchedPurpose = watch('purposeId')
+
+  const purposeOptions: PurposeOption[] = // convert purposes to purposeOptions for React Select
     purposes?.map((purpose) => {
       return {
         value: purpose.purposeId,
         label: purpose.menuDescription,
       }
     }) ?? []
+  // TODO: memoize the callback
   const getPurposeOptionByValue = (
     comparisonValue: string,
   ): PurposeOption | undefined => {
     return purposeOptions.find((option) => option.value === comparisonValue)
   }
   const isPurposeChosen = (selectedOption: string): boolean => {
-    return getPurposeOptionByValue(selectedOption) !== undefined
+    return !!getPurposeOptionByValue(selectedOption)
+  }
+  const getSGNotifyTemplateParamsByPurposeId = (
+    purposeId: string,
+  ): SGNotifyTemplateParams | undefined => {
+    if (!purposeId || !purposes) return
+    const purpose = purposes.find((purpose) => purpose.purposeId === purposeId)
+    return purpose?.sgNotifyTemplateParams
   }
 
   const submissionHandler = (data: NotificationFormData) => {
-    sendNotification.mutate(data, {
+    sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         setTargetNRIC(data.nric)
@@ -86,25 +107,71 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     })
   }
 
-  const sendNotification = useMutation(NotificationService.sendNotification, {
-    onSuccess: () => {
-      toast({
-        status: 'success',
-        description: `Notification sent to ${watch('nric')}`,
-      })
+  const sendNotificationMutation = useMutation(
+    NotificationService.sendNotification,
+    {
+      onSuccess: () => {
+        toast({
+          status: 'success',
+          description: `Notification sent to ${watch('nric')}`,
+        })
+      },
+      onError: (err) => {
+        toast({
+          status: 'warning',
+          description: `${err}` || 'Something went wrong',
+        })
+      },
     },
-    onError: (err) => {
-      toast({
-        status: 'warning',
-        description: `${err}` || 'Something went wrong',
-      })
-    },
-  })
+  )
+
+  const purposeValidationRules = {
+    validate: (v: string) => isPurposeChosen(v) || 'Please select a purpose',
+  }
+
+  const onSubmit = handleSubmit(submissionHandler)
+
+  const templateParams = getSGNotifyTemplateParamsByPurposeId(watchedPurpose)
+
+  const clearDetails = () => reset()
+
+  return {
+    purposeOptions,
+    formMethods,
+    onSubmit,
+    isLoading,
+    purposeValidationRules,
+    getPurposeOptionByValue,
+    templateParams,
+    clearDetails,
+    isMutating: sendNotificationMutation.isLoading,
+  }
+}
+
+export const NotificationForm = (): JSX.Element => {
+  const {
+    formMethods,
+    purposeOptions,
+    isLoading,
+    purposeValidationRules,
+    clearDetails,
+    onSubmit,
+    getPurposeOptionByValue,
+    templateParams,
+    isMutating,
+  } = useNotificationForm()
+
+  const {
+    register,
+    formState: { errors },
+    control,
+    getValues,
+  } = formMethods
 
   return (
     <HeaderContainer>
       <Heading
-        fontSize={['xl', 'xl', '2xl', '2xl']}
+        fontSize={{ base: 'xl', md: '2xl' }}
         color="primary.500"
         mb={[4, 4, 8, 8]}
       >
@@ -139,7 +206,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           of your call.
         </InlineMessage>
         <Box width="100%">
-          <form onSubmit={handleSubmit(submissionHandler)}>
+          <form onSubmit={onSubmit}>
             <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
@@ -156,67 +223,68 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   placeholder="e.g. S1234567D"
                   autoFocus
                 />
-                {errors.nric && (
-                  <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
-                )}
+                <FormErrorMessage>{errors.nric?.message}</FormErrorMessage>
               </FormControl>
-              {purposeOptions.length > 0 && (
+              {
                 <FormControl isInvalid={!!errors.purposeId}>
                   <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                     Purpose of Call
                   </FormLabel>
-                  <Controller
-                    name="purposeId"
-                    control={control}
-                    rules={{
-                      validate: (v: string) =>
-                        isPurposeChosen(v) || 'Please select a purpose',
-                    }}
-                    defaultValue={
-                      // provide default value if only one option
-                      purposeOptions.length === 1
-                        ? purposeOptions[0].value
-                        : undefined
-                    }
-                    render={({ field: { onChange, value } }) => (
-                      <Select
-                        options={purposeOptions}
-                        value={getPurposeOptionByValue(value)}
-                        onChange={(option: SingleValue<PurposeOption>) =>
-                          onChange(option?.value)
-                        }
-                        // TODO: refactor theme somewhere else
-                        theme={(theme) => {
-                          return {
-                            ...theme,
-                            colors: {
-                              ...theme.colors,
-                              primary: '#1B3C87',
-                            },
+                  <Skeleton isLoaded={!isLoading}>
+                    <Controller
+                      name="purposeId"
+                      control={control}
+                      rules={purposeValidationRules}
+                      render={({
+                        field: {
+                          onChange: controllerOnChange,
+                          value: controllerValue,
+                          ...rest
+                        },
+                      }) => (
+                        <Select
+                          {...rest}
+                          options={purposeOptions}
+                          value={getPurposeOptionByValue(controllerValue)}
+                          onChange={(option: SingleValue<PurposeOption>) =>
+                            controllerOnChange(option?.value)
                           }
-                        }}
-                        placeholder="Type to search"
-                      />
-                    )}
-                  />
-                  {errors.purposeId && (
-                    <FormErrorMessage>
-                      {errors.purposeId.message}
-                    </FormErrorMessage>
-                  )}
+                          // TODO: refactor theme somewhere else
+                          theme={(theme) => {
+                            return {
+                              ...theme,
+                              colors: {
+                                ...theme.colors,
+                                primary: '#1B3C87',
+                              },
+                            }
+                          }}
+                          placeholder="Type to search"
+                        />
+                      )}
+                    />
+                  </Skeleton>
+                  <FormErrorMessage>
+                    {errors.purposeId?.message}
+                  </FormErrorMessage>
                 </FormControl>
-              )}
+              }
               <StackItem>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   Message Preview
                 </FormLabel>
-                <MessagePreview nric={watch('nric') ?? ''} />
+                <Skeleton isLoaded={!isLoading}>
+                  <MessagePreview
+                    nric={getValues('nric') ?? ''}
+                    selectedPurposePreviewParams={templateParams}
+                  />
+                </Skeleton>
               </StackItem>
               <StackItem>
                 <VStack spacing={[4, 4, 4, 4]}>
                   <Button
                     type="submit"
-                    isLoading={sendNotification.isLoading}
+                    isLoading={isMutating}
                     loadingText="Notifying..."
                     width="100%"
                   >
@@ -225,7 +293,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <Button
                     width="100%"
                     variant="link"
-                    onClick={() => reset()}
+                    onClick={clearDetails}
                     type="reset"
                   >
                     Clear details

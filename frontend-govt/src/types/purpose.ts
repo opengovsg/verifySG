@@ -11,9 +11,9 @@ export type AllPurposesDto = PurposeDto[]
 
 export interface PurposeDto extends PurposeResponseDto {
   sgNotifyTemplateParams: SGNotifyTemplateParams
+  menuDescription: string
 }
 
 export interface PurposeResponseDto {
   purposeId: string
-  menuDescription: string
 }
