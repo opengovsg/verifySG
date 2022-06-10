@@ -151,7 +151,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
                     {...register('position', {
                       required: 'Please enter a valid position',
                       pattern: {
-                        value: /^[\x00-\x7F]+$/, // ASCII validation
+                        value: /^[A-Za-z ,.'-]+$/, // ASCII validation
                         message: 'Please enter a valid position',
                       },
                     })}
