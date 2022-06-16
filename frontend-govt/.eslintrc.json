@@ -1,10 +1,5 @@
 {
-  "plugins": [
-    "@typescript-eslint",
-    "import",
-    "simple-import-sort",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint", "import", "simple-import-sort", "prettier"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
