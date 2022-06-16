@@ -18,7 +18,7 @@ export default {
   logging: config.get('database.logging'),
   // https://docs.nestjs.com/techniques/database#auto-load-entities
   // false in production https://docs.nestjs.com/techniques/database#:~:text=WARNING,lose%20production%20data.
-  synchronize: config.get('environment') === 'development',
+  synchronize: false,
   // js for runtime, ts for typeorm cli
   entities: [join(__dirname, 'entities', '*.entity{.js,.ts}')],
   migrations: [join(__dirname, 'migrations', '*{.js,.ts}')],
