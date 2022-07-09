@@ -27,12 +27,13 @@ export class AuthOfficerService {
     if (!agency) throw new Error(`Email '${email}' not whitelisted`)
 
     const { otp, timeLeftMinutes } = await this.otpService.getOtp(email)
+    const subject = `One-Time Password (OTP) for CheckWho is ${otp}`
     const htmlBody = `Your OTP is <b>${otp}</b>. It will expire in ${timeLeftMinutes} minutes.
     Please use this to login to your account.
     <p>If your OTP does not work, please request for a new one.</p>`
 
     this.logger.log(`Sending mail to ${email}`)
-    await this.mailerService.sendMail(htmlBody, email)
+    await this.mailerService.sendMail(subject, htmlBody, email)
   }
 
   async verifyOtp(email: string, otp: string): Promise<Officer | undefined> {
