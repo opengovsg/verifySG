@@ -16,6 +16,7 @@ import { ConfigService, Logger } from 'core/providers'
 import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from '../officers/officers.service'
+import { getRequestIp } from '../common/utils'
 
 @Controller('auth-officers')
 export class AuthOfficerController {
@@ -27,10 +28,11 @@ export class AuthOfficerController {
   ) {}
 
   @Post()
-  async sendOTP(@Body() body: OfficerDto): Promise<void> {
+  async sendOTP(@Body() body: OfficerDto, @Req() req: Request): Promise<void> {
     const { email } = body
     try {
-      return await this.authOfficerService.sendOtp(email)
+      const ipAddress = getRequestIp(req)
+      return await this.authOfficerService.sendOtp(email, ipAddress)
     } catch (err) {
       throw new BadRequestException(
         err instanceof Error ? err.message : 'Failed to send OTP',
