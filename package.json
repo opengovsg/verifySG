@@ -2,12 +2,20 @@
   "name": "checkwho",
   "version": "1.1.0",
   "description": "",
+  "workspaces": [
+    "services/*",
+    "libs/*"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "main": "build/backend/index.js",
   "scripts": {
-    "on-backend": "npm run --prefix backend",
-    "on-frontend-govt": "npm run --prefix frontend-govt",
+    "on-backend": "npm run --prefix services/backend",
+    "on-frontend-govt": "npm run --prefix services/frontend-govt",
     "docker-dev": "docker-compose -f docker-compose.dev.yml up --build",
-    "postinstall": "npm install --prefix backend && npm install --prefix frontend-govt",
+    "postinstall": "npm install --prefix services/backend && npm install --prefix services/frontend-govt",
     "dev": "concurrently \"npm run docker-dev\" \"npm run on-frontend-govt dev\" \"npm run on-backend dev\" ",
     "lint": "npm run on-backend -- lint && npm run on-frontend-govt -- lint",
     "lint:fix": "npm run on-backend -- lint:fix && npm run on-frontend-govt -- lint:fix",
@@ -15,7 +23,7 @@
     "build": "npm run on-backend -- build && npm run on-frontend-govt -- build",
     "coverage": "npm run on-backend -- test:cov && cat backend/coverage/lcov.info > lcov.info",
     "cz": "git-cz",
-    "start": "npm run --prefix backend -- start",
+    "start": "npm run on-backend -- start",
     "prepare": "husky install",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
@@ -28,7 +36,8 @@
     "commitizen": "^4.2.4",
     "concurrently": "^7.1.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.2"
+    "husky": "^7.0.2",
+    "turbo": "^1.3.1"
   },
   "config": {
     "commitizen": {
