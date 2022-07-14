@@ -20,7 +20,7 @@ export class MailerService {
     recipient: string,
   ): Promise<void> => {
     if (this.configService.get('environment') === 'development')
-      return this.logger.log(JSON.stringify(body, null, 2))
+      return this.logger.log(JSON.stringify({ subject, body }, null, 2))
 
     const mail = {
       recipient,
