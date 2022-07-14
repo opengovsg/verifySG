@@ -45,6 +45,8 @@ export class NotificationsService {
     const normalizedNric = normalizeNric(nric)
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException('Officer not found')
+    if (!officer.name || !officer.position)
+      throw new BadRequestException('Officer must have name and position')
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
     const notificationToAdd = this.notificationRepository.create({
