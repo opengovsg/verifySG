@@ -9,7 +9,13 @@
 
 - Install and audit node dependencies (run from root)
     ```
-    npm run postinstall
+    npm i
+    ```
+- Run migrations on the development database, then seed data (run from root)
+    ```
+    npm run on-backend -- migration:run
+  
+    npm run on-backend -- seed
     ```
 
 - Start up dev env (run from root)
