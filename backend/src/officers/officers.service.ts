@@ -9,7 +9,7 @@ import {
 } from './dto'
 
 import { AgenciesService } from 'agencies/agencies.service'
-import { normalizeEmail } from '../common/utils'
+import { normalizeEmail } from '~shared/utils/email'
 
 @Injectable()
 export class OfficersService {
