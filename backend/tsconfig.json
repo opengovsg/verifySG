@@ -15,6 +15,15 @@
     "incremental": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "~shared/*": ["../../shared/build/*"]
+    }
+  },
+  "references": [
+    { "path": "../shared" }
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
