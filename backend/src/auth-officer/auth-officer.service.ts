@@ -6,7 +6,7 @@ import { AgenciesService } from 'agencies/agencies.service'
 import { OtpService, OTPVerificationResult } from '../otps/otp.service'
 
 import { Logger } from 'core/providers'
-import { normalizeEmail } from '../common/utils'
+import { normalizeEmail } from '~shared/utils/email'
 import { OfficersService } from '../officers/officers.service'
 import { Officer } from '../database/entities'
 

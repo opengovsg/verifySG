@@ -7,7 +7,6 @@
  */
 export function normalizeEmail(email: string): string {
   const normalizedEmail = email.toLowerCase().trim()
-  // TODO: refactor regexp into shared directory (2/2)
   if (
     !normalizedEmail.match(
       "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
@@ -26,3 +25,12 @@ export function parseEmailDomain(email: string): string {
   email = normalizeEmail(email)
   return email.split('@')[1]
 }
+
+export const isGovtEmail = (inputEmail: string): boolean => {
+  return !!inputEmail.match(
+    "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
+  )
+}
+
+export const INVALID_GOV_SG_EMAIL =
+  'Please provide a valid .gov.sg email address.'
