@@ -5,7 +5,8 @@ import { Repository } from 'typeorm'
 import { ConfigService, Logger } from 'core/providers'
 import { ConfigSchema } from 'core/config.schema'
 import { OTP } from '../database/entities'
-import { normalizeEmail, convertMillisecondsToMinutes } from '../common/utils'
+import { normalizeEmail } from '~shared/utils/email'
+import { convertMillisecondsToMinutes } from '../common/utils'
 import { otpUtils } from './utils'
 
 const POSTGRES_MAX_SMALLINT = 32767

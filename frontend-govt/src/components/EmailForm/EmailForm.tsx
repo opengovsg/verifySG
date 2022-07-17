@@ -8,8 +8,13 @@ import {
   FormLabel,
   Input,
 } from '@opengovsg/design-system-react'
+import { AuthService } from '@services/AuthService'
 
-import { AuthService } from '../../services/AuthService'
+import {
+  INVALID_GOV_SG_EMAIL,
+  isGovtEmail,
+  normalizeEmail,
+} from '~shared/utils'
 
 interface EmailFormProps {
   onSubmit: (email: string) => void
@@ -31,15 +36,6 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
 
   const { email } = watch()
 
-  const INVALID_GOV_SG_EMAIL = 'Please provide a valid .gov.sg email address.'
-
-  // TODO: refactor regexp into shared directory (1/2)
-  const isGovtEmail = (inputEmail: string): boolean => {
-    return !!inputEmail.match(
-      "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
-    )
-  }
-
   const validateGovtEmail = useCallback((value: string) => {
     return isGovtEmail(value) || INVALID_GOV_SG_EMAIL
   }, [])
@@ -57,7 +53,8 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
 
   const submissionHandler = (inputs: EmailFormData) => {
     const { email } = inputs
-    sendOtp.mutate({ email })
+    const normalizedEmail = normalizeEmail(email)
+    sendOtp.mutate({ email: normalizedEmail })
   }
   return (
     <form onSubmit={handleSubmit(submissionHandler)}>
