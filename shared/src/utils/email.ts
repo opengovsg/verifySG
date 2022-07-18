@@ -1,4 +1,11 @@
 /**
+ * Regex for govt email address that ends in .gov.sg
+ * Cannot remember where I got the regex from; feel free to refactor if you find problems with this.
+ * Likely not a problem, since we only accept whitelisted domains.
+ */
+const govtEmailRegex =
+  "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg"
+/**
  * Normalizes email by (1) converting to lowercase; (2) removing surrounding whitespace; (3) checking it is a .gov.sg email
  * validator.normalizeEmail() has more sophisticated logic for dealing with Gmail, Outlook etc., but not needed for us
  * @param email input email
@@ -7,11 +14,7 @@
  */
 export function normalizeEmail(email: string): string {
   const normalizedEmail = email.toLowerCase().trim()
-  if (
-    !normalizedEmail.match(
-      "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
-    )
-  )
+  if (!normalizedEmail.match(govtEmailRegex))
     throw new Error(`Invalid email '${email}'`)
   return normalizedEmail
 }
@@ -27,9 +30,7 @@ export function parseEmailDomain(email: string): string {
 }
 
 export const isGovtEmail = (inputEmail: string): boolean => {
-  return !!inputEmail.match(
-    "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg",
-  )
+  return !!inputEmail.match(govtEmailRegex)
 }
 
 export const INVALID_GOV_SG_EMAIL =
