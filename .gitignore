@@ -68,6 +68,7 @@ typings/
 build
 backend/build
 frontend/build
+tsconfig.tsbuildinfo
 
 # JetBrains IDEs' settings
 .idea

@@ -1,0 +1,32 @@
+{
+  "name": "checkwho-shared",
+  "scripts": {
+    "pre-commit": "lint-staged",
+    "lint": "eslint --ext ts,tsx,js,jsx .",
+    "lint:fix": "eslint --fix --ext ts,tsx,js,jsx .",
+    "build": "tsc --build --clean && tsc",
+    "test": "jest --runInBand --passWithNoTests",
+    "test:watch": "jest --watch --runInBand",
+    "test:cov": "jest --coverage --runInBand",
+    "dev": "tsc-watch"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "jest": "^27.5.1",
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.6.2",
+    "tsc-watch": "^5.0.3",
+    "typescript": "^4.6.3"
+  },
+  "lint-staged": {
+    "**/*.(js|jsx|ts|tsx)": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  }
+}
