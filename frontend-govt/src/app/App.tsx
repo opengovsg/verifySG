@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import axios from 'axios'
 
+import { DowntimeBanner } from '../components/Banner/DowntimeBanner'
 import { StagingBanner } from '../components/Banner/StagingBanner'
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
         <BrowserRouter>
           <AuthProvider>
             <NotificationDataProvider>
+              <DowntimeBanner />
               <StagingBanner />
               <AppRouter />
             </NotificationDataProvider>
