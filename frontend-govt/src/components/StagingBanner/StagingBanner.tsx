@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import axios from 'axios'
 
 import { EnvDto } from '../../types/env'
@@ -12,13 +13,16 @@ const StagingBannerMessage = () => (
   </span>
 )
 
-export const StagingBanner: React.FC = (): JSX.Element => {
+export const StagingBanner: React.FC = (): JSX.Element | null => {
+  const [env, setEnv] = useState<string>('')
+
+  // set env once as env will not change in the same deployment
   axios.get<EnvDto>('/api/env').then((res) => {
     const { env } = res.data
-    if (!env) {
-      return
+    if (env) {
+      setEnv(env)
     }
   })
 
-  return <Banner message={StagingBannerMessage} />
+  return env === 'staging' ? <Banner message={StagingBannerMessage} /> : null
 }
