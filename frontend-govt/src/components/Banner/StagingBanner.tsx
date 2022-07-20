@@ -2,7 +2,8 @@ import { useState } from 'react'
 import axios from 'axios'
 
 import { EnvDto } from '../../types/env'
-import Banner from '../Banner'
+
+import Banner from '.'
 
 const ProductionUrl = 'https://checkwho.gov.sg/login'
 const StagingBannerMessage = () => (
