@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common'
 import { ConfigService } from 'core/providers'
 
-@Controller('sentry')
+@Controller('env')
 export class SentryController {
   constructor(private config: ConfigService) {}
 
