@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import axios from 'axios'
 
-import StagingBanner from '../components/StagingBanner'
+import { StagingBanner } from '../components/Banner/StagingBanner'
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
 import { theme } from '../theme'
