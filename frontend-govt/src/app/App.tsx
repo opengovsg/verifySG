@@ -16,13 +16,13 @@ import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'
 
-interface SentryParams {
+interface EnvParams {
   dsn: string
   env: string
 }
 
-// If Sentry params are specified, init sentry.
-axios.get<SentryParams>('/api/sentry').then((res) => {
+// If Env params are specified, init sentry.
+axios.get<EnvParams>('/api/env').then((res) => {
   const { dsn, env } = res.data
   if (dsn && env)
     Sentry.init({
