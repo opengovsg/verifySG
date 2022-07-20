@@ -2,14 +2,14 @@ import { Controller, Get } from '@nestjs/common'
 import { ConfigService } from 'core/providers'
 
 @Controller('env')
-export class SentryController {
+export class EnvController {
   constructor(private config: ConfigService) {}
 
   /**
    * Endpoint for frontend to call to retrieve frontend Sentry DSN
    */
   @Get()
-  async getSentryFrontendDsn(): Promise<{
+  async getEnv(): Promise<{
     dsn: string
     env: 'development' | 'staging' | 'production' | 'test'
   }> {
