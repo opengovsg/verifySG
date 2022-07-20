@@ -1,23 +1,22 @@
 import { Box } from '@chakra-ui/react'
 
-type MessageType = React.FC
 type BannerProps = {
-  message: MessageType
+  message: React.FC
+  background?: string
 }
 
 export const Banner: React.FC<BannerProps> = ({
   message,
-}: {
-  message: MessageType
+  background = 'primary.500',
 }): JSX.Element => {
   const Message = message
   return (
     <Box
-      h="50px"
+      p="1rem"
       minH="50px"
       color="neutral.100"
       zIndex="2000"
-      background="red.500"
+      background={background}
       display="flex"
       justifyContent="center"
       alignItems="center"
