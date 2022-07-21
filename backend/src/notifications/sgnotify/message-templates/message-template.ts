@@ -4,7 +4,7 @@ import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
-import { maskNric } from '../utils'
+import { maskNric } from '~shared/utils/nric'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -62,6 +62,8 @@ export const generateNewSGNotifyParams = (
         status: SGNotifyNotificationStatus.NOT_SENT,
       }
     case 'OGP':
+    case 'MSF':
+    case 'ECDA':
       return {
         agencyLogoUrl,
         agencyName,
@@ -160,20 +162,3 @@ export const convertSGNotifyParamsToJWTPayload = (
     },
   }
 }
-// TODO: create class/functions/template that will automatically populate params based on MessageTemplateId?
-// import { MessageTemplateId } from '../../database/entities'
-//
-// export class MessageTemplate {
-//   constructor(
-//     private readonly id: MessageTemplateId,
-//     private readonly params: string[],
-//   ) {}
-// }
-//
-// export interface MessageTemplate {
-//   id: MessageTemplateId
-//   shortMessage: string
-//   longMessage: string
-//   messageParams: string[]
-//   supportsHTML: boolean
-// }

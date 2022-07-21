@@ -1,4 +1,4 @@
-import { maskNric } from '../../utils/nric'
+import { maskNric } from '~shared/utils/nric'
 
 export const getMaskedNric = (nric: string) => {
   if (nric === '') {

@@ -28,5 +28,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "dependencies": {
+    "nric": "^1.2.2"
   }
 }
