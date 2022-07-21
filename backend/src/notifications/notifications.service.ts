@@ -7,14 +7,15 @@ import {
   NotificationType,
   ModalityParams,
 } from 'database/entities'
-import { SendNotificationResponseDto, SendNotificationDto } from './dto'
+import { SendNotificationResponseDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
 import {
   generateNewSGNotifyParams,
-  normalizeNric,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import { SGNotifyService } from './sgnotify/sgnotify.service'
+import { normalizeNric } from '~shared/utils/mask-nric'
+import { SendNotificationDto } from '~shared/types'
 
 @Injectable()
 export class NotificationsService {

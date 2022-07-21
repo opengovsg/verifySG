@@ -3,7 +3,8 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common'
 import { OfficerId } from 'common/decorators'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { NotificationsService } from './notifications.service'
-import { SendNotificationDto, SendNotificationResponseDto } from './dto'
+import { SendNotificationResponseDto } from './dto'
+import { SendNotificationDto } from '~shared/types'
 
 @Controller('notifications')
 export class NotificationsController {

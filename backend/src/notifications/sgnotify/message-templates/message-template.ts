@@ -4,7 +4,7 @@ import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
-import { maskNric } from '../utils'
+import { maskNric } from '~shared/utils/mask-nric'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
