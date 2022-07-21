@@ -8,6 +8,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
