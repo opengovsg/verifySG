@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
 
-import { EnvDto } from '../../types/env'
-
 import Banner from '.'
+
+import { EnvDto } from '~shared/types'
 
 const ProductionUrl = 'https://checkwho.gov.sg/login'
 const StagingBannerMessage = () => (
@@ -25,5 +25,7 @@ export const StagingBanner: React.FC = (): JSX.Element | null => {
     }
   })
 
-  return env === 'staging' ? <Banner message={StagingBannerMessage} /> : null
+  return env === 'development' ? (
+    <Banner message={StagingBannerMessage} />
+  ) : null
 }
