@@ -5,7 +5,7 @@
     "lint:fix": "eslint --fix --ext ts,tsx,js,jsx .",
     "prebuild": "rimraf build",
     "build": "nest build",
-    "start": "node -r tsconfig-paths/register build/main",
+    "start": "node -r tsconfig-paths/register build/index",
     "dev": "concurrently \"npm run --prefix ../shared dev\" \"nest start --watch\"",
     "dev:debug": "concurrently \"npm run --prefix ../shared dev\" \"nest start --watch --debug\"",
     "test": "jest",

@@ -70,6 +70,8 @@ jobs:
             frontend-govt/build
             backend/package*.json
             backend/build
+            shared/package*.json
+            shared/build
             .nvmrc
             .npmrc
             Buildfile
