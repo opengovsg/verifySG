@@ -1,4 +1,10 @@
 import { maskNric } from '~shared/utils/nric'
+import {
+  generateCallDetails,
+  salutations,
+  SGNotifyMessageTemplateId,
+  standardOpening,
+} from '~shared/utils/sgnotify'
 
 export const getMaskedNric = (nric: string) => {
   if (nric === '') {
@@ -29,29 +35,41 @@ export const messageContentFactory = ({
   agency: string
   position: string
 }): string => {
-  const maskedNric = getMaskedNric(nric.toUpperCase())
+  const maskedNric = getMaskedNric(nric)
 
-  switch (agency.toLowerCase()) {
-    case 'spf':
-      return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
-        <br/>
-        <br/>
-        This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agency.toUpperCase()}</u></b>.
-        <br/>
-        <br/>
-        The purpose of this call is to follow up on your recent police report/feedback to the Police.`
+  switch (agency) {
+    // TODO: move SPF away from during call notification
+    case 'SPF':
+      return `${salutations(maskedNric)} 
+        <br/><br/>
+        ${standardOpening(
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+          name,
+          position,
+          agency,
+        )}
+        <br/><br/>
+        ${generateCallDetails(
+          agency,
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+        )}`
 
-    case 'ogp':
-      return `Dear Sir/Madam <u><b>(${maskedNric})</b></u>,
-        <br/>
-        <br/>
-        <u><b>${name}, ${position}</u></b> at <u><b>${agency}</u></b> will be calling you shortly.
-        <br/>
-        <br/>
-        Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
-        <br/>
-        <br/>
-        This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their name and designation, ensuring that it matches the information provided in this message.`
+    case 'OGP':
+    case 'MSF':
+    case 'ECDA':
+      return `${salutations(maskedNric)} 
+        <br/><br/>
+        ${standardOpening(
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+          name,
+          position,
+          agency,
+        )}
+        <br/><br/>
+        ${generateCallDetails(
+          agency,
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+        )}`
     default:
       return 'Your agency is not currently supported by CheckWho. Please contact our administrators for support'
   }
