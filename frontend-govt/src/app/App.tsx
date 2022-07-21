@@ -14,9 +14,10 @@ import { StagingBanner } from '../components/Banner/StagingBanner'
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
 import { theme } from '../theme'
-import { EnvDto } from '../types/env'
 
 import { AppRouter } from './AppRouter'
+
+import { EnvDto } from '~shared/types'
 
 // If Sentry params are specified, init sentry.
 axios.get<EnvDto>('/api/env').then((res) => {
