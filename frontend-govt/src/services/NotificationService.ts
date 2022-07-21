@@ -1,6 +1,8 @@
-import { SendNotificationDto, SendNotificationResponseDto } from '../types'
+import { SendNotificationResponseDto } from '../types'
 
 import { ApiService } from './ApiService'
+
+import { SendNotificationDto } from '~shared/types'
 
 const sendNotification = async (
   notificationDetails: SendNotificationDto,

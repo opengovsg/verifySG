@@ -6,8 +6,3 @@ export type SendNotificationResponseDto = {
   createdAt: Date
   officer: OfficerDto
 }
-
-export type SendNotificationDto = {
-  nric: string
-  callScope?: string
-}
