@@ -25,7 +25,5 @@ export const StagingBanner: React.FC = (): JSX.Element | null => {
     }
   })
 
-  return env === 'development' ? (
-    <Banner message={StagingBannerMessage} />
-  ) : null
+  return env === 'staging' ? <Banner message={StagingBannerMessage} /> : null
 }
