@@ -6,6 +6,7 @@ export enum SGNotifyMessageTemplateId {
 }
 
 // only used in backend; must be <= 50 characters
+// to implement validation if we ever parameterise this
 export const sgNotifyTitle = (
   templateId: SGNotifyMessageTemplateId,
 ): string => {
@@ -24,6 +25,7 @@ export const sgNotifyTitle = (
 }
 
 // only used in backend; short message must be <= 100 characters
+// to implement validation if we ever parameterise this
 export const sgNotifyShortMessage = (agencyShortName: string): string => {
   switch (agencyShortName) {
     // TODO: phase out during-notification phone calls with SPF
