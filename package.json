@@ -6,13 +6,14 @@
   "scripts": {
     "on-backend": "npm run --prefix backend",
     "on-frontend-govt": "npm run --prefix frontend-govt",
+    "all": "concurrently -c green,blue",
     "docker-dev": "docker-compose -f docker-compose.dev.yml up --build",
-    "postinstall": "npm install --prefix backend && npm install --prefix frontend-govt",
-    "dev": "concurrently \"npm run docker-dev\" \"npm run on-frontend-govt dev\" \"npm run on-backend dev\" ",
-    "lint": "npm run on-backend -- lint && npm run on-frontend-govt -- lint",
-    "lint:fix": "npm run on-backend -- lint:fix && npm run on-frontend-govt -- lint:fix",
-    "test": "npm run on-backend -- test && npm run on-frontend-govt -- test",
-    "build": "npm run on-backend -- build && npm run on-frontend-govt -- build",
+    "postinstall": "npm run all \"npm --prefix backend install\" \"npm --prefix frontend-govt install\" \"npm --prefix shared install\" && node -e \"if (process.env.NODE_ENV === undefined){process.exit(1)}\" || npm run --prefix shared build",
+    "dev": "npm run --prefix shared build && npm run all -- --kill-others \"npm:on-* dev\"",
+    "dev:full": "npm run all \"npm run docker-dev\" \"npm run dev\"",
+    "lint": "npm run all \"npm:on-* lint\" \"npm run --prefix shared lint\"",
+    "lint:fix": "npm run all \"npm:on-* lint:fix\" \"npm run --prefix shared lint:fix\"",
+    "build": "npm run --prefix shared build && npm run all \"npm:on-* build\"",
     "coverage": "npm run on-backend -- test:cov && cat backend/coverage/lcov.info > lcov.info",
     "cz": "git-cz",
     "start": "npm run --prefix backend -- start",
@@ -26,16 +27,16 @@
     "@commitlint/config-conventional": "^16.2.1",
     "auto-changelog": "^2.4.0",
     "commitizen": "^4.2.4",
-    "concurrently": "^7.1.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.2"
+    "husky": "^7.0.2",
+    "lint-staged": "^12.3.7"
+  },
+  "dependencies": {
+    "concurrently": "^7.1.0"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "dependencies": {
-    "lint-staged": "^12.3.7"
   }
 }
