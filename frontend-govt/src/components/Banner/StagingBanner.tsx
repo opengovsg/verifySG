@@ -8,9 +8,12 @@ import { EnvDto } from '~shared/types'
 const ProductionUrl = 'https://checkwho.gov.sg/login'
 const StagingBannerMessage = () => (
   <span>
-    You are currently on the staging version of CheckWho, which can only send
-    Singpass notifications to specially provisioned staging accounts. Please
-    find the production version <a href={ProductionUrl}>here</a>.
+    Staging CheckWho can only send notifications to specially provisioned
+    Singpass accounts. To notify live Singpass accounts, click{' '}
+    <a href={ProductionUrl}>
+      <u>here</u>
+    </a>
+    .
   </span>
 )
 
@@ -25,5 +28,7 @@ export const StagingBanner: React.FC = (): JSX.Element | null => {
     }
   })
 
-  return env === 'staging' ? <Banner message={StagingBannerMessage} /> : null
+  return env === 'development' ? (
+    <Banner message={StagingBannerMessage} />
+  ) : null
 }
