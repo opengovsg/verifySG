@@ -116,6 +116,11 @@ export const convertSGNotifyParamsToJWTPayload = (
     call_details,
     callback_details,
   } = sgNotifyLongMessageParams
+  if (agencyShortName.length > 25)
+    // this is an undocumented SGNotify API limitation
+    throw new Error(
+      `Sender name ${agencyShortName} too long; must be <= 25 characters`,
+    )
   return {
     notification_req: {
       category: 'MESSAGES',
@@ -123,7 +128,6 @@ export const convertSGNotifyParamsToJWTPayload = (
       delivery: 'IMMEDIATE',
       priority: 'HIGH',
       sender_logo_small: agencyLogoUrl,
-      // NOTE: sender_name must be <= 25 characters
       sender_name: agencyShortName,
       template_layout: [
         {
