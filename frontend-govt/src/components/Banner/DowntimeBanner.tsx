@@ -1,19 +1,28 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 import Banner from '.'
 
+import { EnvDto } from '~shared/types'
+
 const DowntimeMessage = () => (
   <span>
-    It's not you. It's us. One of our services is currently experiencing
-    technical difficulties.
+    It's not you, it's us. One of our services is currently experiencing
+    technical difficulties. Please try again later.
   </span>
 )
 
 export const DowntimeBanner: React.FC = (): JSX.Element | null => {
   const [isDowntime, setIsDowntime] = useState<boolean>(false)
 
-  // Possible TODO: Call SGNotify API to check if there is a downtime
-  // TBC if this is too many calls to the API
+  useEffect(() => {
+    axios.get<EnvDto>('/api/env').then((res) => {
+      const { isDowntime } = res.data
+      if (isDowntime) {
+        setIsDowntime(isDowntime)
+      }
+    })
+  }, [])
 
   return isDowntime ? (
     <Banner message={DowntimeMessage} background="red.500" />

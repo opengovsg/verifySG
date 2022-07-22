@@ -13,6 +13,7 @@ export class EnvController {
   async getEnv(): Promise<EnvResDto> {
     const { frontendDsn } = this.config.get('sentry')
     const env = this.config.get('environment')
-    return { dsn: frontendDsn, env }
+    const isDowntime = this.config.get('isDowntime')
+    return { dsn: frontendDsn, env, isDowntime }
   }
 }
