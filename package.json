@@ -32,7 +32,10 @@
     "lint-staged": "^12.3.7"
   },
   "dependencies": {
-    "concurrently": "^7.1.0"
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "concurrently": "^7.1.0",
+    "reflect-metadata": "^0.1.13"
   },
   "config": {
     "commitizen": {

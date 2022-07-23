@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsNotEmpty } from 'class-validator'
-import { IsNric } from '../../common/decorators'
+import { IsNric } from '~shared/decorators/nric-validator.decorator'
 import { Notification } from 'database/entities'
 import { GetOfficerProfileDto } from '../../officers/dto'
 
