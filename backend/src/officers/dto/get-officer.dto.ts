@@ -1,5 +1,5 @@
 import { Officer } from 'database/entities'
-import { GetAgencyDto } from 'agencies/dto/get-agency.dto'
+import { AgencyDto } from '~shared/types/api'
 
 // TODO: refactor Officer DTOs into shared types (3/3)
 export type OfficerDto = Pick<Officer, 'email'>
@@ -15,4 +15,4 @@ export interface OfficerWhoamiFailureDto {
   message: string
 }
 
-export type GetOfficerProfileDto = GetOfficerDto & { agency: GetAgencyDto }
+export type GetOfficerProfileDto = GetOfficerDto & { agency: AgencyDto }
