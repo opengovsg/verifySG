@@ -1,6 +1,6 @@
-import { OfficerDto, UpdateOfficerDto } from '../types'
+import { ApiService } from '@services/ApiService'
 
-import { ApiService } from './ApiService'
+import { OfficerDto, UpdateOfficerDto } from '@/types'
 
 const getOfficer = async (): Promise<OfficerDto> => {
   return ApiService.get('/officers').then((res) => res.data)

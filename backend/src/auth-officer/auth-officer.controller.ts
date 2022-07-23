@@ -10,7 +10,8 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
+import { OfficerWhoamiDto } from '~shared/types/api'
+import { OfficerDto } from 'officers/dto'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService, Logger } from 'core/providers'
 import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
