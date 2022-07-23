@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common'
 import { ConfigService } from 'core/providers'
-import { EnvDto } from '~shared/types'
+import { EnvDto } from '~shared/types/api'
 
 @Controller('env')
 export class EnvController {

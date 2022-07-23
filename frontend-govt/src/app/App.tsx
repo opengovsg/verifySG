@@ -17,7 +17,7 @@ import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'
 
-import { EnvDto } from '~shared/types'
+import { EnvDto } from '~shared/types/api'
 
 // If Sentry params are specified, init sentry.
 axios.get<EnvDto>('/api/env').then((res) => {
