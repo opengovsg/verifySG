@@ -10,11 +10,13 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerWhoamiDto } from '~shared/types/api'
-import { OfficerDto } from 'officers/dto'
+import {
+  OfficerWhoamiDto,
+  OtpRequestDto,
+  OtpVerifyDto,
+} from '~shared/types/api'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService, Logger } from 'core/providers'
-import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from '../officers/officers.service'
 import { getRequestIp } from '../common/utils'
@@ -29,7 +31,10 @@ export class AuthOfficerController {
   ) {}
 
   @Post()
-  async sendOTP(@Body() body: OfficerDto, @Req() req: Request): Promise<void> {
+  async sendOTP(
+    @Body() body: OtpRequestDto,
+    @Req() req: Request,
+  ): Promise<void> {
     const { email } = body
     try {
       const ipAddress = getRequestIp(req)
@@ -43,7 +48,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpAuthVerifyDto,
+    @Body() body: OtpVerifyDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, otp } = body

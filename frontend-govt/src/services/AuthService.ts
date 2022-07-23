@@ -1,23 +1,16 @@
 import { ApiService } from '@/services/ApiService'
-import { OfficerWhoamiDto } from '~shared/types/api'
+import {
+  OfficerWhoamiDto,
+  OtpRequestDto,
+  OtpVerifyDto,
+} from '~shared/types/api'
 
-const getOtp = async ({ email }: { email: string }): Promise<void> => {
-  await ApiService.post('/auth-officers', {
-    email,
-  })
+const getOtp = async (otpRequest: OtpRequestDto): Promise<void> => {
+  await ApiService.post('/auth-officers', otpRequest)
 }
 
-const verifyOtp = async ({
-  email,
-  otp,
-}: {
-  email: string
-  otp: string
-}): Promise<void> => {
-  await ApiService.post('/auth-officers/verify', {
-    email,
-    otp,
-  })
+const verifyOtp = async (otpVerify: OtpVerifyDto): Promise<void> => {
+  await ApiService.post('/auth-officers/verify', otpVerify)
 }
 
 const whoAmI = async (): Promise<OfficerWhoamiDto> => {
