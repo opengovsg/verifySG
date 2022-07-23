@@ -10,9 +10,9 @@ import {
   Input,
   useToast,
 } from '@opengovsg/design-system-react'
+import { OfficerService } from '@services/OfficerService'
 
 import HeaderContainer from '../../components/HeaderContainer'
-import { OfficerService } from '../../services/OfficerService'
 
 interface ProfileFormData {
   name: string

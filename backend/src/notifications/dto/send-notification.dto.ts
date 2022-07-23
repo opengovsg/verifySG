@@ -1,7 +1,7 @@
 import { IsString, IsOptional, IsNotEmpty } from 'class-validator'
 import { IsNric } from '~shared/decorators/nric-validator.decorator'
 import { Notification } from 'database/entities'
-import { GetOfficerProfileDto } from '../../officers/dto'
+import { OfficerDto } from '~shared/types/api'
 
 // TODO refactor notification DTOs into shared folder 2/2
 export class SendNotificationDto {
@@ -19,5 +19,5 @@ export type SendNotificationResponseDto = Pick<
   Notification,
   'id' | 'createdAt' | 'callScope'
 > & {
-  officer: GetOfficerProfileDto
+  officer: OfficerDto
 }

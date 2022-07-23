@@ -1,4 +1,4 @@
-import { OfficerDto } from './officer'
+import { OfficerDto } from '~shared/types/api'
 
 // TODO refactor notification DTOs into shared folder 1/2
 export type SendNotificationResponseDto = {

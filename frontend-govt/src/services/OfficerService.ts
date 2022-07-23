@@ -1,6 +1,6 @@
 import { ApiService } from '@services/ApiService'
 
-import { OfficerDto, UpdateOfficerDto } from '@/types'
+import { OfficerDto, UpdateOfficerDto } from '~shared/types/api'
 
 const getOfficer = async (): Promise<OfficerDto> => {
   return ApiService.get('/officers').then((res) => res.data)

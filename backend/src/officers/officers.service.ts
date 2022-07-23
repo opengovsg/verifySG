@@ -2,14 +2,10 @@ import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { Officer } from '../database/entities'
 import { InjectRepository } from '@nestjs/typeorm'
-import {
-  OfficerDto,
-  UpdateOfficerProfileDto,
-  GetOfficerProfileDto,
-} from './dto'
 
 import { AgenciesService } from 'agencies/agencies.service'
 import { normalizeEmail } from '~shared/utils/email'
+import { OfficerDto, UpdateOfficerDto } from '~shared/types/api'
 
 @Injectable()
 export class OfficersService {
@@ -18,19 +14,19 @@ export class OfficersService {
     private agencyService: AgenciesService,
   ) {}
 
-  async findOrInsert(officer: OfficerDto): Promise<Officer> {
-    const email = normalizeEmail(officer.email)
-    const foundOfficer = await this.findByEmail(email)
+  async findOrInsertByEmail(email: string): Promise<Officer> {
+    const officerEmail = normalizeEmail(email)
+    const foundOfficer = await this.findByEmail(officerEmail)
 
     if (foundOfficer) return foundOfficer
-    return await this.createOfficer(officer)
+    return await this.createOfficerByEmail(officerEmail)
   }
 
-  async createOfficer(officer: OfficerDto): Promise<Officer> {
-    const agency = await this.agencyService.findByEmail(officer.email)
-    if (!agency) throw new Error(`No agency for ${officer.email} found`)
+  async createOfficerByEmail(email: string): Promise<Officer> {
+    const agency = await this.agencyService.findByEmail(email)
+    if (!agency) throw new Error(`No agency for ${email} found`)
 
-    const officerToAdd = this.officerRepository.create({ ...officer, agency })
+    const officerToAdd = this.officerRepository.create({ email, agency })
     return this.officerRepository.save(officerToAdd)
   }
 
@@ -50,7 +46,7 @@ export class OfficersService {
 
   async updateOfficer(
     id: number,
-    officerDetails: UpdateOfficerProfileDto,
+    officerDetails: UpdateOfficerDto,
   ): Promise<void> {
     const officerToUpdate = await this.officerRepository.findOne(id)
     if (!officerToUpdate) {
@@ -59,7 +55,7 @@ export class OfficersService {
     await this.officerRepository.update({ id }, officerDetails)
   }
 
-  mapToDto(officer: Officer): GetOfficerProfileDto {
+  mapToDto(officer: Officer): OfficerDto {
     const { id, name, position, agency } = officer
     return {
       id,
