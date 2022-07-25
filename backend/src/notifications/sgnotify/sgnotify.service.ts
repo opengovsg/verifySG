@@ -15,12 +15,12 @@ import {
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import {
-  AuthPayload,
+  AuthResPayload,
   GetSGNotifyJwksDto,
-  NotificationPayload,
+  NotificationResPayload,
   PostSGNotifyAuthzDto,
   PostSGNotifyJweDto,
-  SGNotifyPayload,
+  SGNotifyResPayload,
 } from './dto'
 import {
   convertSGNotifyParamsToJWTPayload,
@@ -126,12 +126,12 @@ export class SGNotifyService {
           },
         },
       )
-      const notificationPayload = (await this.decryptAndVerifyPayload(
+      const notificationResPayload = (await this.decryptAndVerifyPayload(
         jwe,
-      )) as NotificationPayload
+      )) as NotificationResPayload
       return {
         ...sgNotifyParams,
-        requestId: notificationPayload.request_id,
+        requestId: notificationResPayload.request_id,
         sgNotifyLongMessageParams: {
           ...sgNotifyParams.sgNotifyLongMessageParams,
         },
@@ -179,10 +179,10 @@ export class SGNotifyService {
           },
         },
       )
-      const authPayload = (await this.decryptAndVerifyPayload(
+      const authResPayload = (await this.decryptAndVerifyPayload(
         data.token,
-      )) as AuthPayload
-      return authPayload.access_token
+      )) as AuthResPayload
+      return authResPayload.access_token
     } catch (e) {
       if ((e as AxiosError).response?.status === 401) {
         this.logger.error(
@@ -205,7 +205,7 @@ export class SGNotifyService {
    */
   async decryptAndVerifyPayload(
     encryptedPayload: string,
-  ): Promise<SGNotifyPayload> {
+  ): Promise<SGNotifyResPayload> {
     // TODO: error handling if decryption fails for some reason
     const { plaintext } = await jose.compactDecrypt(
       encryptedPayload,

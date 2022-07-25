@@ -1,7 +1,7 @@
 import { JWTPayload } from 'jose'
 import { IsNumber, IsString } from 'class-validator'
 
-export class AuthPayload {
+export class AuthResPayload {
   @IsString()
   access_token: string
 
@@ -18,7 +18,7 @@ export class AuthPayload {
   scope: string
 }
 
-export class NotificationPayload {
+export class NotificationResPayload {
   @IsString()
   aud: string
 
@@ -29,4 +29,7 @@ export class NotificationPayload {
   request_id: string
 }
 
-export type SGNotifyPayload = JWTPayload | AuthPayload | NotificationPayload
+export type SGNotifyResPayload =
+  | JWTPayload
+  | AuthResPayload
+  | NotificationResPayload
