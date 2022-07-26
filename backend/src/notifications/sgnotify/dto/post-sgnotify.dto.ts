@@ -9,16 +9,20 @@ export class SGNotifyNotificationRequestPayload implements JWTPayload {
 
 export class SGNotifyNotificationRequest {
   @IsString()
+  // TODO: convert into enum and use IsEnum()
   category: 'MESSAGES'
 
   @IsString()
+  // TODO: convert into enum and use IsEnum()
   channel_mode: 'SPM' | 'SMS' | 'SPMORSMS'
 
   @IsString()
+  // TODO: convert into enum and use IsEnum()
   delivery: 'IMMEDIATE' | 'SCHEDULE'
 
   @IsString()
-  priority: 'HIGH' | 'NORMAL' // API says to use 'HIGH' only
+  // TODO: convert into enum and use IsEnum()
+  priority: 'HIGH' | 'NORMAL' // API doc says to use 'HIGH' only
 
   @IsString()
   @IsUrl()
@@ -41,6 +45,7 @@ export class SGNotifyNotificationRequest {
 }
 
 export class SGNotifyNotificationTemplateLayout {
+  // strictly this refers to SGNotifyMessageTemplateId in shared/src/utils/sgnotify.ts
   @IsString()
   template_id: string
 
