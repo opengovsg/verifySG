@@ -6,7 +6,7 @@ import Header from '../Header'
 export const HeaderContainer: React.FC = ({ children }) => (
   <Flex flexDir="column" w="100vw">
     <Box minHeight="5vh">
-      <Header navbarHeight="8vh" />
+      <Header />
     </Box>
     <Container
       pt={['16px', '16px', '24px', '36px']}
