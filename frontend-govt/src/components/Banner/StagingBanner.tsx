@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import axios from 'axios'
+import { useQuery } from 'react-query'
+
+import { EnvService } from '../../services/EnvService'
 
 import Banner from '.'
-
-import { EnvDto } from '~shared/types'
 
 const ProductionUrl = 'https://checkwho.gov.sg/login'
 const StagingBannerMessage = () => (
@@ -20,12 +20,12 @@ const StagingBannerMessage = () => (
 export const StagingBanner: React.FC = (): JSX.Element | null => {
   const [env, setEnv] = useState<string>('')
 
-  // set env once as env will not change in the same deployment
-  axios.get<EnvDto>('/api/env').then((res) => {
-    const { env } = res.data
-    if (env) {
+  // call env once as env will not change in the same deployment
+  useQuery('env', EnvService.getEnv, {
+    cacheTime: Infinity,
+    onSuccess: ({ env }) => {
       setEnv(env)
-    }
+    },
   })
 
   return env === 'development' ? (
