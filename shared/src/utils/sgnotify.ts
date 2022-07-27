@@ -5,7 +5,8 @@ export enum SGNotifyMessageTemplateId {
   GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
-// only used in backend
+// only used in backend; must be <= 50 characters
+// to implement validation if we ever parameterise this
 export const sgNotifyTitle = (
   templateId: SGNotifyMessageTemplateId,
 ): string => {
@@ -23,7 +24,8 @@ export const sgNotifyTitle = (
   }
 }
 
-// only used in backend
+// only used in backend; short message must be <= 100 characters
+// to implement validation if we ever parameterise this
 export const sgNotifyShortMessage = (agencyShortName: string): string => {
   switch (agencyShortName) {
     // TODO: phase out during-notification phone calls with SPF

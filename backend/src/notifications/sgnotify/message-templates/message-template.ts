@@ -14,7 +14,7 @@ import {
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
-  agencyName: string
+  agencyShortName: string
   title: string
   nric: string
   shortMessage: string
@@ -45,7 +45,7 @@ export const generateNewSGNotifyParams = (
     case 'SPF':
       return {
         agencyLogoUrl,
-        agencyName,
+        agencyShortName,
         title: sgNotifyTitle(
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
         ),
@@ -54,7 +54,7 @@ export const generateNewSGNotifyParams = (
         templateId:
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
         sgNotifyLongMessageParams: {
-          agency: agencyShortName,
+          agency: agencyName,
           officer_name: `<u>${officerName}</u>`,
           position: `<u>${officerPosition}</u>`,
           masked_nric: `(${maskNric(nric)})`,
@@ -70,7 +70,7 @@ export const generateNewSGNotifyParams = (
     case 'ECDA':
       return {
         agencyLogoUrl,
-        agencyName,
+        agencyShortName,
         title: sgNotifyTitle(
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
         ),
@@ -79,7 +79,7 @@ export const generateNewSGNotifyParams = (
         templateId:
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
         sgNotifyLongMessageParams: {
-          agency: agencyShortName,
+          agency: agencyName,
           officer_name: `<u>${officerName}</u>`,
           position: `<u>${officerPosition}</u>`,
           masked_nric: `(${maskNric(nric)})`,
@@ -101,12 +101,13 @@ export const convertSGNotifyParamsToJWTPayload = (
 ): JWTPayload => {
   const {
     agencyLogoUrl,
-    agencyName,
+    agencyShortName,
     templateId,
     sgNotifyLongMessageParams,
     title,
     nric,
   } = sgNotifyParams
+  // this destructuring is untyped, be careful!
   const {
     agency,
     masked_nric,
@@ -115,6 +116,11 @@ export const convertSGNotifyParamsToJWTPayload = (
     call_details,
     callback_details,
   } = sgNotifyLongMessageParams
+  if (agencyShortName.length > 25)
+    // this is an undocumented SGNotify API limitation
+    throw new Error(
+      `Sender name ${agencyShortName} too long; must be <= 25 characters`,
+    )
   return {
     notification_req: {
       category: 'MESSAGES',
@@ -122,7 +128,7 @@ export const convertSGNotifyParamsToJWTPayload = (
       delivery: 'IMMEDIATE',
       priority: 'HIGH',
       sender_logo_small: agencyLogoUrl,
-      sender_name: agencyName,
+      sender_name: agencyShortName,
       template_layout: [
         {
           template_id: templateId,
