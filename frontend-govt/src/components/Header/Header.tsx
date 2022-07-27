@@ -39,7 +39,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <Flex
-      h={navbarHeight}
+      minH={navbarHeight}
+      py="0.5rem"
       w="100vw"
       borderBottom="1px solid"
       borderBottomColor="#DADEE3"
