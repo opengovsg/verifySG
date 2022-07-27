@@ -4,7 +4,13 @@ import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
-import { maskNric } from '../utils'
+import { maskNric } from '~shared/utils/nric'
+import {
+  generateCallDetails,
+  SGNotifyMessageTemplateId,
+  sgNotifyTitle,
+  sgNotifyShortMessage,
+} from '~shared/utils/sgnotify'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -16,13 +22,6 @@ export interface SGNotifyParams {
   sgNotifyLongMessageParams: Record<string, string>
   status: SGNotifyNotificationStatus
   requestId?: string
-}
-
-export enum SGNotifyMessageTemplateId {
-  GENERIC_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-01',
-  GENERIC_NOTIFICATION_DURING_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-02',
-  SPF_POLICE_REPORT_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
-  GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
 export const sgNotifyParamsStatusToNotificationStatusMapper = (
@@ -47,9 +46,11 @@ export const generateNewSGNotifyParams = (
       return {
         agencyLogoUrl,
         agencyName,
-        title: 'Verify your phone call',
+        title: sgNotifyTitle(
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+        ),
         nric,
-        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
+        shortMessage: `${sgNotifyShortMessage(agencyShortName)}`,
         templateId:
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
         sgNotifyLongMessageParams: {
@@ -57,17 +58,24 @@ export const generateNewSGNotifyParams = (
           officer_name: `<u>${officerName}</u>`,
           position: `<u>${officerPosition}</u>`,
           masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetailsNotifyDuringCall(agencyShortName),
+          call_details: generateCallDetails(
+            agencyShortName,
+            SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+          ),
         },
         status: SGNotifyNotificationStatus.NOT_SENT,
       }
     case 'OGP':
+    case 'MSF':
+    case 'ECDA':
       return {
         agencyLogoUrl,
         agencyName,
-        title: 'Upcoming Phone Call',
+        title: sgNotifyTitle(
+          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+        ),
         nric,
-        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly.`,
+        shortMessage: `${sgNotifyShortMessage(agencyShortName)}`,
         templateId:
           SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
         sgNotifyLongMessageParams: {
@@ -75,43 +83,16 @@ export const generateNewSGNotifyParams = (
           officer_name: `<u>${officerName}</u>`,
           position: `<u>${officerPosition}</u>`,
           masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetailsNotifyBeforeCall(agencyShortName),
+          call_details: generateCallDetails(
+            agencyShortName,
+            SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+          ),
           callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
         status: SGNotifyNotificationStatus.NOT_SENT,
       }
     default:
       throw new Error(`Unsupported agency: ${agencyShortName}`)
-  }
-}
-
-export const generateCallDetailsNotifyBeforeCall = (
-  agencyId: string,
-): string => {
-  const standardClosing =
-    "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
-  switch (agencyId) {
-    case 'SPF':
-      return `The purpose of this call is to follow up on your recent police report/feedback to the Police.
-      <br><br>
-      ${standardClosing}`
-    case 'OGP':
-      return `Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
-      <br><br>
-      ${standardClosing}`
-    default:
-      return standardClosing
-  }
-}
-
-export const generateCallDetailsNotifyDuringCall = (
-  agencyId: string,
-): string => {
-  switch (agencyId) {
-    case 'SPF':
-      return 'The purpose of this call is to follow up on your recent police report/feedback to the Police.'
-    default:
-      return ' ' // should never reach here
   }
 }
 
@@ -160,20 +141,3 @@ export const convertSGNotifyParamsToJWTPayload = (
     },
   }
 }
-// TODO: create class/functions/template that will automatically populate params based on MessageTemplateId?
-// import { MessageTemplateId } from '../../database/entities'
-//
-// export class MessageTemplate {
-//   constructor(
-//     private readonly id: MessageTemplateId,
-//     private readonly params: string[],
-//   ) {}
-// }
-//
-// export interface MessageTemplate {
-//   id: MessageTemplateId
-//   shortMessage: string
-//   longMessage: string
-//   messageParams: string[]
-//   supportsHTML: boolean
-// }
