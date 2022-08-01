@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useQuery } from 'react-query'
+
+import { EnvService } from '../../services/EnvService'
 
 import Banner from '.'
 
@@ -13,18 +14,11 @@ const DowntimeMessage = () => (
 )
 
 export const DowntimeBanner: React.FC = (): JSX.Element | null => {
-  const [isDowntime, setIsDowntime] = useState<boolean>(false)
+  const { data: envDto } = useQuery<EnvDto>('env', EnvService.getEnv, {
+    cacheTime: Infinity,
+  })
 
-  useEffect(() => {
-    axios.get<EnvDto>('/api/env').then((res) => {
-      const { isDowntime } = res.data
-      if (isDowntime) {
-        setIsDowntime(isDowntime)
-      }
-    })
-  }, [])
-
-  return isDowntime ? (
+  return envDto?.isDowntime ? (
     <Banner message={DowntimeMessage} background="red.500" />
   ) : null
 }
