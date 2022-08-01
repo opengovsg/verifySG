@@ -1,9 +1,10 @@
-import { useState } from 'react'
 import { useQuery } from 'react-query'
 
 import { EnvService } from '../../services/EnvService'
 
 import Banner from '.'
+
+import { EnvDto } from '~shared/types'
 
 const productionUrl = 'https://checkwho.gov.sg/login'
 const StagingBannerMessage = () => (
@@ -18,7 +19,7 @@ const StagingBannerMessage = () => (
 )
 
 export const StagingBanner: React.FC = (): JSX.Element | null => {
-  const { data: envDto } = useQuery('env', EnvService.getEnv, {
+  const { data: envDto } = useQuery<EnvDto>('env', EnvService.getEnv, {
     cacheTime: Infinity,
   })
 
