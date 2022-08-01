@@ -57,7 +57,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         setTargetNRIC(data.nric)
-        history.push(FEEDBACKFORM_ROUTE)
       },
     })
   }
