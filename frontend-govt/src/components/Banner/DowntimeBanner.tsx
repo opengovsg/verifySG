@@ -8,8 +8,8 @@ import { EnvDto } from '~shared/types'
 
 const DowntimeMessage = () => (
   <span>
-    It's not you, it's us. One of our services is currently experiencing
-    technical difficulties. Please try again later.
+    It's not you, it's us. We are currently experiencing technical difficulties.
+    Please try again later.
   </span>
 )
 
