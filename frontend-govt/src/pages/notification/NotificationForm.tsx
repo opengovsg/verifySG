@@ -1,7 +1,6 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
-import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
 import {
   Button,
@@ -15,7 +14,6 @@ import nric from 'nric'
 
 import HeaderContainer from '../../components/HeaderContainer'
 import MessagePreview from '../../components/MessagePreview'
-import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
 import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
 import { NotificationService } from '../../services/NotificationService'
 
@@ -49,8 +47,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     },
     duration: 6000,
   })
-  const history = useHistory()
-
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
     sendNotification.mutate(data, {
