@@ -18,8 +18,8 @@ import {
   AuthResPayload,
   GetSGNotifyJwksDto,
   NotificationResPayload,
-  PostSGNotifyAuthzDto,
-  PostSGNotifyJweDto,
+  PostSGNotifyAuthzResDto,
+  PostSGNotifyJweResDto,
   SGNotifyResPayload,
 } from './dto'
 import {
@@ -125,7 +125,7 @@ export class SGNotifyService {
     try {
       const {
         data: { jwe },
-      } = await this.client.post<PostSGNotifyJweDto>(
+      } = await this.client.post<PostSGNotifyJweResDto>(
         'v1/notification/requests',
         {
           jwe: jweObject,
@@ -176,7 +176,7 @@ export class SGNotifyService {
       client_secret: clientSecret,
     })
     try {
-      const { data } = await this.client.post<PostSGNotifyAuthzDto>(
+      const { data } = await this.client.post<PostSGNotifyAuthzResDto>(
         '/v1/oauth2/token',
         {
           client_id: clientId,

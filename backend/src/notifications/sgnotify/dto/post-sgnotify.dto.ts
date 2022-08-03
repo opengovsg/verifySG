@@ -53,12 +53,12 @@ export class SGNotifyNotificationTemplateLayout {
   template_input: Record<string, string>
 }
 
-export class PostSGNotifyAuthzDto {
+export class PostSGNotifyAuthzResDto {
   @IsString()
   token: string
 }
 
-export class PostSGNotifyJweDto {
+export class PostSGNotifyJweResDto {
   @IsString()
   jwe: string
 }
