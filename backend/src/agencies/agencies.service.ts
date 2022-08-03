@@ -4,7 +4,7 @@ import { In, Repository } from 'typeorm'
 
 import { AgencyResDto } from '~shared/types/api'
 import { normalizeEmail, parseEmailDomain } from '~shared/utils/email'
-import { CreateAgencyDto, UpdateAgencyDto } from './dto'
+import { CreateAgencyReqDto, UpdateAgencyReqDto } from './dto'
 import { Agency } from 'database/entities/agency.entity'
 
 @Injectable()
@@ -13,7 +13,7 @@ export class AgenciesService {
     @InjectRepository(Agency) private agencyRepository: Repository<Agency>,
   ) {}
 
-  async createAgency(createAgencyDto: CreateAgencyDto): Promise<Agency> {
+  async createAgency(createAgencyDto: CreateAgencyReqDto): Promise<Agency> {
     const { id: agencyId } = createAgencyDto
     await this.agencyRepository.insert(createAgencyDto)
     const agency = await this.findById(agencyId)
@@ -44,7 +44,7 @@ export class AgenciesService {
 
   async updateAgency(
     agencyId: string,
-    updateAgencyDto: UpdateAgencyDto,
+    updateAgencyDto: UpdateAgencyReqDto,
   ): Promise<Agency> {
     const agencyToUpdate = await this.findById(agencyId)
     if (!agencyToUpdate) {
