@@ -1,11 +1,10 @@
-import { IsDate, IsNumber, IsString } from 'class-validator'
+import { IsDate, IsNumber } from 'class-validator'
 
 import { IsNric } from '../../decorators'
 
 import { OfficerDto } from './officer.dto'
 
 export class SendNotificationReqDto {
-  @IsString()
   @IsNric()
   nric: string
 }
