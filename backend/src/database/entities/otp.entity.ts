@@ -21,7 +21,15 @@ export class OTP {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column('varchar', { nullable: false, length: 255 })
+  @Column('varchar', {
+    nullable: false,
+    length: 255,
+    transformer: {
+      // ensure email address is always lowercase
+      to: (value: string) => value.toLowerCase(),
+      from: (value: string) => value.toLowerCase(),
+    },
+  })
   email: string
 
   @Column('varchar', { nullable: false, length: 255 })

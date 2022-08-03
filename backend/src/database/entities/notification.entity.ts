@@ -59,7 +59,15 @@ export class Notification {
   })
   notificationType: NotificationType
 
-  @Column('varchar', { length: 9, nullable: false })
+  @Column('varchar', {
+    length: 9,
+    nullable: false,
+    transformer: {
+      // ensures id (NRIC) is always uppercase
+      to: (value: string) => value.toUpperCase(),
+      from: (value: string) => value.toUpperCase(),
+    },
+  })
   recipientId: string
 
   @Column({
