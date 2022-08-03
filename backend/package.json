@@ -14,9 +14,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pre-commit": "lint-staged",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./src/database/ormconfig.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/database/datasource.ts",
     "migration:run": "npm run typeorm migration:run",
-    "migration:gen": "npm run typeorm migration:generate -- -n",
+    "migration:gen": "npm run typeorm migration:generate",
     "migration:revert": "npm run typeorm migration:revert",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/seed.ts",
     "generate-admin-key": "ts-node -r tsconfig-paths/register src/scripts/generate-admin-key.ts"

@@ -1,14 +1,15 @@
 import 'dotenv/config'
+import convict from 'convict'
 import { join } from 'path'
-import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { DataSource } from 'typeorm'
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
-import { schema } from 'core/config.schema'
-import convict from 'convict'
+import { schema } from '../core/config.schema'
 
 const config = convict(schema)
 
-export default {
+export const connectionOptions: PostgresConnectionOptions = {
   type: 'postgres',
   host: config.get('database.host'),
   port: config.get('database.port'),
@@ -22,13 +23,12 @@ export default {
   // js for runtime, ts for typeorm cli
   entities: [join(__dirname, 'entities', '*.entity{.js,.ts}')],
   migrations: [join(__dirname, 'migrations', '*{.js,.ts}')],
-  cli: {
-    migrationsDir: join(__dirname, 'migrations'),
-  },
   // ref: https://github.com/typeorm/typeorm/issues/3388 to set pool size
   extra: {
     min: config.get('database.minPool'),
     max: config.get('database.maxPool'),
   },
   namingStrategy: new SnakeNamingStrategy(),
-} as TypeOrmModuleOptions
+}
+
+export const AppDataSource = new DataSource(connectionOptions)
