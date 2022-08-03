@@ -17,8 +17,6 @@ export const connectionOptions: PostgresConnectionOptions = {
   password: config.get('database.password'),
   database: config.get('database.name'),
   logging: config.get('database.logging'),
-  // https://docs.nestjs.com/techniques/database#auto-load-entities
-  // false in production https://docs.nestjs.com/techniques/database#:~:text=WARNING,lose%20production%20data.
   synchronize: false,
   // js for runtime, ts for typeorm cli
   entities: [join(__dirname, 'entities', '*.entity{.js,.ts}')],
