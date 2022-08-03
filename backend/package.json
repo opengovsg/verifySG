@@ -91,6 +91,9 @@
     "tsconfig-paths": "^3.11.0",
     "typescript": "^4.4.4"
   },
+  "overrides": {
+    "typeorm": "$typeorm"
+  },
   "lint-staged": {
     "**/*.(js|jsx|ts|tsx)": [
       "prettier --write",
