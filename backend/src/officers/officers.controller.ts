@@ -10,7 +10,7 @@ import {
 import { OfficersService } from './officers.service'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { OfficerId } from 'common/decorators'
-import { OfficerDto, UpdateOfficerDto } from '~shared/types/api'
+import { OfficerResDto, UpdateOfficerResDto } from '~shared/types/api'
 
 @Controller('officers')
 export class OfficersController {
@@ -18,7 +18,7 @@ export class OfficersController {
 
   @Get()
   @UseGuards(AuthOfficerGuard)
-  async getOfficer(@OfficerId() officerId: number): Promise<OfficerDto> {
+  async getOfficer(@OfficerId() officerId: number): Promise<OfficerResDto> {
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new NotFoundException('Officer not found')
     return this.officersService.mapToDto(officer)
@@ -28,7 +28,7 @@ export class OfficersController {
   @UseGuards(AuthOfficerGuard)
   async updateOfficer(
     @OfficerId() officerId: number,
-    @Body() officerDetails: UpdateOfficerDto,
+    @Body() officerDetails: UpdateOfficerResDto,
   ): Promise<void> {
     try {
       await this.officersService.updateOfficer(officerId, officerDetails)

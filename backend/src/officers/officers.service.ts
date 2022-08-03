@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 
 import { AgenciesService } from 'agencies/agencies.service'
 import { normalizeEmail } from '~shared/utils/email'
-import { OfficerDto, UpdateOfficerDto } from '~shared/types/api'
+import { OfficerDto, UpdateOfficerResDto } from '~shared/types/api'
 
 @Injectable()
 export class OfficersService {
@@ -46,7 +46,7 @@ export class OfficersService {
 
   async updateOfficer(
     id: number,
-    officerDetails: UpdateOfficerDto,
+    officerDetails: UpdateOfficerResDto,
   ): Promise<void> {
     const officerToUpdate = await this.officerRepository.findOne(id)
     if (!officerToUpdate) {

@@ -17,10 +17,10 @@ import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'
 
-import { EnvDto } from '~shared/types/api'
+import { EnvResDto } from '~shared/types/api'
 
 // If Sentry params are specified, init sentry.
-axios.get<EnvDto>('/api/env').then((res) => {
+axios.get<EnvResDto>('/api/env').then((res) => {
   const { dsn, env } = res.data
   if (dsn && env) {
     Sentry.init({

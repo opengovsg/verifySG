@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
 
-import { AgencyDto } from '~shared/types/api'
+import { AgencyResDto } from '~shared/types/api'
 import { normalizeEmail, parseEmailDomain } from '~shared/utils/email'
 import { CreateAgencyDto, UpdateAgencyDto } from './dto'
 import { Agency } from 'database/entities/agency.entity'
@@ -60,7 +60,7 @@ export class AgenciesService {
     return compoundId.split(delimiter)
   }
 
-  mapToDto(agency: Agency): AgencyDto {
+  mapToDto(agency: Agency): AgencyResDto {
     const { id, name, logoUrl } = agency
     return { id, name, logoUrl }
   }

@@ -1,8 +1,8 @@
 import { ApiService } from './ApiService'
 
-import { EnvDto } from '~shared/types/api'
+import { EnvResDto } from '~shared/types/api'
 
-const getEnv = async (): Promise<EnvDto> => {
+const getEnv = async (): Promise<EnvResDto> => {
   return ApiService.get('/env').then((res) => {
     return res.data
   })

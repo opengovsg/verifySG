@@ -2,7 +2,7 @@ import { IsAscii, IsEmail, IsNumber, IsString } from 'class-validator'
 
 import { AgencyDto } from './agency.dto'
 
-export type OfficerWhoamiDto = OfficerWhoamiSuccess | OfficerWhoamiFailure
+export type OfficerWhoamiResDto = OfficerWhoamiSuccess | OfficerWhoamiFailure
 
 export class OfficerWhoamiSuccess {
   // TODO (maybe): refactor into common email property
@@ -31,4 +31,6 @@ export class OfficerDto extends OfficerBase {
   agency: AgencyDto
 }
 
-export type UpdateOfficerDto = OfficerBase
+export type OfficerResDto = OfficerDto
+
+export type UpdateOfficerResDto = OfficerBase

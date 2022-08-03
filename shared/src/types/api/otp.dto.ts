@@ -1,12 +1,12 @@
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
 
-export class OtpRequestDto {
+export class GetOtpReqDto {
   // TODO (maybe): refactor into common email property
   @IsEmail() // in theory can make is specific to gov.sg email
   email: string
 }
 
-export class OtpVerifyDto {
+export class VerifyOtpReqDto {
   @MinLength(6)
   @MaxLength(6)
   @IsString()

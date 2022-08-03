@@ -10,3 +10,5 @@ export class AgencyDto {
   @IsUrl() // in theory, can specify it must be a file.go.gov.sg url
   logoUrl: string
 }
+
+export type AgencyResDto = AgencyDto

@@ -11,9 +11,9 @@ import {
 import { Request, Response } from 'express'
 
 import {
-  OfficerWhoamiDto,
-  OtpRequestDto,
-  OtpVerifyDto,
+  OfficerWhoamiResDto,
+  GetOtpReqDto,
+  VerifyOtpReqDto,
 } from '~shared/types/api'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService, Logger } from 'core/providers'
@@ -32,7 +32,7 @@ export class AuthOfficerController {
 
   @Post()
   async sendOTP(
-    @Body() body: OtpRequestDto,
+    @Body() body: GetOtpReqDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email } = body
@@ -48,7 +48,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpVerifyDto,
+    @Body() body: VerifyOtpReqDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, otp } = body
@@ -57,7 +57,7 @@ export class AuthOfficerController {
   }
 
   @Get('whoami')
-  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiDto> {
+  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiResDto> {
     if (!officerId) {
       return { message: 'No logged in officer' }
     }
