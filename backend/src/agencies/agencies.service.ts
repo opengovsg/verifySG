@@ -21,17 +21,20 @@ export class AgenciesService {
     return agency
   }
 
-  async findById(agencyId: string): Promise<Agency | undefined> {
+  async findById(agencyId: string): Promise<Agency | null> {
     return this.agencyRepository.findOne({
       where: { id: agencyId },
     })
   }
 
-  async findByEmail(email: string): Promise<Agency | undefined> {
-    email = normalizeEmail(email)
-    return this.agencyRepository.findOne({
-      where: `'${parseEmailDomain(email)}' = ANY (email_domains)`,
-    })
+  async findByEmail(email: string): Promise<Agency | null> {
+    const emailDomain = parseEmailDomain(normalizeEmail(email))
+    return this.agencyRepository
+      .createQueryBuilder('agency')
+      .where(':emailDomain = ANY (agency.emailDomains)', {
+        emailDomain,
+      })
+      .getOne()
   }
 
   async findAgenciesById(agencyIds: string[]): Promise<Agency[]> {
