@@ -1,36 +1,19 @@
-import { ApiService } from './ApiService'
+import { ApiService } from '@/services/ApiService'
+import {
+  GetOtpReqDto,
+  OfficerWhoamiResDto,
+  VerifyOtpReqDto,
+} from '~shared/types/api'
 
-const getOtp = async ({ email }: { email: string }): Promise<void> => {
-  await ApiService.post('/auth-officers', {
-    email,
-  })
+const getOtp = async (otpRequest: GetOtpReqDto): Promise<void> => {
+  await ApiService.post('/auth-officers', otpRequest)
 }
 
-const verifyOtp = async ({
-  email,
-  otp,
-}: {
-  email: string
-  otp: string
-}): Promise<void> => {
-  await ApiService.post('/auth-officers/verify', {
-    email,
-    otp,
-  })
+const verifyOtp = async (otpVerify: VerifyOtpReqDto): Promise<void> => {
+  await ApiService.post('/auth-officers/verify', otpVerify)
 }
 
-// TODO: use shared types to align service types with backend API types example (1/2)
-export interface OfficerWhoamiSuccessDto {
-  email: string
-}
-
-export interface OfficerWhoamiFailureDto {
-  message: string
-}
-
-export type OfficerWhoamiDto = OfficerWhoamiSuccessDto | OfficerWhoamiFailureDto
-
-const whoAmI = async (): Promise<OfficerWhoamiDto> => {
+const whoAmI = async (): Promise<OfficerWhoamiResDto> => {
   return await ApiService.get('/auth-officers/whoami').then((res) => res.data)
 }
 

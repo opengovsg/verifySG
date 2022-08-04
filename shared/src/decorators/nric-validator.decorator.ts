@@ -12,8 +12,10 @@ export function IsNric() {
         message: 'Must be a valid NRIC/FIN',
       },
       validator: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        validate(value: any): boolean {
+        validate(value: unknown): boolean {
+          if (typeof value !== 'string') {
+            return false
+          }
           return nric.validate(value)
         },
       },

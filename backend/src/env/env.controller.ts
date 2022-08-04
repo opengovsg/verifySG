@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common'
 import { ConfigService } from 'core/providers'
-import { EnvDto } from '~shared/types'
+import { EnvResDto } from '~shared/types/api'
 
 @Controller('env')
 export class EnvController {
@@ -10,7 +10,7 @@ export class EnvController {
    * Endpoint for frontend to call to retrieve frontend Sentry DSN
    */
   @Get()
-  async getEnv(): Promise<EnvDto> {
+  async getEnv(): Promise<EnvResDto> {
     const { frontendDsn } = this.config.get('sentry')
     const env = this.config.get('environment')
     return { dsn: frontendDsn, env }
