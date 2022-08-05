@@ -4,7 +4,7 @@ import { EnvService } from '../../services/EnvService'
 
 import Banner from '.'
 
-import { EnvDto } from '~shared/types'
+import { EnvResDto } from '~shared/types/api'
 
 const DowntimeMessage = () => (
   <span>
@@ -14,7 +14,7 @@ const DowntimeMessage = () => (
 )
 
 export const DowntimeBanner: React.FC = (): JSX.Element | null => {
-  const { data: envDto } = useQuery<EnvDto>('env', EnvService.getEnv, {
+  const { data: envDto } = useQuery<EnvResDto>('env', EnvService.getEnv, {
     cacheTime: Infinity,
   })
 
