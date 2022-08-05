@@ -35,7 +35,8 @@
 ### Auto-generate migrations
 
 ```zsh
-npm run on-backend migration:gen migration-name-in-kebab-case
+# need to add path to migrations folder
+npm run on-backend migration:gen src/database/migrations/migration-name-in-kebab-case
 ```
 
 ### Run migrations
