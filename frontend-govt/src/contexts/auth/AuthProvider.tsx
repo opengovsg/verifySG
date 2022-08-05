@@ -14,11 +14,14 @@ export const AuthProvider = ({ children }: AuthProps) => {
     false,
   )
   const [officer, setOfficer] = useState<string>('')
+  const [agencyShortName, setAgencyShortName] = useState<string>('')
 
   const getOfficer = async (): Promise<void> => {
     const retrievedOfficer = await AuthService.whoAmI()
-    if ('email' in retrievedOfficer) {
-      setOfficer(retrievedOfficer.email)
+    if (retrievedOfficer) {
+      if ('email' in retrievedOfficer) setOfficer(retrievedOfficer.email)
+      if ('agencyShortName' in retrievedOfficer)
+        setAgencyShortName(retrievedOfficer.agencyShortName)
       setIsAuthenticated(true)
     }
   }
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }: AuthProps) => {
       value={{
         isAuthenticated,
         officer,
+        agencyShortName,
         getOfficer,
         logout,
       }}

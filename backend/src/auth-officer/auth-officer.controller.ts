@@ -68,8 +68,8 @@ export class AuthOfficerController {
     if (!officer) {
       throw new NotFoundException('No officer with this officer ID found')
     }
-    const { email } = officer
-    return { email }
+    const { email, agency } = officer
+    return { email, agencyShortName: agency.id }
   }
 
   @Post('logout')

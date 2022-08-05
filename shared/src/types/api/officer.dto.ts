@@ -8,6 +8,9 @@ export class OfficerWhoamiSuccess {
   // TODO (maybe): refactor into common email property
   @IsEmail() // in theory can make is specific to gov.sg email
   email: string
+
+  @IsString()
+  agencyShortName: string
 }
 
 export class OfficerWhoamiFailure {

@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react'
 interface AuthContext {
   isAuthenticated: boolean | undefined
   officer: string
+  agencyShortName: string
   getOfficer: () => Promise<void>
   logout: () => Promise<void>
 }
