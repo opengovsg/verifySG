@@ -14,7 +14,6 @@
     "lint": "npm run all \"npm:on-* lint\" \"npm run --prefix shared lint\"",
     "lint:fix": "npm run all \"npm:on-* lint:fix\" \"npm run --prefix shared lint:fix\"",
     "build": "npm run --prefix shared build && npm run all \"npm:on-* build\"",
-    "coverage": "npm run on-backend -- test:cov && cat backend/coverage/lcov.info > lcov.info",
     "cz": "git-cz",
     "start": "npm run --prefix backend -- start",
     "prepare": "husky install",

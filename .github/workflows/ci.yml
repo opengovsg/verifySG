@@ -1,4 +1,4 @@
-name: Lint, test, build, and deploy
+name: Lint, build, test and deploy
 on:
   push:
   pull_request:
@@ -12,7 +12,7 @@ env:
   EB_PRODUCTION_ENVIRONMENT: checkwho-production-environment
 jobs:
   lint:
-    name: Lint, test, and build
+    name: Lint, build, and test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -48,17 +48,13 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Run tests and generate coverage
-        run: npm run coverage
-
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./lcov.info
-
       - name: Build
         run: npm run build
+
+      - name: Run tests
+        run: |
+          npm run --prefix backend test
+          npm run --prefix shared test
 
       - name: Upload deployment files
         uses: actions/upload-artifact@v2
