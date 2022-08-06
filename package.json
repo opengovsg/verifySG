@@ -16,6 +16,7 @@
     "build": "npm run --prefix shared build && npm run all \"npm:on-* build\"",
     "cz": "git-cz",
     "start": "npm run --prefix backend -- start",
+    "test": "npm run all \"npm:on-* test\" \"npm run --prefix shared test\"",
     "prepare": "husky install",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
