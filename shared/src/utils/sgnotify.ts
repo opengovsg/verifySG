@@ -34,6 +34,8 @@ export const sgNotifyShortMessage = (agencyShortName: string): string => {
     case 'OGP':
     case 'MSF':
     case 'ECDA':
+    case 'IRAS':
+    case 'MOH':
       return `A public officer from ${agencyShortName} will be calling you shortly.`
     default:
       throw new Error(`Unsupported agency: ${agencyShortName}`)
@@ -84,6 +86,10 @@ export const generateCallDetails = (
         case 'MSF':
         case 'ECDA':
           return standardClosingBeforeCall
+        case 'MOH':
+          return 'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.'
+        case 'IRAS':
+          return 'This call is regarding your tax matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.'
         default:
           throw new Error(`Unsupported agency: ${agencyId}`)
       }
