@@ -7,14 +7,13 @@ import { OTP } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { CoreModule } from '../../core/core.module'
 import { otpUtils } from '../utils'
-import { ConfigService, Logger } from '../../core/providers'
+import { Logger } from '../../core/providers'
 
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000
 
 describe('OtpService', () => {
   let otpService: OtpService
   let otpRepository: Repository<OTP>
-  let configService: ConfigService
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
@@ -45,7 +44,6 @@ describe('OtpService', () => {
 
     otpService = module.get<OtpService>(OtpService)
     otpRepository = module.get(getRepositoryToken(OTP))
-    configService = module.get<ConfigService>(ConfigService)
     logger = module.get<Logger>(Logger)
     otpUtils.generateOtpAndHashAsync = jest.fn().mockReturnValue({
       otp: validOtpMock,
@@ -68,7 +66,6 @@ describe('OtpService', () => {
   it('should be defined', () => {
     expect(otpService).toBeDefined()
     expect(otpRepository).toBeDefined()
-    expect(configService).toBeDefined()
     expect(logger).toBeDefined()
   })
 
@@ -141,8 +138,7 @@ describe('OtpService', () => {
      * User fails with OTPVerificationResult.MAX_ATTEMPTS_REACHED
      * */
     await otpService.getOtp(mockEmailAddress)
-    const numAllowedAttempts = configService.get('otp.numAllowedAttempts')
-    for (let i = 0; i < numAllowedAttempts; i++) {
+    for (let i = 0; i < 10; i++) {
       const otpVerificationResult = await otpService.verifyOtp(
         validOtpEntityMock.email,
         '123456',
