@@ -54,6 +54,7 @@ jobs:
       - name: Run tests
         run: |
           npm run --prefix backend test
+          npm run --prefix frontend-govt test
           npm run --prefix shared test
 
       - name: Upload deployment files
