@@ -49,10 +49,6 @@ describe('OtpService', () => {
       otp: validOtpMock,
       hash: validOtpEntityMock.hash,
     })
-    otpUtils.generateOtpAndHashAsync = jest.fn().mockResolvedValue({
-      otp: validOtpMock,
-      hash: validOtpEntityMock.hash,
-    })
   })
 
   afterAll(async () => {
