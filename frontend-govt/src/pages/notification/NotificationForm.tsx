@@ -1,6 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
+import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
 import {
   Button,
@@ -48,12 +49,29 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     },
     duration: 6000,
   })
+  const history = useHistory()
+  const { agencyShortName } = useAuth()
+
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        setTargetNRIC(data.nric)
+        switch (agencyShortName) {
+          // temporary for trials: redirect if 'MOH'
+          case 'MOH':
+            setTargetNRIC(data.nric)
+            history.push(FEEDBACKFORM_ROUTE)
+            break
+          // temporary for trials: do not redirect if 'IRAS', 'SPF', 'MSF' and others
+          default:
+            reset(
+              { nric: '', callScope: '' },
+              {
+                keepValues: false,
+              },
+            )
+        }
       },
     })
   }
