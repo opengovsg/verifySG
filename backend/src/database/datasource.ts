@@ -9,7 +9,7 @@ import { schema } from '../core/config.schema'
 
 const config = convict(schema)
 
-export const connectionOptions: PostgresConnectionOptions = {
+export const connectionConfig: PostgresConnectionOptions = {
   type: 'postgres',
   host: config.get('database.host'),
   port: config.get('database.port'),
@@ -29,4 +29,4 @@ export const connectionOptions: PostgresConnectionOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 }
 
-export const AppDataSource = new DataSource(connectionOptions)
+export const AppDataSource = new DataSource(connectionConfig)

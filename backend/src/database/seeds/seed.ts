@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { DataSource } from 'typeorm'
 import { agenciesData } from './agenciesData'
-import { connectionOptions } from '../datasource'
+import { connectionConfig } from '../datasource'
 import { Agency } from '../entities'
 
 const createAgencies = async (dataSource: DataSource) => {
@@ -24,7 +24,7 @@ const createAgencies = async (dataSource: DataSource) => {
 const main = async () => {
   console.log('Seeding database...')
   try {
-    const dataSource = new DataSource(connectionOptions)
+    const dataSource = new DataSource(connectionConfig)
     await createAgencies(dataSource)
   } catch (e) {
     console.error(e)
