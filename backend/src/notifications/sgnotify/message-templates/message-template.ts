@@ -119,8 +119,7 @@ export const convertParamsToNotificationRequestPayload = async (
     call_details,
     callback_details,
   } = sgNotifyLongMessageParams
-  const notificationRequest = new SGNotifyNotificationRequest()
-  Object.assign(notificationRequest, {
+  const notificationRequest = Object.assign(new SGNotifyNotificationRequest(), {
     category: 'MESSAGES',
     channel_mode: 'SPM',
     delivery: 'IMMEDIATE',
