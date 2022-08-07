@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query'
-
-import { EnvService } from '../../services/EnvService'
+import { EnvService } from '@services/EnvService'
 
 import Banner from '.'
 

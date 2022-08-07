@@ -7,9 +7,9 @@ import {
   FormErrorMessage,
   FormLabel,
 } from '@opengovsg/design-system-react'
+import { AuthService } from '@services/AuthService'
 
-import { useAuth } from '../../contexts/auth/AuthContext'
-import { AuthService } from '../../services/AuthService'
+import { useAuth } from '@/contexts/auth/AuthContext'
 
 interface OTPFormProps {
   email: string

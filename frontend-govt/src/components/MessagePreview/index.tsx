@@ -1,9 +1,8 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { Alert, Box } from '@chakra-ui/react'
+import { OfficerService } from '@services/OfficerService'
 import sanitizeHtml from 'sanitize-html'
-
-import { OfficerService } from '../../services/OfficerService'
 
 import { messageContentFactory } from './helpers'
 

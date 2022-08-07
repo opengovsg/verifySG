@@ -1,6 +1,5 @@
 import { ReactChild, ReactChildren, useEffect, useState } from 'react'
-
-import { AuthService } from '../../services/AuthService'
+import { AuthService } from '@services/AuthService'
 
 import { AuthContext } from './AuthContext'
 

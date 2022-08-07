@@ -10,12 +10,13 @@ import {
   Input,
   useToast,
 } from '@opengovsg/design-system-react'
+import { NotificationService } from '@services/NotificationService'
 import nric from 'nric'
 
-import HeaderContainer from '../../components/HeaderContainer'
-import MessagePreview from '../../components/MessagePreview'
-import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
-import { NotificationService } from '../../services/NotificationService'
+import HeaderContainer from '@/components/HeaderContainer'
+import MessagePreview from '@/components/MessagePreview'
+import { FEEDBACKFORM_ROUTE } from '@/constants/routes'
+import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 
 interface NotificationFormData {
   nric: string

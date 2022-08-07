@@ -12,7 +12,7 @@ import {
 } from '@opengovsg/design-system-react'
 import { OfficerService } from '@services/OfficerService'
 
-import HeaderContainer from '../../components/HeaderContainer'
+import HeaderContainer from '@/components/HeaderContainer'
 
 interface ProfileFormData {
   name: string
