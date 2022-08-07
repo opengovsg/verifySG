@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  Check,
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
@@ -12,6 +13,7 @@ import { Officer } from './officer.entity'
 @Entity({ name: 'agency' })
 export class Agency {
   @PrimaryColumn('varchar', { unique: true, nullable: false, length: 255 })
+  @Check('id = upper(id)')
   id: string // shortName
 
   @Column('varchar', { nullable: false, length: 255 })
@@ -24,6 +26,7 @@ export class Agency {
   officers: Officer[]
 
   @Column('varchar', { array: true, length: 255, default: [] })
+  @Check('email_domains = lower(email_domains::varchar)::varchar[]')
   emailDomains: string[]
 
   @CreateDateColumn({ type: 'timestamptz' })

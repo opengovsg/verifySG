@@ -6,6 +6,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
   UpdateDateColumn,
+  Check,
 } from 'typeorm'
 
 import { Officer } from './officer.entity'
@@ -60,6 +61,7 @@ export class Notification {
   notificationType: NotificationType
 
   @Column('varchar', { length: 9, nullable: false })
+  @Check('recipient_id = upper(recipient_id)')
   recipientId: string
 
   @Column({
