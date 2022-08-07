@@ -3,7 +3,7 @@
  * Cannot remember where I got the regex from; feel free to refactor if you find problems with this.
  * Likely not a problem, since we only accept whitelisted domains.
  */
-const govtEmailRegex =
+export const SG_GOVT_EMAIL_REGEX =
   "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+.gov.sg"
 /**
  * Normalizes email by (1) converting to lowercase; (2) removing surrounding whitespace; (3) checking it is a .gov.sg email
@@ -14,7 +14,7 @@ const govtEmailRegex =
  */
 export function normalizeEmail(email: string): string {
   const normalizedEmail = email.toLowerCase().trim()
-  if (!normalizedEmail.match(govtEmailRegex))
+  if (!normalizedEmail.match(SG_GOVT_EMAIL_REGEX))
     throw new Error(`Invalid email '${email}'`)
   return normalizedEmail
 }
@@ -30,7 +30,7 @@ export function parseEmailDomain(email: string): string {
 }
 
 export const isGovtEmail = (inputEmail: string): boolean => {
-  return !!inputEmail.match(govtEmailRegex)
+  return !!inputEmail.match(SG_GOVT_EMAIL_REGEX)
 }
 
 export const INVALID_GOV_SG_EMAIL =

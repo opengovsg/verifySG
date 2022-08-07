@@ -42,7 +42,7 @@ you may choose to investigate this IP to address further.</p>`
     const verificationResult = await this.otpService.verifyOtp(email, otp)
     switch (verificationResult) {
       case OTPVerificationResult.SUCCESS: {
-        return await this.officersService.findOrInsert({ email })
+        return await this.officersService.findOrInsertByEmail(email)
       }
       // not sure whether to log additional info for failed verification
       case OTPVerificationResult.EXPIRED_OTP: {

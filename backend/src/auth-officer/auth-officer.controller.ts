@@ -10,10 +10,13 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
+import {
+  OfficerWhoamiResDto,
+  GetOtpReqDto,
+  VerifyOtpReqDto,
+} from '~shared/types/api'
 import { AuthOfficerService } from './auth-officer.service'
 import { ConfigService, Logger } from 'core/providers'
-import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
 import { OfficersService } from '../officers/officers.service'
 import { getRequestIp } from '../common/utils'
@@ -28,7 +31,10 @@ export class AuthOfficerController {
   ) {}
 
   @Post()
-  async sendOTP(@Body() body: OfficerDto, @Req() req: Request): Promise<void> {
+  async sendOTP(
+    @Body() body: GetOtpReqDto,
+    @Req() req: Request,
+  ): Promise<void> {
     const { email } = body
     try {
       const ipAddress = getRequestIp(req)
@@ -42,7 +48,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpAuthVerifyDto,
+    @Body() body: VerifyOtpReqDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, otp } = body
@@ -51,7 +57,7 @@ export class AuthOfficerController {
   }
 
   @Get('whoami')
-  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiDto> {
+  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiResDto> {
     if (!officerId) {
       return { message: 'No logged in officer' }
     }

@@ -8,7 +8,7 @@ import {
   IsUrl,
   Matches,
 } from 'class-validator'
-export class CreateAgencyDto {
+export class CreateAgencyReqDto {
   @IsNotEmpty()
   @IsUppercase()
   // Only allow alphanumeric and dash

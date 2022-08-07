@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import axios from 'axios'
 
+import { DowntimeBanner } from '../components/Banner/DowntimeBanner'
 import { StagingBanner } from '../components/Banner/StagingBanner'
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
@@ -17,10 +18,10 @@ import { theme } from '../theme'
 
 import { AppRouter } from './AppRouter'
 
-import { EnvDto } from '~shared/types'
+import { EnvResDto } from '~shared/types/api'
 
 // If Sentry params are specified, init sentry.
-axios.get<EnvDto>('/api/env').then((res) => {
+axios.get<EnvResDto>('/api/env').then((res) => {
   const { dsn, env } = res.data
   if (dsn && env) {
     Sentry.init({
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
         <BrowserRouter>
           <AuthProvider>
             <NotificationDataProvider>
+              <DowntimeBanner />
               <StagingBanner />
               <AppRouter />
             </NotificationDataProvider>

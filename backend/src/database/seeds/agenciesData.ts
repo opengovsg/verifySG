@@ -1,10 +1,7 @@
-// TODO: include field validators after shared folder is set up
+import { AgencyDto } from '~shared/types/api'
 
-interface AgencyData {
-  id: string
-  name: string
-  logoUrl: string
-  emailDomains: string[]
+class AgencyData extends AgencyDto {
+  emailDomains: string[] // in theory, can further validate these are valid .gov.sg domains
 }
 
 export const agenciesData: AgencyData[] = [

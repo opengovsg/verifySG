@@ -6,6 +6,7 @@ export interface ConfigSchema {
   }
   port: number
   environment: 'development' | 'staging' | 'production' | 'test'
+  isDowntime: boolean
   awsRegion: string
   database: {
     host: string
@@ -76,6 +77,12 @@ export const schema: Schema<ConfigSchema> = {
     env: 'NODE_ENV',
     format: ['development', 'staging', 'production', 'test'],
     default: 'development',
+  },
+  isDowntime: {
+    doc: 'Whether CheckWho is experiencing downtime',
+    env: 'IS_DOWNTIME',
+    format: Boolean,
+    default: false,
   },
   awsRegion: {
     doc: 'The AWS region for SES. Optional, logs mail to console if absent',

@@ -3,7 +3,10 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common'
 import { OfficerId } from 'common/decorators'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { NotificationsService } from './notifications.service'
-import { SendNotificationDto, SendNotificationResponseDto } from './dto'
+import {
+  SendNotificationReqDto,
+  SendNotificationResDto,
+} from '~shared/types/api'
 
 @Controller('notifications')
 export class NotificationsController {
@@ -18,8 +21,8 @@ export class NotificationsController {
   @Post()
   async sendNotification(
     @OfficerId() officerId: number,
-    @Body() body: SendNotificationDto,
-  ): Promise<SendNotificationResponseDto> {
+    @Body() body: SendNotificationReqDto,
+  ): Promise<SendNotificationResDto> {
     return this.notificationsService.sendNotification(officerId, body)
   }
 }
