@@ -220,6 +220,7 @@ describe('OtpService', () => {
       mockEmailAddress,
       otpA,
     )
+    // there is a small chance of failure if otpA and otpB are the same
     expect(otpAVerificationResult).toBe(OTPVerificationResult.INCORRECT_OTP)
     const otpBVerificationResult = await otpService.verifyOtp(
       mockEmailAddress,
