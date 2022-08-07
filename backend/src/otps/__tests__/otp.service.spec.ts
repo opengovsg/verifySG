@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest'
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -6,28 +7,21 @@ import { OtpService, OTPVerificationResult } from '../otp.service'
 import { OTP } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { CoreModule } from '../../core/core.module'
-import { otpUtils } from '../utils'
-import { Logger } from '../../core/providers'
-
-const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000
+import { ConfigService, Logger } from '../../core/providers'
+import {
+  generateIncorrectOtp,
+  mockEmailAddress,
+  ONE_MINUTE_IN_MILLISECONDS,
+  otpEntityMock,
+} from '../utils/otp-utils.spec'
 
 describe('OtpService', () => {
   let otpService: OtpService
   let otpRepository: Repository<OTP>
+  let configService: ConfigService
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
-  const validOtpMock = '089282'
-  const mockEmailAddress = 'benjamin_tan@spf.gov.sg'
-  const validOtpEntityMock: OTP = {
-    createdAt: new Date(Date.now() - 5 * ONE_MINUTE_IN_MILLISECONDS),
-    email: mockEmailAddress,
-    expiredAt: new Date(Date.now() + 10 * ONE_MINUTE_IN_MILLISECONDS),
-    hash: '$2b$10$SMxZF/FO1jftpFULJSJfyuIhnZ.0LVAvFbUQqMdYoiLrAKxNQgBFe',
-    id: 1,
-    numOfAttempts: 0,
-    updatedAt: new Date(Date.now() - 5 * ONE_MINUTE_IN_MILLISECONDS),
-  }
 
   beforeAll(async () => {
     const [opts, resetHook, closeHook] = await useTestDatabase()
@@ -45,10 +39,6 @@ describe('OtpService', () => {
     otpService = module.get<OtpService>(OtpService)
     otpRepository = module.get(getRepositoryToken(OTP))
     logger = module.get<Logger>(Logger)
-    otpUtils.generateOtpAndHashAsync = jest.fn().mockReturnValue({
-      otp: validOtpMock,
-      hash: validOtpEntityMock.hash,
-    })
   })
 
   afterAll(async () => {
@@ -65,14 +55,6 @@ describe('OtpService', () => {
     expect(logger).toBeDefined()
   })
 
-  it('should verify otp as matching hash', async () => {
-    const verificationResultBool = await otpUtils.verifyOtpWithHashAsync(
-      validOtpMock,
-      validOtpEntityMock.hash,
-    )
-    expect(verificationResultBool).toBe(true)
-  })
-
   it('otp happy path', async () => {
     /*
      * User requests OTP
@@ -80,20 +62,15 @@ describe('OtpService', () => {
      * User succeeds with OTPVerificationResult.SUCCESS
      * */
     const { otp, timeLeftMinutes } = await otpService.getOtp(mockEmailAddress)
-    expect(otp).toBe(validOtpMock)
     expect(timeLeftMinutes).toBe('15')
-    expect(otpUtils.generateOtpAndHashAsync).toHaveBeenCalled()
     const otpBeforeVerification = await otpRepository.findOneBy({
-      email: 'benjamin_tan@spf.gov.sg',
+      email: mockEmailAddress,
     })
-    expect(otpBeforeVerification).toHaveProperty(
-      'hash',
-      validOtpEntityMock.hash,
-    )
+    expect(otpBeforeVerification).not.toBeNull()
     jest.spyOn(otpService, 'incrementAttemptCount')
     const otpVerificationResult = await otpService.verifyOtp(
-      validOtpEntityMock.email,
-      validOtpMock,
+      mockEmailAddress,
+      otp,
     )
     expect(otpService.incrementAttemptCount).toHaveBeenCalled()
     expect(otpVerificationResult).toBe(OTPVerificationResult.SUCCESS)
@@ -110,10 +87,11 @@ describe('OtpService', () => {
      * User fails with OTPVerificationResult.INCORRECT_OTP
      * User submits correct OTP and logs in successfully
      * */
-    await otpService.getOtp(mockEmailAddress)
+    const { otp } = await otpService.getOtp(mockEmailAddress)
+    const incorrectOtp = generateIncorrectOtp(otp)
     const otpVerificationResult1 = await otpService.verifyOtp(
-      validOtpEntityMock.email,
-      '123456',
+      mockEmailAddress,
+      incorrectOtp,
     )
     const otpAfterFailedVerification = await otpRepository.findOneBy({
       email: mockEmailAddress,
@@ -121,8 +99,8 @@ describe('OtpService', () => {
     expect(otpAfterFailedVerification).toHaveProperty('numOfAttempts', 1)
     expect(otpVerificationResult1).toBe(OTPVerificationResult.INCORRECT_OTP)
     const otpVerificationResult2 = await otpService.verifyOtp(
-      validOtpEntityMock.email,
-      validOtpMock,
+      mockEmailAddress,
+      otp,
     )
     expect(otpVerificationResult2).toBe(OTPVerificationResult.SUCCESS)
   })
@@ -133,11 +111,23 @@ describe('OtpService', () => {
      * User submits correct OTP before expiry
      * User fails with OTPVerificationResult.MAX_ATTEMPTS_REACHED
      * */
-    await otpService.getOtp(mockEmailAddress)
-    for (let i = 0; i < 10; i++) {
+    configService = createMock<ConfigService>({
+      get: (key: string) => {
+        switch (key) {
+          case 'otp':
+            return { numAllowedAttempts: 10 }
+          default:
+            return ''
+        }
+      },
+    })
+    const { otp } = await otpService.getOtp(mockEmailAddress)
+    const { numAllowedAttempts } = configService.get('otp')
+    const incorrectOtp = generateIncorrectOtp(otp)
+    for (let i = 0; i < numAllowedAttempts; i++) {
       const otpVerificationResult = await otpService.verifyOtp(
-        validOtpEntityMock.email,
-        '123456',
+        mockEmailAddress,
+        incorrectOtp,
       )
       const otpInDb = await otpRepository.findOneBy({
         email: mockEmailAddress,
@@ -146,8 +136,8 @@ describe('OtpService', () => {
       expect(otpInDb).toHaveProperty('numOfAttempts', i + 1)
     }
     const otpVerificationResult = await otpService.verifyOtp(
-      validOtpEntityMock.email,
-      validOtpMock,
+      mockEmailAddress,
+      otp,
     )
     expect(otpVerificationResult).toBe(
       OTPVerificationResult.MAX_ATTEMPTS_REACHED,
@@ -160,23 +150,22 @@ describe('OtpService', () => {
      * User fails with OTPVerificationResult.EXPIRED_OTP
      * */
     // mock expired otp (no time to let clock run normally)
-    // need to set as spy to run mockRestore() without affecting subsequent tests
-    const spy = jest.spyOn(otpRepository, 'create').mockReturnValue({
+    const mockExpiredOtp = jest.spyOn(otpRepository, 'create').mockReturnValue({
       id: 1,
-      email: validOtpEntityMock.email,
-      hash: validOtpEntityMock.hash,
+      email: mockEmailAddress,
+      hash: otpEntityMock.hash,
       createdAt: new Date(Date.now() - 25 * ONE_MINUTE_IN_MILLISECONDS),
       numOfAttempts: 0,
       updatedAt: new Date(Date.now() - 15 * ONE_MINUTE_IN_MILLISECONDS),
       expiredAt: new Date(Date.now() - 10 * ONE_MINUTE_IN_MILLISECONDS),
     })
-    await otpService.getOtp(mockEmailAddress)
+    const { otp } = await otpService.getOtp(mockEmailAddress)
     const otpVerificationResult = await otpService.verifyOtp(
-      validOtpEntityMock.email,
-      validOtpMock,
+      mockEmailAddress,
+      otp,
     )
     expect(otpVerificationResult).toBe(OTPVerificationResult.EXPIRED_OTP)
-    spy.mockRestore()
+    mockExpiredOtp.mockRestore()
   })
   it('cannot find OTP in db scenario 1: hitting endpoint directly', async () => {
     /* User submits OTP with no corresponding email in db
@@ -186,7 +175,7 @@ describe('OtpService', () => {
     jest.spyOn(logger, 'warn')
     const otpVerificationResult = await otpService.verifyOtp(
       mockEmailAddress,
-      '123456',
+      '123456', // will always be incorrect since otp db is empty
     )
     const otp = await otpRepository.findOneBy({
       email: mockEmailAddress,
@@ -226,10 +215,6 @@ describe('OtpService', () => {
      * User succeeds with OTPVerificationResult.SUCCESS
      * */
     const { otp: otpA } = await otpService.getOtp(mockEmailAddress)
-    otpUtils.generateOtpAndHashAsync = jest.fn().mockResolvedValue({
-      otp: '705728',
-      hash: '$2b$10$v6H4EA1E.85gW6wNuhugweIskX2Facl9hCvIHTi8v6hGOZDp/UBC6',
-    })
     const { otp: otpB } = await otpService.getOtp(mockEmailAddress)
     const otpAVerificationResult = await otpService.verifyOtp(
       mockEmailAddress,
