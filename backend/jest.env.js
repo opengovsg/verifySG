@@ -7,6 +7,8 @@ process.env = {
   DB_USERNAME: postgres.env.POSTGRES_USER,
   DB_PASSWORD: postgres.env.POSTGRES_PASSWORD,
   DB_NAME: postgres.env.POSTGRES_DB,
+  // these filler env variables are needed to run tests in CI
+  // else will throw error that mandatory env variables are not available
   POSTMAN_API_KEY: 'TEST',
   ADMIN_KEY_HASH: 'TEST',
   SGNOTIFY_CLIENT_ID: 'TEST',
