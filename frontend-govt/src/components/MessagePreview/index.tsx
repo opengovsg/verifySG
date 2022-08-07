@@ -1,3 +1,4 @@
+import React from 'react'
 import { useQuery } from 'react-query'
 import { Alert, Box } from '@chakra-ui/react'
 import sanitizeHtml from 'sanitize-html'

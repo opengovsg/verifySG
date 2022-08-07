@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Skeleton } from '@chakra-ui/react'
