@@ -9,16 +9,28 @@ import { OfficerService } from '@services/OfficerService'
 import HeaderContainer from '@/components/HeaderContainer'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 
+import { useAuth } from '@/contexts/auth/AuthContext'
+
 interface FormFieldPrefill {
   fieldId: string
   value?: string
 }
 
 export const FeedbackForm: React.FC = () => {
-  const formLink = 'https://form.gov.sg/627a0dbe5fba010011ff832c'
   const nameFieldId = '623d285ee46e5c0012d70649'
   const positionFieldId = '623d286e012667001232b83f'
   const nricFieldId = '623d31820126670012345b40'
+
+  // TEMPORARY for trials: redirect to agency specific form link
+  const { agencyShortName } = useAuth()
+  let formLink: string
+  switch (agencyShortName) {
+    case 'MOH':
+      formLink = 'UPDATE_MOH_FORM_LINK_HERE'
+      break
+    default:
+      formLink = 'https://form.gov.sg/627a0dbe5fba010011ff832c'
+  }
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
   const { targetNRIC, setTargetNRIC } = useNotificationData()

@@ -58,12 +58,12 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         switch (agencyShortName) {
-          // temporary for trials: redirect if 'MOH'
+          // TEMPORARY for trials: redirect if 'MOH'
           case 'MOH':
             setTargetNRIC(data.nric)
             history.push(FEEDBACKFORM_ROUTE)
             break
-          // temporary for trials: do not redirect if 'IRAS', 'SPF', 'MSF' and others
+          // TEMPORARY for trials: do not redirect if 'IRAS', 'SPF', 'MSF' and others
           default:
             reset(
               { nric: '', callScope: '' },
