@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
 
+import { Agency } from 'database/entities/agency.entity'
+
+import { CreateAgencyReqDto, UpdateAgencyReqDto } from './dto'
+
 import { AgencyResDto } from '~shared/types/api'
 import { normalizeEmail, parseEmailDomain } from '~shared/utils/email'
-import { CreateAgencyReqDto, UpdateAgencyReqDto } from './dto'
-import { Agency } from 'database/entities/agency.entity'
 
 @Injectable()
 export class AgenciesService {

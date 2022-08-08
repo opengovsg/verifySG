@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common'
-import convict, { Config, Path } from 'convict'
 import {
   GetParametersByPathCommand,
   GetParametersByPathCommandOutput,
   SSMClient,
 } from '@aws-sdk/client-ssm'
+import { Injectable } from '@nestjs/common'
+import convict, { Config, Path } from 'convict'
 import fs from 'fs'
 import dotenv = require('dotenv')
 

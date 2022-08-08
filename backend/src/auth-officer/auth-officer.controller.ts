@@ -10,16 +10,19 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
+import { OfficerId } from 'common/decorators'
+import { ConfigService, Logger } from 'core/providers'
+
+import { getRequestIp } from '../common/utils'
+import { OfficersService } from '../officers/officers.service'
+
+import { AuthOfficerService } from './auth-officer.service'
+
 import {
-  OfficerWhoamiResDto,
   GetOtpReqDto,
+  OfficerWhoamiResDto,
   VerifyOtpReqDto,
 } from '~shared/types/api'
-import { AuthOfficerService } from './auth-officer.service'
-import { ConfigService, Logger } from 'core/providers'
-import { OfficerId } from 'common/decorators'
-import { OfficersService } from '../officers/officers.service'
-import { getRequestIp } from '../common/utils'
 
 @Controller('auth-officers')
 export class AuthOfficerController {

@@ -1,5 +1,5 @@
-import { JWTPayload } from 'jose'
 import { IsNumber, IsString } from 'class-validator'
+import { JWTPayload } from 'jose'
 
 export class AuthResPayload implements JWTPayload {
   @IsString()

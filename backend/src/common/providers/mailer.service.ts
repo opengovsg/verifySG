@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { Logger } from 'core/providers'
-import { ConfigSchema } from 'core/config.schema'
-
 import axios from 'axios'
 
-import { ConfigService } from 'core/providers'
+import { ConfigSchema } from 'core/config.schema'
+import { ConfigService, Logger } from 'core/providers'
 
 @Injectable()
 export class MailerService {

@@ -1,4 +1,5 @@
-import { PartialType, OmitType } from '@nestjs/mapped-types'
+import { OmitType, PartialType } from '@nestjs/mapped-types'
+
 import { CreateAgencyReqDto } from './create-agency.dto'
 
 // OmitType creates UpdateAgencyDto with all properties of CreateCatDto except shortName

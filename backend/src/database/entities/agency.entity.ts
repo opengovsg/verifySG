@@ -1,11 +1,11 @@
 import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
   Check,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm'
 
 import { Officer } from './officer.entity'

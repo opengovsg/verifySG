@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common'
-import { AuthOfficerService } from './auth-officer.service'
-import { AuthOfficerController } from './auth-officer.controller'
-import { OfficersModule } from 'officers/officers.module'
-import { OtpService } from '../otps/otp.service'
-import { MailerService } from 'common/providers/mailer.service'
-import { AgenciesModule } from 'agencies/agencies.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { AgenciesModule } from 'agencies/agencies.module'
+import { MailerService } from 'common/providers/mailer.service'
+import { OfficersModule } from 'officers/officers.module'
+
 import { OTP } from '../database/entities'
+import { OtpService } from '../otps/otp.service'
+
+import { AuthOfficerController } from './auth-officer.controller'
+import { AuthOfficerService } from './auth-officer.service'
 
 @Module({
   imports: [TypeOrmModule.forFeature([OTP]), OfficersModule, AgenciesModule],

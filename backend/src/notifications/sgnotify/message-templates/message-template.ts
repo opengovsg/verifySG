@@ -1,19 +1,21 @@
+import { validateOrReject } from 'class-validator'
+
 import {
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
-import { maskNric } from '~shared/utils/nric'
-import {
-  generateCallDetails,
-  SGNotifyMessageTemplateId,
-  sgNotifyTitle,
-  sgNotifyShortMessage,
-} from '~shared/utils/sgnotify'
 import {
   SGNotifyNotificationRequest,
   SGNotifyNotificationRequestPayload,
 } from '../dto'
-import { validateOrReject } from 'class-validator'
+
+import { maskNric } from '~shared/utils/nric'
+import {
+  generateCallDetails,
+  SGNotifyMessageTemplateId,
+  sgNotifyShortMessage,
+  sgNotifyTitle,
+} from '~shared/utils/sgnotify'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string

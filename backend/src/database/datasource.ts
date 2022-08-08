@@ -1,9 +1,11 @@
 import 'dotenv/config'
+
 import convict from 'convict'
 import { join } from 'path'
 import { DataSource } from 'typeorm'
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
+
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 
 import { schema } from '../core/config.schema'
 

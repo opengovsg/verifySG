@@ -1,16 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  Check,
   Column,
   CreateDateColumn,
-  OneToMany,
+  Entity,
   ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Check,
 } from 'typeorm'
 
-import { Notification } from './notification.entity'
 import { Agency } from './agency.entity'
+import { Notification } from './notification.entity'
 
 @Entity({ name: 'officer' })
 export class Officer {

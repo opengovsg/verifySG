@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 
-import { MailerService } from 'common/providers/mailer.service'
 import { AgenciesService } from 'agencies/agencies.service'
+import { MailerService } from 'common/providers/mailer.service'
+import { Logger } from 'core/providers'
 
+import { Officer } from '../database/entities'
+import { OfficersService } from '../officers/officers.service'
 import { OtpService, OTPVerificationResult } from '../otps/otp.service'
 
-import { Logger } from 'core/providers'
 import { normalizeEmail } from '~shared/utils/email'
-import { OfficersService } from '../officers/officers.service'
-import { Officer } from '../database/entities'
 
 @Injectable()
 export class AuthOfficerService {

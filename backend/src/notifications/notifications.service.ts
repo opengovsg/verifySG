@@ -2,22 +2,24 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { normalizeNric } from '~shared/utils/nric'
 import {
+  ModalityParams,
   Notification,
   NotificationType,
-  ModalityParams,
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
+
+import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
-import { SGNotifyService } from './sgnotify/sgnotify.service'
+
 import {
   SendNotificationReqDto,
   SendNotificationResDto,
 } from '~shared/types/api'
+import { normalizeNric } from '~shared/utils/nric'
 
 @Injectable()
 export class NotificationsService {

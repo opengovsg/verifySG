@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 import { DataSource } from 'typeorm'
-import { agenciesData } from './agenciesData'
+
 import { connectionConfig } from '../datasource'
 import { Agency } from '../entities'
+
+import { agenciesData } from './agenciesData'
 
 const createAgencies = async (dataSource: DataSource) => {
   dataSource
