@@ -1,30 +1,29 @@
-import { APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core'
 import {
+  BadRequestException,
+  MiddlewareConsumer,
   Module,
   NestModule,
-  MiddlewareConsumer,
-  ValidationPipe,
-  BadRequestException,
   ValidationError,
+  ValidationPipe,
 } from '@nestjs/common'
-import { values } from 'lodash'
-import { TypeOrmModule } from '@nestjs/typeorm'
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import {
+  SentryInterceptor as NestSentryInterceptor,
+  SentryModule as NestSentryModule,
+} from '@ntegral/nestjs-sentry'
+import { values } from 'lodash'
 import { join } from 'path'
 
-import { HelmetMiddleware } from 'common/middlewares/helmet.middleware'
-import { SessionMiddleware } from 'common/middlewares/session.middleware'
-import { MorganMiddleware } from 'common/middlewares/morgan.middleware'
 import { AllExceptionsFilter } from 'common/filters/error-handler.filter'
+import { HelmetMiddleware } from 'common/middlewares/helmet.middleware'
+import { MorganMiddleware } from 'common/middlewares/morgan.middleware'
+import { SessionMiddleware } from 'common/middlewares/session.middleware'
+import { CoreModule } from 'core/core.module'
+import { connectionConfig } from 'database/datasource'
 
 import { ApiModule } from './api.module'
-import { CoreModule } from 'core/core.module'
-
-import { connectionConfig } from 'database/datasource'
-import {
-  SentryModule as NestSentryModule,
-  SentryInterceptor as NestSentryInterceptor,
-} from '@ntegral/nestjs-sentry'
 
 @Module({
   imports: [

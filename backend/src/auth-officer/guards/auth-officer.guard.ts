@@ -1,12 +1,13 @@
 // Adapted from https://github.com/datagovsg/healthsync
 
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
 import { Request, Response } from 'express'
+
 import { OfficersService } from 'officers/officers.service'
 
 @Injectable()

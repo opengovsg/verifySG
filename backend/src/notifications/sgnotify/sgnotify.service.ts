@@ -1,19 +1,20 @@
-import axios, { AxiosError, AxiosInstance } from 'axios'
-import crypto from 'crypto'
-import * as jose from 'jose'
-import { JWTPayload } from 'jose'
 import {
   BadRequestException,
   Injectable,
   ServiceUnavailableException,
 } from '@nestjs/common'
+import axios, { AxiosError, AxiosInstance } from 'axios'
+import crypto from 'crypto'
+import * as jose from 'jose'
+import { JWTPayload } from 'jose'
 
-import { ConfigService, Logger } from '../../core/providers'
 import { ConfigSchema } from '../../core/config.schema'
+import { ConfigService, Logger } from '../../core/providers'
 import {
   Notification,
   SGNotifyNotificationStatus,
 } from '../../database/entities'
+
 import {
   AuthResPayload,
   GetSGNotifyJwksDto,

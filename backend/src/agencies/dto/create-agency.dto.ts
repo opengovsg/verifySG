@@ -3,11 +3,12 @@ import {
   IsArray,
   IsNotEmpty,
   IsOptional,
-  IsUppercase,
   IsString,
+  IsUppercase,
   IsUrl,
   Matches,
 } from 'class-validator'
+
 export class CreateAgencyReqDto {
   @IsNotEmpty()
   @IsUppercase()

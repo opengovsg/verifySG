@@ -1,28 +1,23 @@
 module.exports = {
-  env: {
-    es6: true,
-    node: true,
-    jest: true,
-  },
+  plugins: ['@typescript-eslint', 'import', 'simple-import-sort', 'prettier'],
   extends: [
     'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: './tsconfig.json',
-    tsconfigRootDir: __dirname,
-    ecmaVersion: 2018,
-    sourceType: 'module',
-  },
-  plugins: ['@typescript-eslint', 'simple-import-sort', 'import'],
+  ignorePatterns: ['build', 'tsconfig.json', '.eslintrc.js'],
+  env: { es6: true },
   root: true,
-  ignorePatterns: ['.eslintrc.js', 'jest.config.ts', '/src/scripts/*'],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   rules: {
-    'no-console': 'warn',
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       { argsIgnorePattern: '^_', ignoreRestSiblings: true },
     ],
     '@typescript-eslint/member-delimiter-style': [
@@ -38,6 +33,9 @@ module.exports = {
         },
       },
     ],
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    'no-console': 'warn',
     // Rules for auto sort of imports
     'simple-import-sort/imports': [
       'error',
@@ -46,11 +44,22 @@ module.exports = {
           // Side effect imports.
           ['^\\u0000'],
           // Packages.
+          // Packages. `react` related packages come first.
           // Things that start with a letter (or digit or underscore), or
           // `@` followed by a letter.
-          ['^@?\\w'],
-          // Absolute imports, must include `/` and cannot include `@`
-          ['^([\\w-]+)/'],
+          ['^react', '^@?\\w'],
+          // Root imports
+          // Shared imports should be separate from application imports.
+          ['^(shared)(/.*|$)'],
+          [
+            '^(~assets|~theme)(/.*|$)',
+            '^(~components)(/.*|$)',
+            '^(~constants)(/.*|$)',
+            '^(~contexts)(/.*|$)',
+            '^(~services)(/.*|$)',
+            '^(~types)(/.*|$)',
+          ],
+          ['^(~pages)(/.*|$)'],
           // Parent imports. Put `..` last.
           ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
           // Other relative imports. Put same-folder imports and `.` last.

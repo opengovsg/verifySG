@@ -1,15 +1,18 @@
 import {
   BadRequestException,
-  NotFoundException,
   Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
   UseGuards,
 } from '@nestjs/common'
-import { OfficersService } from './officers.service'
+
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 import { OfficerId } from 'common/decorators'
+
+import { OfficersService } from './officers.service'
+
 import { OfficerResDto, UpdateOfficerResDto } from '~shared/types/api'
 
 @Controller('officers')

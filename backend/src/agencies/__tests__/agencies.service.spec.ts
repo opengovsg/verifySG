@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
+
 import { Agency } from 'database/entities'
+
 import { AgenciesService } from '../agencies.service'
 
 describe('AgenciesService', () => {

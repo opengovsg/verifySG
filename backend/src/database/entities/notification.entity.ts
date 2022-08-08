@@ -1,16 +1,17 @@
 import {
-  Entity,
+  Check,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Check,
 } from 'typeorm'
 
-import { Officer } from './officer.entity'
 import { SGNotifyParams } from '../../notifications/sgnotify/utils'
+
+import { Officer } from './officer.entity'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',

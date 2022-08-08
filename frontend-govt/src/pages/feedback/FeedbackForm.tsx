@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Link, Text, VStack } from '@chakra-ui/react'
+import { NOTIFICATIONFORM_ROUTE } from '@constants/routes'
 import { Button } from '@opengovsg/design-system-react'
+import { OfficerService } from '@services/OfficerService'
 
-import HeaderContainer from '../../components/HeaderContainer'
-import { NOTIFICATIONFORM_ROUTE } from '../../constants/routes'
-import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
-import { OfficerService } from '../../services/OfficerService'
+import HeaderContainer from '@/components/HeaderContainer'
+import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 
 interface FormFieldPrefill {
   fieldId: string

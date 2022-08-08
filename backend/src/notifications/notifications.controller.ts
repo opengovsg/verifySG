@@ -1,8 +1,10 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 
-import { OfficerId } from 'common/decorators'
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
+import { OfficerId } from 'common/decorators'
+
 import { NotificationsService } from './notifications.service'
+
 import {
   SendNotificationReqDto,
   SendNotificationResDto,

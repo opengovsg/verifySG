@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { InjectConnection } from '@nestjs/typeorm'
-import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { TypeormStore } from 'connect-typeorm'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import session from 'express-session'
 import { Connection } from 'typeorm'
-import { TypeormStore } from 'connect-typeorm'
 
 import { ConfigService } from 'core/providers'
 import { Session } from 'database/entities'

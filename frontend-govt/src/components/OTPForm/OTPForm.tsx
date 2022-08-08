@@ -7,9 +7,9 @@ import {
   FormErrorMessage,
   FormLabel,
 } from '@opengovsg/design-system-react'
+import { AuthService } from '@services/AuthService'
 
-import { useAuth } from '../../contexts/auth/AuthContext'
-import { AuthService } from '../../services/AuthService'
+import { useAuth } from '@/contexts/auth/AuthContext'
 
 interface OTPFormProps {
   email: string
@@ -123,7 +123,9 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
             placeholder="e.g. 111111"
             autoFocus
           />
-          {errors.otp && <FormErrorMessage children={errors.otp.message} />}
+          {errors.otp && (
+            <FormErrorMessage>{errors.otp.message}</FormErrorMessage>
+          )}
         </FormControl>
         <HStack justifyContent="flex-start" spacing={6}>
           <Button type="submit">Log in</Button>

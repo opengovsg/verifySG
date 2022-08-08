@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { ConfigService, Logger } from 'core/providers'
 import { ConfigSchema } from 'core/config.schema'
-import { OTP } from '../database/entities'
-import { normalizeEmail } from '~shared/utils/email'
+import { ConfigService, Logger } from 'core/providers'
+
 import { convertMillisecondsToMinutes } from '../common/utils'
+import { OTP } from '../database/entities'
+
 import { otpUtils } from './utils'
+
+import { normalizeEmail } from '~shared/utils/email'
 
 const POSTGRES_MAX_SMALLINT = 32767
 

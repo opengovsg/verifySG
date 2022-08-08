@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
-import { Officer } from '../database/entities'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 import { AgenciesService } from 'agencies/agencies.service'
-import { normalizeEmail } from '~shared/utils/email'
+
+import { Officer } from '../database/entities'
+
 import { OfficerDto, UpdateOfficerResDto } from '~shared/types/api'
+import { normalizeEmail } from '~shared/utils/email'
 
 @Injectable()
 export class OfficersService {

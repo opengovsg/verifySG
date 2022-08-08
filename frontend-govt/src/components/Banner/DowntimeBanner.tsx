@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query'
-
-import { EnvService } from '../../services/EnvService'
+import { EnvService } from '@services/EnvService'
 
 import Banner from '.'
 
@@ -8,8 +7,8 @@ import { EnvResDto } from '~shared/types/api'
 
 const DowntimeMessage = () => (
   <span>
-    It's not you, it's us. We are currently experiencing technical difficulties.
-    Please try again later.
+    It&rsquo;s not you, it&rsquo;s us. We are currently experiencing technical
+    difficulties. Please try again later.
   </span>
 )
 

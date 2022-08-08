@@ -1,4 +1,4 @@
-import { Schema, addFormats } from 'convict'
+import { addFormats, Schema } from 'convict'
 
 export interface ConfigSchema {
   frontendUrls: {

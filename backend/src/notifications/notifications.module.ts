@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { Notification } from 'database/entities'
+import { OfficersModule } from 'officers/officers.module'
+
+import { SGNotifyService } from './sgnotify/sgnotify.service'
 import { NotificationsController } from './notifications.controller'
 import { NotificationsService } from './notifications.service'
-import { OfficersModule } from 'officers/officers.module'
-import { SGNotifyService } from './sgnotify/sgnotify.service'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Notification]), OfficersModule],

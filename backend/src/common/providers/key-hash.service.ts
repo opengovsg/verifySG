@@ -1,8 +1,7 @@
+import { Injectable } from '@nestjs/common'
 import { createHash, randomBytes, timingSafeEqual } from 'crypto'
 
-import { Injectable } from '@nestjs/common'
 import { ConfigSchema } from 'core/config.schema'
-
 import { ConfigService } from 'core/providers'
 
 @Injectable()

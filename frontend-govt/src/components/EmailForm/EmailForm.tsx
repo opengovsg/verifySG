@@ -79,7 +79,9 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
             placeholder="e.g. benjamin_tan@spf.gov.sg"
             autoFocus
           />
-          {errors.email && <FormErrorMessage children={errors.email.message} />}
+          {errors.email && (
+            <FormErrorMessage>{errors.email.message}</FormErrorMessage>
+          )}
         </FormControl>
         <Box>
           <Button isLoading={sendOtp.isLoading} type="submit">
