@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToOne,
   UpdateDateColumn,
+  Check,
 } from 'typeorm'
 
 import { Notification } from './notification.entity'
@@ -17,6 +18,7 @@ export class Officer {
   id: number
 
   @Column('varchar', { unique: true, nullable: false, length: 255 })
+  @Check('email = lower(email)')
   email: string
 
   @Column('varchar', { nullable: true, length: 255 })
