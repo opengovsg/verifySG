@@ -213,19 +213,30 @@ describe('OtpService', () => {
      * User fails with OTPVerificationResult.INCORRECT_OTP
      * User submits OTP B
      * User succeeds with OTPVerificationResult.SUCCESS
+     * User resubmits OTP A
+     * User fails with OTPVerificationResult.INCORRECT_OTP
      * */
     const { otp: otpA } = await otpService.getOtp(mockEmailAddress)
     const { otp: otpB } = await otpService.getOtp(mockEmailAddress)
-    const otpAVerificationResult = await otpService.verifyOtp(
+    const otpAVerificationResultAttempt1 = await otpService.verifyOtp(
       mockEmailAddress,
       otpA,
     )
     // there is a small chance of failure if otpA and otpB are the same
-    expect(otpAVerificationResult).toBe(OTPVerificationResult.INCORRECT_OTP)
+    expect(otpAVerificationResultAttempt1).toBe(
+      OTPVerificationResult.INCORRECT_OTP,
+    )
     const otpBVerificationResult = await otpService.verifyOtp(
       mockEmailAddress,
       otpB,
     )
     expect(otpBVerificationResult).toBe(OTPVerificationResult.SUCCESS)
+    const otpAVerificationResultAttempt2 = await otpService.verifyOtp(
+      mockEmailAddress,
+      otpA,
+    )
+    expect(otpAVerificationResultAttempt2).toBe(
+      OTPVerificationResult.INCORRECT_OTP,
+    )
   })
 })
