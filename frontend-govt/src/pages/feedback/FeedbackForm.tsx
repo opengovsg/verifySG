@@ -7,9 +7,8 @@ import { Button } from '@opengovsg/design-system-react'
 import { OfficerService } from '@services/OfficerService'
 
 import HeaderContainer from '@/components/HeaderContainer'
-import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
-
 import { useAuth } from '@/contexts/auth/AuthContext'
+import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 
 interface FormFieldPrefill {
   fieldId: string
