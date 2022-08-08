@@ -2,15 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { AgenciesService } from 'agencies/agencies.service'
 import { Agency, Officer } from 'database/entities'
-import { OfficersController } from './officers.controller'
-import { OfficersService } from './officers.service'
+import { OfficersService } from '../officers.service'
 
-describe('OfficersController', () => {
-  let controller: OfficersController
+describe('OfficersService', () => {
+  let service: OfficersService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [OfficersController],
       providers: [
         OfficersService,
         {
@@ -29,10 +27,10 @@ describe('OfficersController', () => {
       ],
     }).compile()
 
-    controller = module.get<OfficersController>(OfficersController)
+    service = module.get<OfficersService>(OfficersService)
   })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined()
+    expect(service).toBeDefined()
   })
 })
