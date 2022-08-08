@@ -28,8 +28,9 @@ export class NotificationsService {
     private sgNotifyService: SGNotifyService,
   ) {}
 
-  async findById(id: number): Promise<Notification | undefined> {
-    return this.notificationRepository.findOne(id, {
+  async findById(id: number): Promise<Notification | null> {
+    return this.notificationRepository.findOne({
+      where: { id },
       relations: ['officer', 'officer.agency'],
     })
   }
@@ -43,7 +44,7 @@ export class NotificationsService {
   async createNotification(
     officerId: number,
     notificationBody: SendNotificationReqDto,
-  ): Promise<Notification | undefined> {
+  ): Promise<Notification | null> {
     const { nric } = notificationBody
     const normalizedNric = normalizeNric(nric)
     const officer = await this.officersService.findById(officerId)

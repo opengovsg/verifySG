@@ -1,31 +1,31 @@
 /* eslint-disable no-console */
-import { Connection, ConnectionOptions, createConnection } from 'typeorm'
-import { Agency } from '../entities'
-import ormconfig from '../ormconfig'
+import { DataSource } from 'typeorm'
 import { agenciesData } from './agenciesData'
+import { connectionConfig } from '../datasource'
+import { Agency } from '../entities'
 
-const createAgencies = async (connection: Connection) => {
-  const agencyRepo = connection.manager.getRepository(Agency)
-
-  console.log('Creating agencies...')
-  for (const agency of agenciesData) {
-    try {
-      await agencyRepo.save({
-        ...agency,
-      })
-    } catch (e) {
-      console.error(e)
-    }
-  }
+const createAgencies = async (dataSource: DataSource) => {
+  dataSource
+    .initialize()
+    .then(async () => {
+      console.log('Creating agencies...')
+      for (const agencyData of agenciesData) {
+        const agency = new Agency()
+        Object.assign(agency, agencyData)
+        await dataSource.manager.save(agency)
+      }
+    })
+    .then(() => {
+      console.log('Agencies created successfully!')
+    })
+    .catch((error) => console.log(`Something went wrong!\n${error}`))
 }
 
 const main = async () => {
   console.log('Seeding database...')
   try {
-    const connection = await createConnection(ormconfig as ConnectionOptions)
-    await createAgencies(connection)
-
-    console.log('Finished seeding database!')
+    const dataSource = new DataSource(connectionConfig)
+    await createAgencies(dataSource)
   } catch (e) {
     console.error(e)
   }

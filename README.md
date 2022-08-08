@@ -11,7 +11,7 @@
     ```zsh
     npm i
     ```
-- PostgreSQL in current setup is running within Docker container; no need to start up PostgreSQL manually.
+- PostgreSQL in current setup is running within Docker container; no need to start up PostgreSQL manually. To start up PostgreSQL in docker, run `npm run docker-dev.`
 
 - Run migrations on the development database, then seed data (run from root). Please make sure that your Docker container is running before running these commands.
 
@@ -35,7 +35,8 @@
 ### Auto-generate migrations
 
 ```zsh
-npm run on-backend migration:gen migration-name-in-kebab-case
+# need to add path to migrations folder
+npm run on-backend migration:gen src/database/migrations/migration-name-in-kebab-case
 ```
 
 ### Run migrations

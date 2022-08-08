@@ -20,8 +20,7 @@ import { AllExceptionsFilter } from 'common/filters/error-handler.filter'
 import { ApiModule } from './api.module'
 import { CoreModule } from 'core/core.module'
 
-import { DatabaseConfigService } from 'database/db-config.service'
-
+import { connectionConfig } from 'database/datasource'
 import {
   SentryModule as NestSentryModule,
   SentryInterceptor as NestSentryInterceptor,
@@ -35,7 +34,7 @@ import {
       rootPath: join(__dirname, '..', '..', 'frontend-govt', 'build'),
     }),
     TypeOrmModule.forRootAsync({
-      useClass: DatabaseConfigService,
+      useFactory: () => connectionConfig,
     }),
     NestSentryModule.forRoot({
       dsn: process.env.SENTRY_BACKEND_DSN,

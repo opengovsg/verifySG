@@ -30,7 +30,7 @@ export class OtpService {
     this.config = this.configService.get('otp')
   }
 
-  async findOTPByEmail(email: string): Promise<OTP | undefined> {
+  async findOTPByEmail(email: string): Promise<OTP | null> {
     email = normalizeEmail(email)
     return this.otpRepository.findOne({
       where: {
@@ -43,7 +43,7 @@ export class OtpService {
   }
 
   async incrementAttemptCount(otpId: number): Promise<void> {
-    const otp = await this.otpRepository.findOne(otpId)
+    const otp = await this.otpRepository.findOneBy({ id: otpId })
     if (!otp) {
       throw new Error(`OTP not found for id ${otpId}`)
     }

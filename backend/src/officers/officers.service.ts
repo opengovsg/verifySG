@@ -30,13 +30,14 @@ export class OfficersService {
     return this.officerRepository.save(officerToAdd)
   }
 
-  async findById(id: number): Promise<Officer | undefined> {
-    return this.officerRepository.findOne(id, {
+  async findById(id: number): Promise<Officer | null> {
+    return this.officerRepository.findOne({
+      where: { id },
       relations: ['agency'],
     })
   }
 
-  async findByEmail(email: string): Promise<Officer | undefined> {
+  async findByEmail(email: string): Promise<Officer | null> {
     email = normalizeEmail(email)
     return this.officerRepository.findOne({
       where: { email },
@@ -48,7 +49,7 @@ export class OfficersService {
     id: number,
     officerDetails: UpdateOfficerResDto,
   ): Promise<void> {
-    const officerToUpdate = await this.officerRepository.findOne(id)
+    const officerToUpdate = await this.officerRepository.findOneBy({ id })
     if (!officerToUpdate) {
       throw new Error(`Officer ${id} not found`)
     }
