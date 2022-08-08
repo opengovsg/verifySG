@@ -69,9 +69,6 @@ export class Notification {
   })
   status: NotificationStatus
 
-  @Column('text', { nullable: true, default: null })
-  callScope: string
-
   @Column({ type: 'jsonb' })
   modalityParams: ModalityParams
 
