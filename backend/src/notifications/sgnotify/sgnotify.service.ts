@@ -15,15 +15,15 @@ import {
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import {
-  AuthPayload,
+  AuthResPayload,
   GetSGNotifyJwksDto,
-  NotificationPayload,
-  PostSGNotifyAuthzDto,
-  PostSGNotifyJweDto,
-  SGNotifyPayload,
+  NotificationResPayload,
+  PostSGNotifyAuthzResDto,
+  PostSGNotifyJweResDto,
+  SGNotifyResPayload,
 } from './dto'
 import {
-  convertSGNotifyParamsToJWTPayload,
+  convertParamsToNotificationRequestPayload,
   insertECPrivateKeyHeaderAndFooter,
   SGNotifyParams,
 } from './utils'
@@ -106,16 +106,25 @@ export class SGNotifyService {
    */
   async sendNotification(notification: Notification): Promise<SGNotifyParams> {
     const { modalityParams: sgNotifyParams } = notification
+    const notificationRequestPayload =
+      await convertParamsToNotificationRequestPayload(sgNotifyParams).catch(
+        (e) => {
+          this.logger.error(
+            `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+          )
+          throw new BadRequestException(
+            'Error with notification request. Please contact us if you encounter this error.', // displayed on frontend
+          )
+        },
+      )
     const [authzToken, jweObject] = await Promise.all([
       this.getAuthzToken(),
-      this.signAndEncryptPayload(
-        convertSGNotifyParamsToJWTPayload(sgNotifyParams),
-      ),
+      this.signAndEncryptPayload(notificationRequestPayload),
     ])
     try {
       const {
         data: { jwe },
-      } = await this.client.post<PostSGNotifyJweDto>(
+      } = await this.client.post<PostSGNotifyJweResDto>(
         'v1/notification/requests',
         {
           jwe: jweObject,
@@ -126,12 +135,12 @@ export class SGNotifyService {
           },
         },
       )
-      const notificationPayload = (await this.decryptAndVerifyPayload(
+      const notificationResPayload = (await this.decryptAndVerifyPayload(
         jwe,
-      )) as NotificationPayload
+      )) as NotificationResPayload
       return {
         ...sgNotifyParams,
-        requestId: notificationPayload.request_id,
+        requestId: notificationResPayload.request_id,
         sgNotifyLongMessageParams: {
           ...sgNotifyParams.sgNotifyLongMessageParams,
         },
@@ -166,7 +175,7 @@ export class SGNotifyService {
       client_secret: clientSecret,
     })
     try {
-      const { data } = await this.client.post<PostSGNotifyAuthzDto>(
+      const { data } = await this.client.post<PostSGNotifyAuthzResDto>(
         '/v1/oauth2/token',
         {
           client_id: clientId,
@@ -179,10 +188,10 @@ export class SGNotifyService {
           },
         },
       )
-      const authPayload = (await this.decryptAndVerifyPayload(
+      const authResPayload = (await this.decryptAndVerifyPayload(
         data.token,
-      )) as AuthPayload
-      return authPayload.access_token
+      )) as AuthResPayload
+      return authResPayload.access_token
     } catch (e) {
       if ((e as AxiosError).response?.status === 401) {
         this.logger.error(
@@ -205,7 +214,7 @@ export class SGNotifyService {
    */
   async decryptAndVerifyPayload(
     encryptedPayload: string,
-  ): Promise<SGNotifyPayload> {
+  ): Promise<SGNotifyResPayload> {
     // TODO: error handling if decryption fails for some reason
     const { plaintext } = await jose.compactDecrypt(
       encryptedPayload,
@@ -216,7 +225,7 @@ export class SGNotifyService {
       signedJWT,
       this.SGNotifyPublicKeySig,
     )
-    return payload
+    return payload as SGNotifyResPayload
   }
 
   /**

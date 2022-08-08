@@ -1,5 +1,3 @@
-import { JWTPayload } from 'jose'
-
 import {
   NotificationStatus,
   SGNotifyNotificationStatus,
@@ -11,6 +9,11 @@ import {
   sgNotifyTitle,
   sgNotifyShortMessage,
 } from '~shared/utils/sgnotify'
+import {
+  SGNotifyNotificationRequest,
+  SGNotifyNotificationRequestPayload,
+} from '../dto'
+import { validateOrReject } from 'class-validator'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -96,9 +99,9 @@ export const generateNewSGNotifyParams = (
   }
 }
 
-export const convertSGNotifyParamsToJWTPayload = (
+export const convertParamsToNotificationRequestPayload = async (
   sgNotifyParams: SGNotifyParams,
-): JWTPayload => {
+): Promise<SGNotifyNotificationRequestPayload> => {
   const {
     agencyLogoUrl,
     agencyShortName,
@@ -116,34 +119,33 @@ export const convertSGNotifyParamsToJWTPayload = (
     call_details,
     callback_details,
   } = sgNotifyLongMessageParams
-  if (agencyShortName.length > 25)
-    // this is an undocumented SGNotify API limitation
-    throw new Error(
-      `Sender name ${agencyShortName} too long; must be <= 25 characters`,
-    )
-  return {
-    notification_req: {
-      category: 'MESSAGES',
-      channel_mode: 'SPM',
-      delivery: 'IMMEDIATE',
-      priority: 'HIGH',
-      sender_logo_small: agencyLogoUrl,
-      sender_name: agencyShortName,
-      template_layout: [
-        {
-          template_id: templateId,
-          template_input: {
-            agency,
-            masked_nric,
-            officer_name,
-            position,
-            call_details,
-            callback_details,
-          },
+  const notificationRequest = Object.assign(new SGNotifyNotificationRequest(), {
+    category: 'MESSAGES',
+    channel_mode: 'SPM',
+    delivery: 'IMMEDIATE',
+    priority: 'HIGH',
+    sender_logo_small: agencyLogoUrl,
+    sender_name: agencyShortName,
+    template_layout: [
+      {
+        template_id: templateId,
+        template_input: {
+          agency,
+          masked_nric,
+          officer_name,
+          position,
+          call_details,
+          callback_details,
         },
-      ],
-      title,
-      uin: nric,
-    },
+      },
+    ],
+    title,
+    uin: nric,
+  })
+  await validateOrReject(notificationRequest).catch((errors) => {
+    throw new Error(`Invalid notification request: ${errors}`)
+  })
+  return {
+    notification_req: notificationRequest,
   }
 }
