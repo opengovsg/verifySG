@@ -59,10 +59,6 @@ export class Notification {
   @ManyToOne(
     () => MessageTemplate,
     (messageTemplate) => messageTemplate.notifications,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
   )
   messageTemplate: MessageTemplate
 
