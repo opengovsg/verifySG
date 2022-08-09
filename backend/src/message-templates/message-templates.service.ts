@@ -6,7 +6,7 @@ import { MessageTemplate } from '../database/entities'
 
 import {
   MessageTemplateDto,
-  MessageTemplateResDto,
+  MessageTemplateSendNotificationResDto,
   SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 
@@ -64,7 +64,9 @@ export class MessageTemplatesService {
       sgNotifyMessageTemplateParams,
     }
   }
-  mapToResDto(messageTemplate: MessageTemplate): MessageTemplateResDto {
+  mapToResDto(
+    messageTemplate: MessageTemplate,
+  ): MessageTemplateSendNotificationResDto {
     const { key, menu } = messageTemplate
     return {
       key,
