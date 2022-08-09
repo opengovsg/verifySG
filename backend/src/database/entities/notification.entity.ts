@@ -11,6 +11,7 @@ import {
 
 import { SGNotifyParams } from '../../notifications/sgnotify/utils'
 
+import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'
 
 export enum NotificationType {
@@ -54,6 +55,16 @@ export class Notification {
     onUpdate: 'CASCADE',
   })
   officer: Officer
+
+  @ManyToOne(
+    () => MessageTemplate,
+    (messageTemplate) => messageTemplate.notifications,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  messageTemplate: MessageTemplate
 
   @Column({
     type: 'enum',

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
+import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'
 
 @Entity({ name: 'agency' })
@@ -24,6 +25,9 @@ export class Agency {
 
   @OneToMany(() => Officer, (officer) => officer.agency)
   officers: Officer[]
+
+  @OneToMany(() => MessageTemplate, (messageTemplate) => messageTemplate.agency)
+  messageTemplates: MessageTemplate[]
 
   @Column('varchar', { array: true, length: 255, default: [] })
   @Check('email_domains = lower(email_domains::varchar)::varchar[]')
