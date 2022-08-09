@@ -56,9 +56,9 @@ export class NotificationsService {
       officerId,
       msgTemplateKey,
     )
-    const normalizedNric = normalizeNric(nric)
     if (!officer.name || !officer.position)
       throw new BadRequestException('Officer must have name and position')
+    const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
     const { id: messageTemplateId, sgNotifyMessageTemplateParams } =
