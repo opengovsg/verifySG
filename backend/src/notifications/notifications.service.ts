@@ -10,6 +10,7 @@ import {
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
+import { Logger } from '../core/providers'
 import { MessageTemplatesService } from '../message-templates/message-templates.service'
 
 import { SGNotifyService } from './sgnotify/sgnotify.service'
@@ -32,6 +33,7 @@ export class NotificationsService {
     private messageTemplatesService: MessageTemplatesService,
     private officersService: OfficersService,
     private sgNotifyService: SGNotifyService,
+    private logger: Logger,
   ) {}
 
   async findById(id: number): Promise<Notification | null> {
@@ -70,7 +72,7 @@ export class NotificationsService {
       messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      modalityParams: generateNewSGNotifyParams(
+      modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
         {
           agencyShortName,
@@ -82,7 +84,14 @@ export class NotificationsService {
           officerPosition: officer.position,
         },
         sgNotifyMessageTemplateParams,
-      ),
+      ).catch((e) => {
+        this.logger.error(
+          `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+        )
+        throw new BadRequestException(
+          'Error with notification request. Please contact us if you encounter this error.', // displayed on frontend
+        )
+      }),
     })
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,

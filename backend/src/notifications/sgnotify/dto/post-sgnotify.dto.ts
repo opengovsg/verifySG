@@ -9,6 +9,7 @@ export class SGNotifyNotificationRequestPayload implements JWTPayload {
   [propName: string]: unknown
 }
 
+// a subset of SGNotifyParams
 export class SGNotifyNotificationRequest {
   @IsString()
   // TODO: convert into enum and use IsEnum()

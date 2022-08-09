@@ -1,6 +1,14 @@
-import { validateOrReject } from 'class-validator'
+import {
+  IsOptional,
+  IsString,
+  IsUppercase,
+  IsUrl,
+  MaxLength,
+  validateOrReject,
+} from 'class-validator'
 
 import {
+  Agency,
   NotificationStatus,
   SGNotifyNotificationStatus,
 } from '../../../database/entities'
@@ -9,6 +17,7 @@ import {
   SGNotifyNotificationRequestPayload,
 } from '../dto'
 
+import { IsNric } from '~shared/decorators'
 import { SGNotifyMessageTemplateParams } from '~shared/types/api'
 import { maskNric } from '~shared/utils/nric'
 import {
@@ -17,16 +26,35 @@ import {
   sgNotifyTitle,
 } from '~shared/utils/sgnotify'
 
-// make this into a class and do validation?
-export interface SGNotifyParams {
-  agencyLogoUrl: string
-  agencyShortName: string
-  title: string // must be <= 50 characters
+// see SGNotifyNotificationRequest, which is similar
+export class SGNotifyParams {
+  @IsString()
+  @IsUppercase()
+  agencyShortName: Agency['id']
+
+  @IsString()
+  @IsUrl()
+  agencyLogoUrl: Agency['logoUrl']
+
+  @IsString()
+  @MaxLength(50)
+  title: string
+
+  @IsString()
+  @MaxLength(100)
+  shortMessage: string
+
+  @IsNric()
   nric: string
-  shortMessage: string // must be <= 100 characters
+
   templateId: SGNotifyMessageTemplateId
+
   sgNotifyLongMessageParams: Record<string, string>
+
   status: SGNotifyNotificationStatus
+
+  @IsOptional()
+  @IsString()
   requestId?: string
 }
 
@@ -70,12 +98,12 @@ const generateGenericSGNotifyParams = (
   }
 }
 
-export const generateNewSGNotifyParams = (
+export const generateNewSGNotifyParams = async (
   nric: string,
   agencyParams: AgencyParams,
   officerParams: OfficerParams,
   templateParams: SGNotifyMessageTemplateParams,
-): SGNotifyParams => {
+): Promise<SGNotifyParams> => {
   const genericSGNotifyParams = generateGenericSGNotifyParams(
     nric,
     agencyParams,
@@ -85,9 +113,10 @@ export const generateNewSGNotifyParams = (
   const { templateId, longMessageParams } = templateParams
   const title = sgNotifyTitle(templateId)
   const shortMessage = sgNotifyShortMessage(templateId, agencyShortName)
+  const sgNotifyParams = new SGNotifyParams()
   switch (templateId) {
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
-      return {
+      Object.assign(sgNotifyParams, {
         ...genericSGNotifyParams,
         templateId,
         title,
@@ -97,9 +126,10 @@ export const generateNewSGNotifyParams = (
           call_details: longMessageParams.call_details,
           callback_details: longMessageParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
-      }
+      })
+      break
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
-      return {
+      Object.assign(sgNotifyParams, {
         ...genericSGNotifyParams,
         templateId,
         title,
@@ -108,11 +138,16 @@ export const generateNewSGNotifyParams = (
           ...genericSGNotifyParams.sgNotifyLongMessageParams,
           call_details: longMessageParams.call_details,
         },
-      }
+      })
+      break
     default:
       // strictly speaking untrue; we wish to avoid supporting specific templates as far as possible
       throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
+  await validateOrReject(sgNotifyParams).catch((errors) => {
+    throw new Error(`Invalid parameters in notification request: ${errors}`)
+  })
+  return sgNotifyParams
 }
 
 export const convertParamsToNotificationRequestPayload = async (
@@ -157,11 +192,6 @@ export const convertParamsToNotificationRequestPayload = async (
     ],
     title,
     uin: nric,
-  })
-  await validateOrReject(notificationRequest).catch((errors) => {
-    throw new Error(`Invalid notification request: 
-    Notification request: ${notificationRequest}
-    Error: ${errors}`)
   })
   return {
     notification_req: notificationRequest,

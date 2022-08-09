@@ -127,17 +127,7 @@ export class SGNotifyService {
   async sendNotification(notification: Notification): Promise<SGNotifyParams> {
     const { modalityParams: sgNotifyParams } = notification
     const notificationRequestPayload =
-      await convertParamsToNotificationRequestPayload(sgNotifyParams).catch(
-        (error) => {
-          this.logger.error(
-            `Error when converting notification params to SGNotify request payload.
-            Payload sent: ${sgNotifyParams}
-            Error: ${error}`,
-          )
-          // ask user to inform us of this error as it means something wrong with the params supplied
-          throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
-        },
-      )
+      await convertParamsToNotificationRequestPayload(sgNotifyParams)
     const [authzToken, jweObject] = await Promise.all([
       this.getAuthzToken(),
       this.signAndEncryptPayload(notificationRequestPayload),
