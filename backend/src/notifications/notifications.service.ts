@@ -6,8 +6,11 @@ import {
   ModalityParams,
   Notification,
   NotificationType,
+  Officer,
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
+
+import { MessageTemplatesService } from '../message-templates/message-templates.service'
 
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
@@ -26,6 +29,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
+    private messageTemplatesService: MessageTemplatesService,
     private officersService: OfficersService,
     private sgNotifyService: SGNotifyService,
   ) {}
@@ -33,7 +37,7 @@ export class NotificationsService {
   async findById(id: number): Promise<Notification | null> {
     return this.notificationRepository.findOne({
       where: { id },
-      relations: ['officer', 'officer.agency'],
+      relations: ['officer', 'officer.agency', 'messageTemplate'],
     })
   }
 
@@ -47,31 +51,63 @@ export class NotificationsService {
     officerId: number,
     notificationBody: SendNotificationReqDto,
   ): Promise<Notification | null> {
-    const { nric } = notificationBody
+    const { msgTemplateKey, nric } = notificationBody
+    const officer = await this.validateCreateNotificationArgs(
+      officerId,
+      msgTemplateKey,
+    )
     const normalizedNric = normalizeNric(nric)
-    const officer = await this.officersService.findById(officerId)
-    if (!officer) throw new BadRequestException('Officer not found')
     if (!officer.name || !officer.position)
       throw new BadRequestException('Officer must have name and position')
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
+    const { id: messageTemplateId, sgNotifyMessageTemplateParams } =
+      await this.messageTemplatesService.getSGNotifyMessageTemplateParams(
+        msgTemplateKey,
+      )
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
+      messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
       modalityParams: generateNewSGNotifyParams(
-        logoUrl,
-        agencyName,
         normalizedNric,
-        agencyShortName,
-        officer.name,
-        officer.position,
+        {
+          agencyShortName,
+          agencyName,
+          agencyLogoUrl: logoUrl,
+        },
+        {
+          officerName: officer.name,
+          officerPosition: officer.position,
+        },
+        sgNotifyMessageTemplateParams,
       ),
     })
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,
     )
     return this.findById(addedNotification.id)
+  }
+  // return Officer to save one db query
+  async validateCreateNotificationArgs(
+    officerId: number,
+    msgTemplateKey: string,
+  ): Promise<Officer> {
+    const officer = await this.officersService.findById(officerId)
+    if (!officer) throw new BadRequestException('Officer not found')
+    const { agency } = await this.officersService.mapToDto(officer)
+    const { id: agencyId } = agency
+    const isMessageTemplateValid =
+      await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
+        msgTemplateKey,
+        agencyId,
+      )
+    if (!isMessageTemplateValid) {
+      // either message template does not exist OR belongs to a different agency
+      throw new BadRequestException('Provided message template invalid')
+    }
+    return officer
   }
 
   /**
@@ -123,10 +159,12 @@ export class NotificationsService {
   }
 
   mapToDto(notification: Notification): SendNotificationResDto {
-    const { id, officer, createdAt } = notification
+    const { id, officer, createdAt, messageTemplate } = notification
     return {
       id,
       createdAt,
+      messageTemplate:
+        this.messageTemplatesService.mapToResDto(messageTemplate),
       officer: this.officersService.mapToDto(officer),
     }
   }
