@@ -60,4 +60,43 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'OGP',
+    key: 'ogp-praise',
+    menu: 'Praise',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          "This call is to let you know you've been an all-around great person!",
+      },
+    },
+  },
+  {
+    agencyId: 'IRAS',
+    key: 'iras-individual-tax',
+    menu: 'Individual Tax',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding your tax matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+      },
+    },
+  },
+  {
+    agencyId: 'IRAS',
+    key: 'iras-jgi',
+    menu: 'Jobs Growth Incentive (JGI)',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding your Jobs Growth Incentive (JGI) matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+      },
+    },
+  },
 ]
