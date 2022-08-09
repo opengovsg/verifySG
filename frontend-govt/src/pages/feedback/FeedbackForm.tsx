@@ -19,9 +19,11 @@ export const FeedbackForm: React.FC = () => {
   const nameFieldId = '623d285ee46e5c0012d70649'
   const positionFieldId = '623d286e012667001232b83f'
   const nricFieldId = '623d31820126670012345b40'
+  const msgTemplateKeyId = '' // TODO
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
-  const { targetNRIC, setTargetNRIC } = useNotificationData()
+  const { targetNRIC, setTargetNRIC, msgTemplateKey, setMsgTemplateKey } =
+    useNotificationData()
   const history = useHistory()
 
   const getPrefillLink = (ogLink: string, prefills: FormFieldPrefill[]) =>
@@ -54,6 +56,10 @@ export const FeedbackForm: React.FC = () => {
           fieldId: nricFieldId,
           value: targetNRIC,
         },
+        {
+          fieldId: msgTemplateKeyId,
+          value: msgTemplateKey,
+        },
       ]
       setEmbedLink(getPrefillLink(formLink, prefills))
     },
@@ -61,7 +67,8 @@ export const FeedbackForm: React.FC = () => {
 
   const returnToNotificationForm = () => {
     // clear nric in notificationDataContext
-    setTargetNRIC(undefined)
+    setTargetNRIC('')
+    setMsgTemplateKey('')
 
     // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)

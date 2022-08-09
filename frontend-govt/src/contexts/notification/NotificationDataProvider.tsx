@@ -11,14 +11,15 @@ export const NotificationDataProvider = ({
   children,
 }: NotificationDataProps) => {
   const [targetNRIC, setTargetNRIC] = useState<string | undefined>()
+  const [msgTemplateKey, setMsgTemplateKey] = useState<string | undefined>()
 
   return (
     <NotificationDataContext.Provider
       value={{
         targetNRIC,
-        setTargetNRIC: (nric) => {
-          setTargetNRIC(nric)
-        },
+        setTargetNRIC,
+        msgTemplateKey,
+        setMsgTemplateKey,
       }}
     >
       {children}
