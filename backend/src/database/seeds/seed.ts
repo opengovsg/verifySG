@@ -38,7 +38,11 @@ const loadMessageTemplates = async (dataSource: DataSource) => {
           ...messageTemplateData,
           agency: { id: messageTemplateData.agencyId },
         })
-        await dataSource.manager.save(messageTemplate)
+        try {
+          await dataSource.manager.save(messageTemplate)
+        } catch (e) {
+          console.error(e)
+        }
       }
     })
     .then(() => {
