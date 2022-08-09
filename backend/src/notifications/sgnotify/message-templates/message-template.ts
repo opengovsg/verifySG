@@ -11,14 +11,19 @@ import {
 
 import { SGNotifyMessageTemplateParams } from '~shared/types/api'
 import { maskNric } from '~shared/utils/nric'
-import { SGNotifyMessageTemplateId } from '~shared/utils/sgnotify'
+import {
+  SGNotifyMessageTemplateId,
+  sgNotifyShortMessage,
+  sgNotifyTitle,
+} from '~shared/utils/sgnotify'
 
+// make this into a class and do validation?
 export interface SGNotifyParams {
   agencyLogoUrl: string
   agencyShortName: string
-  title: string
+  title: string // must be <= 50 characters
   nric: string
-  shortMessage: string
+  shortMessage: string // must be <= 100 characters
   templateId: SGNotifyMessageTemplateId
   sgNotifyLongMessageParams: Record<string, string>
   status: SGNotifyNotificationStatus
@@ -78,13 +83,15 @@ export const generateNewSGNotifyParams = (
   )
   const { agencyShortName } = agencyParams
   const { templateId, longMessageParams } = templateParams
+  const title = sgNotifyTitle(templateId)
+  const shortMessage = sgNotifyShortMessage(templateId, agencyShortName)
   switch (templateId) {
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return {
         ...genericSGNotifyParams,
         templateId,
-        title: 'Upcoming Phone Call',
-        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly`,
+        title,
+        shortMessage,
         sgNotifyLongMessageParams: {
           ...genericSGNotifyParams.sgNotifyLongMessageParams,
           call_details: longMessageParams.call_details,
@@ -95,15 +102,15 @@ export const generateNewSGNotifyParams = (
       return {
         ...genericSGNotifyParams,
         templateId,
-        title: 'Verify your phone call',
-        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
+        title,
+        shortMessage,
         sgNotifyLongMessageParams: {
           ...genericSGNotifyParams.sgNotifyLongMessageParams,
           call_details: longMessageParams.call_details,
         },
       }
     default:
-      // strictly speaking untrue; wei wish to avoid supporting specific templates as far as possible
+      // strictly speaking untrue; we wish to avoid supporting specific templates as far as possible
       throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
 }

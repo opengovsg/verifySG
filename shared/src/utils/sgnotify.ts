@@ -5,8 +5,6 @@ export enum SGNotifyMessageTemplateId {
   GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
 }
 
-// only used in backend; must be <= 50 characters
-// to implement validation if we ever parameterise this
 export const sgNotifyTitle = (
   templateId: SGNotifyMessageTemplateId,
 ): string => {
@@ -20,25 +18,21 @@ export const sgNotifyTitle = (
     // case SGNotifyMessageTemplateId.GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL:
     //   return 'Upcoming Phone Call'
     default:
-      throw new Error(`Unknown templateId: ${templateId}`)
+      throw new Error(`Unsupported templateId: ${templateId}`)
   }
 }
 
-// only used in backend; short message must be <= 100 characters
-// to implement validation if we ever parameterise this
-export const sgNotifyShortMessage = (agencyShortName: string): string => {
-  switch (agencyShortName) {
-    // TODO: phase out during-notification phone calls with SPF
-    case 'SPF':
-      return 'You are currently on a call with a public officer from SPF'
-    case 'OGP':
-    case 'MSF':
-    case 'ECDA':
-    case 'IRAS':
-    case 'MOH':
+export const sgNotifyShortMessage = (
+  templateId: SGNotifyMessageTemplateId,
+  agencyShortName: string,
+): string => {
+  switch (templateId) {
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
+      return `You are currently on a call with a public officer from ${agencyShortName}`
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return `A public officer from ${agencyShortName} will be calling you shortly.`
     default:
-      throw new Error(`Unsupported agency: ${agencyShortName}`)
+      throw new Error(`Unsupported templateId: ${templateId}`)
   }
 }
 
@@ -52,54 +46,28 @@ export const standardOpening = (
   templateId: SGNotifyMessageTemplateId,
   name: string,
   position: string,
-  agency: string,
+  agencyName: string,
 ): string => {
   switch (templateId) {
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
-      return `This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agency.toUpperCase()}</u></b>.`
+      return `This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agencyName}</u></b>.`
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
-      return `<u><b>${name}, ${position}</u></b> at <u><b>${agency}</u></b> will be calling you shortly.`
+      return `<u><b>${name}, ${position}</u></b> at <u><b>${agencyName}</u></b> will be calling you shortly.`
     default:
       throw new Error(`Unknown templateId: ${templateId}`)
   }
 }
 
-const standardClosingBeforeCall =
-  "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message."
-
-// used in both message preview and backend API call
 export const generateCallDetails = (
-  agencyId: string,
   templateId: SGNotifyMessageTemplateId,
+  longMessageParams: Record<string, string>,
 ): string => {
   switch (templateId) {
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
-      switch (agencyId) {
-        case 'SPF':
-          return `The purpose of this call is to follow up on your recent police report/feedback to the Police.
-          <br><br>
-          ${standardClosingBeforeCall}`
-        case 'OGP':
-          return `Thank you for agreeing to provide feedback on our products and services. The purpose of the call is to conduct a short feedback interview.
-          <br><br>
-          ${standardClosingBeforeCall}`
-        case 'MSF':
-        case 'ECDA':
-          return standardClosingBeforeCall
-        case 'MOH':
-          return 'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.'
-        case 'IRAS':
-          return 'This call is regarding your tax matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.'
-        default:
-          throw new Error(`Unsupported agency: ${agencyId}`)
-      }
+      // be careful with this destructuring; templateId specific
+      return longMessageParams.call_details
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
-      switch (agencyId) {
-        case 'SPF':
-          return 'The purpose of this call is to follow up on your recent police report/feedback to the Police.'
-        default:
-          throw new Error(`Unsupported agency: ${agencyId}`)
-      }
+      return longMessageParams.call_details
     default:
       throw new Error(`Unknown templateId: ${templateId}`)
   }

@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsString } from 'class-validator'
+import { IsDate, IsString } from 'class-validator'
 
 import { IsNric } from '../../decorators'
 
@@ -14,9 +14,6 @@ export class SendNotificationReqDto {
 }
 
 export class SendNotificationResDto {
-  @IsNumber()
-  id: number
-
   @IsDate()
   createdAt: Date
 

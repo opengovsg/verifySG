@@ -159,9 +159,8 @@ export class NotificationsService {
   }
 
   mapToDto(notification: Notification): SendNotificationResDto {
-    const { id, officer, createdAt, messageTemplate } = notification
+    const { officer, createdAt, messageTemplate } = notification
     return {
-      id,
       createdAt,
       messageTemplate:
         this.messageTemplatesService.mapToResDto(messageTemplate),
