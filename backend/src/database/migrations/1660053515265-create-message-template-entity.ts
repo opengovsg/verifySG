@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class createMessageTemplateEntity1660013848562
+export class createMessageTemplateEntity1660053515265
   implements MigrationInterface
 {
-  name = 'createMessageTemplateEntity1660013848562'
+  name = 'createMessageTemplateEntity1660053515265'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -13,7 +13,7 @@ export class createMessageTemplateEntity1660013848562
       `ALTER TABLE "notification" ADD "message_template_id" integer`,
     )
     await queryRunner.query(
-      `ALTER TABLE "notification" ADD CONSTRAINT "FK_a8a1a906cbaa98d8358f42be0e8" FOREIGN KEY ("message_template_id") REFERENCES "message_template"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+      `ALTER TABLE "notification" ADD CONSTRAINT "FK_a8a1a906cbaa98d8358f42be0e8" FOREIGN KEY ("message_template_id") REFERENCES "message_template"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     )
     await queryRunner.query(
       `ALTER TABLE "message_template" ADD CONSTRAINT "FK_b1907dd70d26278e5118c18243c" FOREIGN KEY ("agency_id") REFERENCES "agency"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
