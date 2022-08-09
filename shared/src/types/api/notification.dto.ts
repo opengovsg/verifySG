@@ -2,7 +2,7 @@ import { IsDate, IsNumber, IsString } from 'class-validator'
 
 import { IsNric } from '../../decorators'
 
-import { MessageTemplateResDto } from './message-template.dto'
+import { MessageTemplateSendNotificationResDto } from './message-template.dto'
 import { OfficerDto } from './officer.dto'
 
 export class SendNotificationReqDto {
@@ -22,5 +22,5 @@ export class SendNotificationResDto {
 
   officer: OfficerDto
 
-  messageTemplate: MessageTemplateResDto
+  messageTemplate: MessageTemplateSendNotificationResDto
 }

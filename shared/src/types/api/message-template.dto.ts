@@ -18,9 +18,11 @@ export class MessageTemplateDto {
   sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
 }
 
-export type MessageTemplateResDto = Omit<
+export type MessageTemplateResDto = MessageTemplateDto
+
+export type MessageTemplateSendNotificationResDto = Omit<
   MessageTemplateDto,
   'sgNotifyMessageTemplateParams'
 >
 
-export type MessageTemplatesResDto = MessageTemplateResDto[]
+export type MessageTemplatesResDto = MessageTemplateSendNotificationResDto[]
