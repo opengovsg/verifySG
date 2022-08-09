@@ -15,7 +15,9 @@ export class MessageTemplatesController {
   ) {}
 
   @Get()
-  async all(@OfficerId() officerId: number): Promise<MessageTemplatesResDto> {
+  async getAllMessageTemplatesByAgency(
+    @OfficerId() officerId: number,
+  ): Promise<MessageTemplatesResDto> {
     if (!officerId) {
       throw new NotFoundException('Officer not logged in')
     }
