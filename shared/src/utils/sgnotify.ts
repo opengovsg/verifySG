@@ -50,14 +50,16 @@ export const standardOpening = (
 ): string => {
   switch (templateId) {
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
-      return `This message is to verify that you are currently speaking to <u><b>${name}, ${position}</u></b> from <b><u>${agencyName}</u></b>.`
+      return `This message is to verify that you are currently speaking to <u>${name}</u>, <u>${position}</u> from ${agencyName}.`
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
-      return `<u><b>${name}, ${position}</u></b> at <u><b>${agencyName}</u></b> will be calling you shortly.`
+      return `<u>${name}</u>, <u>${position}</u> at ${agencyName} will be calling you shortly.`
     default:
       throw new Error(`Unknown templateId: ${templateId}`)
   }
 }
 
+// only used on frontend's message preview
+// potentially can be used with generateNewSGNotifyParams on backend in a future refactoring)
 export const generateCallDetails = (
   templateId: SGNotifyMessageTemplateId,
   longMessageParams: Record<string, string>,

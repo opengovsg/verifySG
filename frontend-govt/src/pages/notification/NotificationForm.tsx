@@ -1,7 +1,15 @@
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
-import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
+import React, { useEffect } from 'react'
+import { Control, Controller, useForm } from 'react-hook-form'
+import { useMutation, useQuery } from 'react-query'
+import Select, { SingleValue } from 'react-select'
+import {
+  Box,
+  FormControl,
+  Heading,
+  Skeleton,
+  StackItem,
+  VStack,
+} from '@chakra-ui/react'
 import {
   Button,
   FormErrorMessage,
@@ -17,28 +25,31 @@ import HeaderContainer from '@/components/HeaderContainer'
 import MessagePreview from '@/components/MessagePreview'
 import { FEEDBACKFORM_ROUTE } from '@/constants/routes'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
+import { MessageTemplateService } from '@/services/MessageTemplateService'
+import { SGNotifyMessageTemplateParams } from '~shared/types/api'
 
 interface NotificationFormData {
   nric: string
-  callScope?: string
+  msgTemplateKey: string
 }
 
 interface NotificationFormProps {
   onSubmit?: (data: NotificationFormData) => void
 }
 
-export const NotificationForm: React.FC<NotificationFormProps> = () => {
-  // use form hooks
-  const {
-    register,
-    watch,
-    trigger,
-    clearErrors,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<NotificationFormData>()
-  const { setTargetNRIC } = useNotificationData()
+interface MessageTemplateOption {
+  // shape for React Select options
+  value: string // msgTemplateKey
+  label: string // menu
+}
+
+const useNotificationForm = () => {
+  const formMethods = useForm<NotificationFormData>({
+    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
+  })
+  const { watch, reset, setValue, handleSubmit } = formMethods
+
+  const { setTargetNRIC, setMsgTemplateKey } = useNotificationData()
 
   const toast = useToast({
     isClosable: true,
@@ -48,36 +59,130 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     },
     duration: 6000,
   })
-  // handle submission logic
+
+  const { data: messageTemplates, isLoading } = useQuery(
+    ['messageTemplates'], // query key must be in array in React 18
+    MessageTemplateService.getMessageTemplates,
+  )
+
+  // load default value if response only contains a single purpose
+  useEffect(() => {
+    if (!isLoading && messageTemplates?.length === 1) {
+      // load default value on query load
+      setValue('msgTemplateKey', messageTemplates[0].key)
+    }
+  }, [isLoading, messageTemplates, setValue])
+
+  const watchedMessageTemplate = watch('msgTemplateKey')
+
+  const messageTemplateOptions: MessageTemplateOption[] =
+    messageTemplates?.map((messageTemplate) => {
+      return {
+        value: messageTemplate.key,
+        label: messageTemplate.menu,
+      }
+    }) ?? []
+
+  const getMessageTemplateOptionByValue = (
+    targetValue: string,
+  ): MessageTemplateOption | undefined => {
+    return messageTemplateOptions.find((option) => option.value === targetValue)
+  }
+
+  const isMessageTemplateChosen = (selectedOption: string): boolean => {
+    return !!getMessageTemplateOptionByValue(selectedOption)
+  }
+
+  const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
+    msgTemplateKey: string,
+  ): SGNotifyMessageTemplateParams | undefined => {
+    if (!msgTemplateKey || !messageTemplates) {
+      return
+    }
+    const messageTemplate = messageTemplates.find(
+      (template) => template.key === msgTemplateKey,
+    )
+    return messageTemplate?.sgNotifyMessageTemplateParams
+  }
+
+  // query hook to mutate data
+  const sendNotificationMutation = useMutation(
+    NotificationService.sendNotification,
+    {
+      onSuccess: () => {
+        toast({
+          status: 'success',
+          description: `Notification sent to ${watch('nric')}`,
+        })
+      },
+      onError: (err) => {
+        toast({
+          status: 'warning',
+          description: `${err}` || 'Something went wrong',
+        })
+      },
+    },
+  )
   const submissionHandler = (data: NotificationFormData) => {
-    sendNotification.mutate(data, {
+    sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
         setTargetNRIC(data.nric)
+        setMsgTemplateKey(data.msgTemplateKey)
       },
     })
   }
 
-  // query hook to mutate data
-  const sendNotification = useMutation(NotificationService.sendNotification, {
-    onSuccess: () => {
-      toast({
-        status: 'success',
-        description: `Notification sent to ${watch('nric')}`,
-      })
-    },
-    onError: (err) => {
-      toast({
-        status: 'warning',
-        description: `${err}` || 'Something went wrong',
-      })
-    },
-  })
+  const msgTemplateValidation = {
+    validate: (value: string) =>
+      isMessageTemplateChosen(value) || 'Please select a message template',
+  }
+
+  const onSubmit = handleSubmit(submissionHandler)
+
+  const templateParams = getSGNotifyMessageTemplateParamsByMsgTemplateKey(
+    watchedMessageTemplate,
+  )
+
+  const clearInputs = () => reset()
+
+  return {
+    onSubmit,
+    clearInputs,
+    templateParams,
+    msgTemplateValidation,
+    formMethods,
+    messageTemplateOptions,
+    isLoading,
+    getMessageTemplateOptionByValue,
+    isMutating: sendNotificationMutation.isLoading,
+  }
+}
+
+export const NotificationForm: React.FC<NotificationFormProps> = () => {
+  const {
+    onSubmit,
+    clearInputs,
+    templateParams,
+    msgTemplateValidation,
+    formMethods,
+    messageTemplateOptions,
+    isLoading,
+    getMessageTemplateOptionByValue,
+    isMutating,
+  } = useNotificationForm()
+
+  const {
+    register,
+    formState: { errors },
+    control,
+    getValues,
+  } = formMethods
 
   return (
     <HeaderContainer>
       <Heading
-        fontSize={['xl', 'xl', '2xl', '2xl']}
+        fontSize={{ base: 'xl', md: '2xl' }} // suggested by Kar Rui; useful for subsequent refactoring
         color="primary.500"
         mb={[4, 4, 8, 8]}
       >
@@ -112,7 +217,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
           of your call.
         </InlineMessage>
         <Box width="100%">
-          <form onSubmit={handleSubmit(submissionHandler)}>
+          <form onSubmit={onSubmit}>
             <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
@@ -126,30 +231,42 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                         nric.validate(v) || 'Please enter a valid NRIC / FIN',
                     },
                   })}
-                  onBlur={() => {
-                    trigger('nric')
-                  }}
-                  onFocus={() => {
-                    clearErrors('nric')
-                  }}
                   placeholder="e.g. S1234567D"
                   autoFocus
                 />
-                {errors.nric && (
-                  <FormErrorMessage>{errors.nric.message}</FormErrorMessage>
-                )}
+                <FormErrorMessage>{errors.nric?.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.msgTemplateKey}>
+                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
+                  Message Template
+                </FormLabel>
+                <Skeleton isLoaded={!isLoading}>
+                  <TemplateSelectionMenu
+                    control={control}
+                    messageTemplateOptions={messageTemplateOptions}
+                    msgTemplateValidation={msgTemplateValidation}
+                    getMessageTemplateOptionByValue={
+                      getMessageTemplateOptionByValue
+                    }
+                  />
+                </Skeleton>
               </FormControl>
               <StackItem>
                 <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                   Message Preview
                 </FormLabel>
-                <MessagePreview nric={watch('nric') ?? ''} />
+                <Skeleton isLoaded={!isLoading}>
+                  <MessagePreview
+                    nric={getValues('nric') ?? ''}
+                    selectedTemplate={templateParams}
+                  />
+                </Skeleton>
               </StackItem>
               <StackItem>
                 <VStack spacing={[4, 4, 4, 4]}>
                   <Button
                     type="submit"
-                    isLoading={sendNotification.isLoading}
+                    isLoading={isMutating}
                     loadingText="Notifying..."
                     width="100%"
                   >
@@ -158,7 +275,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <Button
                     width="100%"
                     variant="link"
-                    onClick={() => reset()}
+                    onClick={clearInputs}
                     type="reset"
                   >
                     Clear details
@@ -170,5 +287,58 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         </Box>
       </VStack>
     </HeaderContainer>
+  )
+}
+
+interface TemplateSelectionMenuProps {
+  control: Control<NotificationFormData>
+  messageTemplateOptions: MessageTemplateOption[]
+  msgTemplateValidation: {
+    validate: (value: string) => true | 'Please select a message template'
+  }
+  getMessageTemplateOptionByValue: (
+    target: string,
+  ) => MessageTemplateOption | undefined
+}
+
+const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
+  control,
+  messageTemplateOptions,
+  msgTemplateValidation,
+  getMessageTemplateOptionByValue,
+}) => {
+  return (
+    <Controller
+      name="msgTemplateKey"
+      control={control}
+      rules={msgTemplateValidation}
+      render={({
+        field: {
+          onChange: controllerOnChange,
+          value: controllerValue,
+          ...rest
+        },
+      }) => (
+        <Select
+          {...rest}
+          options={messageTemplateOptions}
+          value={getMessageTemplateOptionByValue(controllerValue)}
+          onChange={(option: SingleValue<MessageTemplateOption>) =>
+            controllerOnChange(option?.value)
+          }
+          // TODO: refactor theme somewhere else
+          theme={(theme) => {
+            return {
+              ...theme,
+              colors: {
+                ...theme.colors,
+                primary: '#1B3C87', // ideally should refer back to theme, rather than hardcoding
+              },
+            }
+          }}
+          placeholder="Type to search"
+        />
+      )}
+    />
   )
 }
