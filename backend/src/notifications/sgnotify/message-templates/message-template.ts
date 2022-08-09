@@ -9,13 +9,9 @@ import {
   SGNotifyNotificationRequestPayload,
 } from '../dto'
 
+import { SGNotifyMessageTemplateParams } from '~shared/types/api'
 import { maskNric } from '~shared/utils/nric'
-import {
-  generateCallDetails,
-  SGNotifyMessageTemplateId,
-  sgNotifyShortMessage,
-  sgNotifyTitle,
-} from '~shared/utils/sgnotify'
+import { SGNotifyMessageTemplateId } from '~shared/utils/sgnotify'
 
 export interface SGNotifyParams {
   agencyLogoUrl: string
@@ -29,6 +25,17 @@ export interface SGNotifyParams {
   requestId?: string
 }
 
+export interface AgencyParams {
+  agencyShortName: string
+  agencyName: string
+  agencyLogoUrl: string
+}
+
+export interface OfficerParams {
+  officerName: string
+  officerPosition: string
+}
+
 export const sgNotifyParamsStatusToNotificationStatusMapper = (
   params: SGNotifyParams,
 ): NotificationStatus => {
@@ -37,69 +44,67 @@ export const sgNotifyParamsStatusToNotificationStatusMapper = (
     : NotificationStatus.SENT
 }
 
-export const generateNewSGNotifyParams = (
-  agencyLogoUrl: string,
-  agencyName: string,
+const generateGenericSGNotifyParams = (
   nric: string,
-  agencyShortName: string,
-  officerName: string,
-  officerPosition: string,
+  agencyParams: AgencyParams,
+  officerParams: OfficerParams,
+): Omit<SGNotifyParams, 'templateId' | 'title' | 'shortMessage'> => {
+  const { agencyShortName, agencyName, agencyLogoUrl } = agencyParams
+  const { officerName, officerPosition } = officerParams
+  return {
+    agencyLogoUrl,
+    agencyShortName,
+    nric,
+    sgNotifyLongMessageParams: {
+      agency: agencyName,
+      officer_name: `<u>${officerName}</u>`,
+      position: `<u>${officerPosition}</u>`,
+      masked_nric: `(${maskNric(nric)})`,
+    },
+    status: SGNotifyNotificationStatus.NOT_SENT,
+  }
+}
+
+export const generateNewSGNotifyParams = (
+  nric: string,
+  agencyParams: AgencyParams,
+  officerParams: OfficerParams,
+  templateParams: SGNotifyMessageTemplateParams,
 ): SGNotifyParams => {
-  // TODO: generalise this to support (1) different use cases (2) different notifications (before + during phone call)
-  switch (agencyShortName) {
-    case 'SPF':
+  const genericSGNotifyParams = generateGenericSGNotifyParams(
+    nric,
+    agencyParams,
+    officerParams,
+  )
+  const { agencyShortName } = agencyParams
+  const { templateId, longMessageParams } = templateParams
+  switch (templateId) {
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return {
-        agencyLogoUrl,
-        agencyShortName,
-        title: sgNotifyTitle(
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
-        ),
-        nric,
-        shortMessage: `${sgNotifyShortMessage(agencyShortName)}`,
-        templateId:
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+        ...genericSGNotifyParams,
+        templateId,
+        title: 'Upcoming Phone Call',
+        shortMessage: `A public officer from ${agencyShortName} will be calling you shortly`,
         sgNotifyLongMessageParams: {
-          agency: agencyName,
-          officer_name: `<u>${officerName}</u>`,
-          position: `<u>${officerPosition}</u>`,
-          masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetails(
-            agencyShortName,
-            SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
-          ),
+          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          call_details: longMessageParams.call_details,
+          callback_details: longMessageParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
-        status: SGNotifyNotificationStatus.NOT_SENT,
       }
-    case 'OGP':
-    case 'MSF':
-    case 'ECDA':
-    case 'IRAS':
-    case 'MOH':
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
       return {
-        agencyLogoUrl,
-        agencyShortName,
-        title: sgNotifyTitle(
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
-        ),
-        nric,
-        shortMessage: `${sgNotifyShortMessage(agencyShortName)}`,
-        templateId:
-          SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+        ...genericSGNotifyParams,
+        templateId,
+        title: 'Verify your phone call',
+        shortMessage: `You are currently on a call with a public officer from ${agencyShortName}`,
         sgNotifyLongMessageParams: {
-          agency: agencyName,
-          officer_name: `<u>${officerName}</u>`,
-          position: `<u>${officerPosition}</u>`,
-          masked_nric: `(${maskNric(nric)})`,
-          call_details: generateCallDetails(
-            agencyShortName,
-            SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
-          ),
-          callback_details: ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
+          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          call_details: longMessageParams.call_details,
         },
-        status: SGNotifyNotificationStatus.NOT_SENT,
       }
     default:
-      throw new Error(`Unsupported agency: ${agencyShortName}`)
+      // strictly speaking untrue; wei wish to avoid supporting specific templates as far as possible
+      throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
 }
 
