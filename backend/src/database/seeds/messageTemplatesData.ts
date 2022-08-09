@@ -47,4 +47,17 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'OGP',
+    key: 'ogp-feedback',
+    menu: 'Feedback (before call)',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          "The purpose of this call is to follow up on your recent feedback on OGP's services",
+      },
+    },
+  },
 ]
