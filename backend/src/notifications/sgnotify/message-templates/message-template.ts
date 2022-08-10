@@ -77,6 +77,8 @@ export const sgNotifyParamsStatusToNotificationStatusMapper = (
     : NotificationStatus.SENT
 }
 
+// these are the params that are independent of templateId
+// extracted out for clarity and to minimize repetition in generateNewSGNotifyParams
 const generateGenericSGNotifyParams = (
   nric: string,
   agencyParams: AgencyParams,
