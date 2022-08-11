@@ -1,3 +1,1 @@
-import { feedbackFormLinkFactory } from './helper'
-
-export default feedbackFormLinkFactory
+export * from './helper'

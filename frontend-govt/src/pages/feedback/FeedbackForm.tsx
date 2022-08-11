@@ -6,7 +6,7 @@ import { NOTIFICATIONFORM_ROUTE } from '@constants/routes'
 import { Button } from '@opengovsg/design-system-react'
 import { OfficerService } from '@services/OfficerService'
 
-import feedbackFormLinkFactory from '@/components/FeedbackForm'
+import { feedbackFormLinkFactory } from '@/components/FeedbackForm'
 import HeaderContainer from '@/components/HeaderContainer'
 import { useAuth } from '@/contexts/auth/AuthContext'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
