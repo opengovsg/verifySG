@@ -6,6 +6,7 @@ import { NOTIFICATIONFORM_ROUTE } from '@constants/routes'
 import { Button } from '@opengovsg/design-system-react'
 import { OfficerService } from '@services/OfficerService'
 
+import feedbackFormLinkFactory from '@/components/FeedbackForm'
 import HeaderContainer from '@/components/HeaderContainer'
 import { useAuth } from '@/contexts/auth/AuthContext'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
@@ -22,14 +23,7 @@ export const FeedbackForm: React.FC = () => {
 
   // TEMPORARY for trials: redirect to agency specific form link
   const { agencyShortName } = useAuth()
-  let formLink: string
-  switch (agencyShortName) {
-    case 'MOH':
-      formLink = 'UPDATE_MOH_FORM_LINK_HERE'
-      break
-    default:
-      formLink = 'https://form.gov.sg/627a0dbe5fba010011ff832c'
-  }
+  const formLink = feedbackFormLinkFactory(agencyShortName)
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
   const { targetNRIC, setTargetNRIC } = useNotificationData()
