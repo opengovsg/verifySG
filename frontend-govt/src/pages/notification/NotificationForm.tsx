@@ -15,6 +15,7 @@ import {
 import { NotificationService } from '@services/NotificationService'
 import nric from 'nric'
 
+import { agenciesRequiringFeedbackForm } from '@/components/FeedbackForm'
 import HeaderContainer from '@/components/HeaderContainer'
 import MessagePreview from '@/components/MessagePreview'
 import { useAuth } from '@/contexts/auth/AuthContext'
@@ -58,20 +59,16 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        switch (agencyShortName) {
-          // TEMPORARY for trials: redirect if 'MOH'
-          case 'MOH':
-            setTargetNRIC(data.nric)
-            history.push(FEEDBACKFORM_ROUTE)
-            break
-          // TEMPORARY for trials: do not redirect if 'IRAS', 'SPF', 'MSF' and others
-          default:
-            reset(
-              { nric: '', callScope: '' },
-              {
-                keepValues: false,
-              },
-            )
+        if (agenciesRequiringFeedbackForm.includes(agencyShortName)) {
+          setTargetNRIC(data.nric)
+          history.push(FEEDBACKFORM_ROUTE)
+        } else {
+          reset(
+            { nric: '', callScope: '' },
+            {
+              keepValues: false,
+            },
+          )
         }
       },
     })

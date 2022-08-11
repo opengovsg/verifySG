@@ -13,3 +13,8 @@ export const feedbackFormLinkFactory = (agencyShortName: string): string => {
       return 'UPDATE_DEFAULT_FORM_LINK_HERE'
   }
 }
+
+/**
+ * Store agencies that require display of feedback form after sending out notification
+ */
+export const agenciesRequiringFeedbackForm = ['MOH']
