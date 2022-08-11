@@ -46,7 +46,9 @@ const loadMessageTemplates = async (dataSource: DataSource) => {
       }
     })
     .then(() => {
-      console.log('Message templates loaded successfully!')
+      console.log(
+        'Finished attempt to load message templates! Scroll up to check for errors',
+      )
     })
     .catch((error) =>
       console.log(

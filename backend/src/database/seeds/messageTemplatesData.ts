@@ -99,4 +99,43 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-hrp',
+    menu: 'Home Recovery Programme',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.',
+      },
+    },
+  },
+  {
+    agencyId: 'ECDA',
+    key: 'ecda-generic',
+    menu: 'Generic',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.",
+      },
+    },
+  },
+  {
+    agencyId: 'MSF',
+    key: 'msf-generic',
+    menu: 'Generic',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          "This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.",
+      },
+    },
+  },
 ]
