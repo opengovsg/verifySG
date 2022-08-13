@@ -4,7 +4,7 @@ interface AuthContext {
   isAuthenticated: boolean | undefined
   officer: string
   agencyShortName: string
-  getOfficer: () => Promise<void>
+  initializeOfficerInfo: () => Promise<void>
   logout: () => Promise<void>
 }
 

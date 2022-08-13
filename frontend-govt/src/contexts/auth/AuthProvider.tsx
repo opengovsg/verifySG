@@ -1,4 +1,10 @@
-import { ReactChild, ReactChildren, useEffect, useState } from 'react'
+import {
+  ReactChild,
+  ReactChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { AuthService } from '@services/AuthService'
 
 import { AuthContext } from './AuthContext'
@@ -8,27 +14,24 @@ interface AuthProps {
   children: ReactChild | ReactChildren
 }
 
-// returns a
 export const AuthProvider = ({ children }: AuthProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(
-    false,
-  )
-  const [officer, setOfficer] = useState<string>('')
-  const [agencyShortName, setAgencyShortName] = useState<string>('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [officer, setOfficer] = useState('')
+  const [agencyShortName, setAgencyShortName] = useState('')
 
-  const getOfficer = async (): Promise<void> => {
-    const retrievedOfficer = await AuthService.whoAmI()
-    if (retrievedOfficer) {
-      if ('email' in retrievedOfficer) setOfficer(retrievedOfficer.email)
-      if ('agencyShortName' in retrievedOfficer)
-        setAgencyShortName(retrievedOfficer.agencyShortName)
-      setIsAuthenticated(true)
-    }
-  }
+  const initializeOfficerInfo = useCallback(async (): Promise<void> => {
+    const officerWhoamiResDto = await AuthService.whoAmI()
+    setIsAuthenticated(officerWhoamiResDto.authenticated)
+    // return early if officer is not authenticated
+    if (!officerWhoamiResDto.authenticated) return
+    // TypeScript discriminated union can infer officerWhoamiResDto is OfficerWhoamiSuccess
+    setOfficer(officerWhoamiResDto.email)
+    setAgencyShortName(officerWhoamiResDto.agencyShortName)
+  }, [])
 
   useEffect(() => {
-    getOfficer()
-  }, [getOfficer])
+    void initializeOfficerInfo()
+  }, [initializeOfficerInfo])
 
   const logout = async (): Promise<void> => {
     await AuthService.logout()
@@ -42,7 +45,7 @@ export const AuthProvider = ({ children }: AuthProps) => {
         isAuthenticated,
         officer,
         agencyShortName,
-        getOfficer,
+        initializeOfficerInfo,
         logout,
       }}
     >

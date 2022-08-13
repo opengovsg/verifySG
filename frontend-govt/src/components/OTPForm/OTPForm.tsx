@@ -28,7 +28,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   const [resendTimer, setResendTimer] = useState(RESEND_WAIT_TIME / 1000)
 
   // import auth context
-  const { getOfficer } = useAuth()
+  const { initializeOfficerInfo } = useAuth()
 
   // otp resend timer side-effect
   useEffect(() => {
@@ -82,7 +82,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
   // login form handlers
   const verifyOtp = useMutation(AuthService.verifyOtp, {
     onSuccess: async () => {
-      await getOfficer()
+      await initializeOfficerInfo()
       onSubmit()
     },
     onError: (err: string) => {

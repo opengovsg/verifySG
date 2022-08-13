@@ -5,6 +5,8 @@ import { AgencyDto } from './agency.dto'
 export type OfficerWhoamiResDto = OfficerWhoamiSuccess | OfficerWhoamiFailure
 
 export class OfficerWhoamiSuccess {
+  authenticated: true
+
   // TODO (maybe): refactor into common email property
   @IsEmail() // in theory can make is specific to gov.sg email
   email: string
@@ -14,6 +16,8 @@ export class OfficerWhoamiSuccess {
 }
 
 export class OfficerWhoamiFailure {
+  authenticated: false
+
   message: string
 }
 

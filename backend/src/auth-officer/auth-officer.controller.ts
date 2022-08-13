@@ -62,14 +62,14 @@ export class AuthOfficerController {
   @Get('whoami')
   async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiResDto> {
     if (!officerId) {
-      return { message: 'No logged in officer' }
+      return { authenticated: false, message: 'No logged in officer' }
     }
     const officer = await this.officersService.findById(officerId)
     if (!officer) {
       throw new NotFoundException('No officer with this officer ID found')
     }
     const { email, agency } = officer
-    return { email, agencyShortName: agency.id }
+    return { authenticated: true, email, agencyShortName: agency.id }
   }
 
   @Post('logout')
