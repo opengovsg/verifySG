@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
+import { requiresFeedbackForm } from '@constants/feedback-form-metadata'
 import { FEEDBACKFORM_ROUTE } from '@constants/routes'
 import {
   Button,
@@ -15,7 +16,6 @@ import {
 import { NotificationService } from '@services/NotificationService'
 import nric from 'nric'
 
-import { agenciesRequiringFeedbackForm } from '@/components/FeedbackForm'
 import HeaderContainer from '@/components/HeaderContainer'
 import MessagePreview from '@/components/MessagePreview'
 import { useAuth } from '@/contexts/auth/AuthContext'
@@ -59,7 +59,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        if (agenciesRequiringFeedbackForm.includes(agencyShortName)) {
+        if (requiresFeedbackForm(agencyShortName)) {
           setTargetNRIC(data.nric)
           history.push(FEEDBACKFORM_ROUTE)
         } else {

@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Link, Text, VStack } from '@chakra-ui/react'
+import { getFormMetadata } from '@constants/feedback-form-metadata'
 import { NOTIFICATIONFORM_ROUTE } from '@constants/routes'
 import { Button } from '@opengovsg/design-system-react'
 import { OfficerService } from '@services/OfficerService'
 
-import { feedbackFormLinkFactory } from '@/components/FeedbackForm'
 import HeaderContainer from '@/components/HeaderContainer'
 import { useAuth } from '@/contexts/auth/AuthContext'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
@@ -17,13 +17,16 @@ interface FormFieldPrefill {
 }
 
 export const FeedbackForm: React.FC = () => {
-  const nameFieldId = '623d285ee46e5c0012d70649'
-  const positionFieldId = '623d286e012667001232b83f'
-  const nricFieldId = '623d31820126670012345b40'
-
   // TEMPORARY for trials: redirect to agency specific form link
   const { agencyShortName } = useAuth()
-  const formLink = feedbackFormLinkFactory(agencyShortName)
+  const {
+    formUrl,
+    nameFieldId,
+    positionFieldId,
+    // TODO: add this after message template is implemented
+    // messageTemplateKeyFieldId,
+    nricFieldId,
+  } = getFormMetadata(agencyShortName)
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
   const { targetNRIC, setTargetNRIC } = useNotificationData()
@@ -60,7 +63,13 @@ export const FeedbackForm: React.FC = () => {
           value: targetNRIC,
         },
       ]
-      setEmbedLink(getPrefillLink(formLink, prefills))
+      // if (messageTemplateKeyFieldId) prefills.push(
+      //   {
+      //     fieldId: messageTemplateKeyFieldId,
+      //     value: messageTemplateKey
+      //   }
+      // )
+      setEmbedLink(getPrefillLink(formUrl, prefills))
     },
   })
 
