@@ -73,6 +73,8 @@ export const generateNewSGNotifyParams = (
     case 'OGP':
     case 'MSF':
     case 'ECDA':
+    case 'IRAS':
+    case 'MOH':
       return {
         agencyLogoUrl,
         agencyShortName,

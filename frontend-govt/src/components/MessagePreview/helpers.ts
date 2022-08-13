@@ -57,6 +57,8 @@ export const messageContentFactory = ({
     case 'OGP':
     case 'MSF':
     case 'ECDA':
+    case 'IRAS':
+    case 'MOH':
       return `${salutations(maskedNric)} 
         <br/><br/>
         ${standardOpening(
