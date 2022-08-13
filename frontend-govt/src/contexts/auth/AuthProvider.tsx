@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }: AuthProps) => {
     await AuthService.logout()
     setIsAuthenticated(false)
     setOfficer('')
+    setAgencyShortName('')
   }
 
   return (
