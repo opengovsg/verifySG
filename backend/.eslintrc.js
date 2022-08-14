@@ -18,7 +18,13 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'simple-import-sort', 'import'],
   root: true,
-  ignorePatterns: ['.eslintrc.js', 'jest.config.ts', '/src/scripts/*'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'jest.config.ts',
+    '/src/scripts/*',
+    'jest-testcontainers-config.js',
+    'jest.env.js',
+  ],
   rules: {
     'no-console': 'warn',
     '@typescript-eslint/no-unused-vars': [
