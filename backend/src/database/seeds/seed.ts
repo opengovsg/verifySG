@@ -8,59 +8,51 @@ import { agenciesData } from './agenciesData'
 import { messageTemplatesData } from './messageTemplatesData'
 
 const createAgencies = async (dataSource: DataSource) => {
-  dataSource
-    .initialize()
-    .then(async () => {
-      console.log('Creating agencies...')
-      for (const agencyData of agenciesData) {
-        const agency = Object.assign(new Agency(), agencyData)
-        await dataSource.manager.save(agency)
-      }
-    })
-    .then(() => {
-      console.log('Agencies created successfully!')
-    })
-    .catch((error) =>
-      console.log(`Something went wrong while creating agencies!\n${error}`),
-    )
+  console.log('Attempting to create agencies...')
+  for (const agencyData of agenciesData) {
+    const agency = Object.assign(new Agency(), agencyData)
+    await dataSource.manager
+      .save(agency)
+      .catch((error) =>
+        console.log(
+          `Something went wrong while creating agency ${agency.name}: ${error}`,
+        ),
+      )
+  }
+  console.log('Finished creating agencies.')
 }
 
 const loadMessageTemplates = async (dataSource: DataSource) => {
-  dataSource
-    .initialize()
-    .then(async () => {
-      console.log('Loading message templates...')
-      const messageTemplateRepo =
-        dataSource.manager.getRepository(MessageTemplate)
-      for (const messageTemplateData of messageTemplatesData) {
-        console.log(`Creating message template: ${messageTemplateData.key}...`)
-        const messageTemplate = messageTemplateRepo.create({
-          ...messageTemplateData,
-          agency: { id: messageTemplateData.agencyId },
-        })
-        try {
-          await dataSource.manager.save(messageTemplate)
-        } catch (e) {
-          console.error(e)
-        }
-      }
+  console.log('Attempting to load message templates...')
+  const messageTemplateRepo = dataSource.manager.getRepository(MessageTemplate)
+  for (const messageTemplateData of messageTemplatesData) {
+    const templateExists = await messageTemplateRepo.findOneBy({
+      key: messageTemplateData.key,
     })
-    .then(() => {
-      console.log(
-        'Finished attempt to load message templates! Scroll up to check for errors',
+    if (templateExists) {
+      console.log(`Skipping ${templateExists.key} as it already exists.`)
+      continue
+    }
+    console.log(`Loading message template: ${messageTemplateData.key}...`)
+    const messageTemplate = messageTemplateRepo.create({
+      ...messageTemplateData,
+      agency: { id: messageTemplateData.agencyId },
+    })
+    await dataSource.manager
+      .save(messageTemplate)
+      .catch((error) =>
+        console.log(
+          `Something went wrong while creating ${messageTemplate.key}: ${error}`,
+        ),
       )
-    })
-    .catch((error) =>
-      console.log(
-        `Something went wrong while loading message templates!\n${error}`,
-      ),
-    )
+  }
 }
 
 const main = async () => {
   console.log('Seeding database...')
   try {
     const dataSource = new DataSource(connectionConfig)
+    await dataSource.initialize()
     await createAgencies(dataSource)
     await loadMessageTemplates(dataSource)
   } catch (e) {
