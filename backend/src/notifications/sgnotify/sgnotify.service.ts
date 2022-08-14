@@ -127,7 +127,7 @@ export class SGNotifyService {
       await convertParamsToNotificationRequestPayload(sgNotifyParams).catch(
         (e) => {
           this.logger.error(
-            `Internal server error when converting notification params to SGNotify request payload.
+            `Error when converting notification params to SGNotify request payload.
             Payload sent: ${sgNotifyParams}
             Error: ${e}`,
           )
@@ -174,6 +174,7 @@ export class SGNotifyService {
       this.logger.error(
         `Error when decrypting and verifying notification response payload.\nError: ${error}`,
       )
+      throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
       // no need to throw ServiceUnavailable Exception as this error arises after notification is sent
     })) as NotificationResPayload
     return {
@@ -211,6 +212,7 @@ export class SGNotifyService {
         },
       )
       .catch((error) => {
+        // should not happen unless our credentials are revoked
         if ((error as AxiosError).response?.status === 401) {
           this.logger.error(
             `SGNotify credentials are invalid.
@@ -218,6 +220,7 @@ export class SGNotifyService {
             Error: ${error}.`,
           )
         }
+        // catch residual errors; besides 401,other errors cannot be meaningfully handled on our side
         this.logger.error(
           `Error when getting authz token from SGNotify.\nError: ${error}`,
         )
