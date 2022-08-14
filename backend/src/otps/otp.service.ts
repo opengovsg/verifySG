@@ -100,7 +100,7 @@ export class OtpService {
     if (!isValid) return OTPVerificationResult.INCORRECT_OTP
     // if OTP is valid and has been verified, to hard delete OTP from db
     await this.otpRepository.delete({
-      email, // this deletes ALL hashes with this email to prevent earlier OTPs from being sued
+      email, // this deletes ALL hashes with this email to invalidate earlier OTPs
     })
     return OTPVerificationResult.SUCCESS
   }
