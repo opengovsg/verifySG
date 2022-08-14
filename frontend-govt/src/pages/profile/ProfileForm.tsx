@@ -13,11 +13,7 @@ import {
 import { OfficerService } from '@services/OfficerService'
 
 import HeaderContainer from '@/components/HeaderContainer'
-
-interface ProfileFormData {
-  name: string
-  position: string
-}
+import { UpdateOfficerReqDto } from '~shared/types/api'
 
 interface ProfileFormProps {
   onSubmit?: () => void
@@ -30,7 +26,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     handleSubmit,
     formState: { errors, isDirty },
     setValue,
-  } = useForm<ProfileFormData>()
+  } = useForm<UpdateOfficerReqDto>()
   const toast = useToast({
     isClosable: true,
     containerStyle: {
@@ -72,7 +68,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
   })
 
   // handle submission logic
-  const submissionHandler = (data: ProfileFormData) => {
+  const submissionHandler = (data: UpdateOfficerReqDto) => {
     updateProfile.mutate(data)
   }
 

@@ -1,4 +1,10 @@
-import { IsAscii, IsEmail, IsNumber, IsString } from 'class-validator'
+import {
+  IsAscii,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator'
 
 import { AgencyDto } from './agency.dto'
 
@@ -17,11 +23,13 @@ export class OfficerWhoamiFailure {
 export class OfficerBase {
   @IsString()
   @IsAscii()
-  name: string
+  @IsNotEmpty()
+  name: Exclude<string, ''>
 
   @IsString()
   @IsAscii()
-  position: string
+  @IsNotEmpty()
+  position: Exclude<string, ''>
 }
 
 export class OfficerDto extends OfficerBase {
@@ -33,4 +41,4 @@ export class OfficerDto extends OfficerBase {
 
 export type OfficerResDto = OfficerDto
 
-export type UpdateOfficerResDto = OfficerBase
+export class UpdateOfficerReqDto extends OfficerBase {}

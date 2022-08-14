@@ -13,7 +13,7 @@ import { OfficerId } from 'common/decorators'
 
 import { OfficersService } from './officers.service'
 
-import { OfficerResDto, UpdateOfficerResDto } from '~shared/types/api'
+import { OfficerResDto, UpdateOfficerReqDto } from '~shared/types/api'
 
 @Controller('officers')
 export class OfficersController {
@@ -31,7 +31,7 @@ export class OfficersController {
   @UseGuards(AuthOfficerGuard)
   async updateOfficer(
     @OfficerId() officerId: number,
-    @Body() officerDetails: UpdateOfficerResDto,
+    @Body() officerDetails: UpdateOfficerReqDto,
   ): Promise<void> {
     try {
       await this.officersService.updateOfficer(officerId, officerDetails)
