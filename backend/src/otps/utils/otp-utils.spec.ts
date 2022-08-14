@@ -1,4 +1,5 @@
 import { OTP } from '../../database/entities'
+
 import { otpUtils } from './otp-utils'
 
 export const mockEmailAddress = 'benjamin_tan@spf.gov.sg'
