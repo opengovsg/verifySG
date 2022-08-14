@@ -52,24 +52,24 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     duration: 6000,
   })
   const history = useHistory()
-  const { agencyShortName } = useAuth()
+  const { officerAgency } = useAuth()
 
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        if (requiresFeedbackForm(agencyShortName)) {
+        if (requiresFeedbackForm(officerAgency)) {
           setTargetNRIC(data.nric)
           history.push(FEEDBACKFORM_ROUTE)
-        } else {
-          reset(
-            { nric: '', callScope: '' },
-            {
-              keepValues: false,
-            },
-          )
+          return
         }
+        reset(
+          { nric: '' },
+          {
+            keepValues: false,
+          },
+        )
       },
     })
   }

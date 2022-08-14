@@ -1,52 +1,58 @@
-import {
-  ReactChild,
-  ReactChildren,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { useToast } from '@opengovsg/design-system-react'
+import { getApiErrorMessage } from '@services/ApiService'
 import { AuthService } from '@services/AuthService'
+import { AxiosError } from 'axios'
 
 import { AuthContext } from './AuthContext'
 
-// auth provider props & declaration
 interface AuthProps {
-  children: ReactChild | ReactChildren
+  children: ReactNode
 }
 
 export const AuthProvider = ({ children }: AuthProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [officer, setOfficer] = useState('')
-  const [agencyShortName, setAgencyShortName] = useState('')
+  const [officerEmail, setOfficerEmail] = useState('')
+  const [officerAgency, setOfficerAgency] = useState('')
+  const toast = useToast()
 
-  const initializeOfficerInfo = useCallback(async (): Promise<void> => {
+  const initOfficerInfo = useCallback(async (): Promise<void> => {
     const officerWhoamiResDto = await AuthService.whoAmI()
     setIsAuthenticated(officerWhoamiResDto.authenticated)
     // return early if officer is not authenticated
     if (!officerWhoamiResDto.authenticated) return
     // TypeScript discriminated union can infer officerWhoamiResDto is OfficerWhoamiSuccess
-    setOfficer(officerWhoamiResDto.email)
-    setAgencyShortName(officerWhoamiResDto.agencyShortName)
+    setOfficerEmail(officerWhoamiResDto.email)
+    setOfficerAgency(officerWhoamiResDto.agencyShortName)
   }, [])
 
   useEffect(() => {
-    void initializeOfficerInfo()
-  }, [initializeOfficerInfo])
+    void initOfficerInfo()
+  }, [initOfficerInfo])
 
   const logout = async (): Promise<void> => {
     await AuthService.logout()
-    setIsAuthenticated(false)
-    setOfficer('')
-    setAgencyShortName('')
+      .then(() => {
+        setIsAuthenticated(false)
+        setOfficerEmail('')
+        setOfficerAgency('')
+      })
+      .catch((error: AxiosError) => {
+        toast({
+          title: 'Error',
+          description: getApiErrorMessage(error),
+          status: 'warning',
+        })
+      })
   }
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        officer,
-        agencyShortName,
-        initializeOfficerInfo,
+        officerEmail,
+        officerAgency,
+        initOfficerInfo,
         logout,
       }}
     >

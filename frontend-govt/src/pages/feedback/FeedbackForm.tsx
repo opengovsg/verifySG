@@ -18,7 +18,7 @@ interface FormFieldPrefill {
 
 export const FeedbackForm: React.FC = () => {
   // TEMPORARY for trials: redirect to agency specific form link
-  const { agencyShortName } = useAuth()
+  const { officerAgency } = useAuth()
   const {
     formUrl,
     nameFieldId,
@@ -26,7 +26,7 @@ export const FeedbackForm: React.FC = () => {
     // TODO: add this after message template is implemented
     // messageTemplateKeyFieldId,
     nricFieldId,
-  } = getFormMetadata(agencyShortName)
+  } = getFormMetadata(officerAgency)
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
   const { targetNRIC, setTargetNRIC } = useNotificationData()
@@ -75,7 +75,7 @@ export const FeedbackForm: React.FC = () => {
 
   const returnToNotificationForm = () => {
     // clear nric in notificationDataContext
-    setTargetNRIC(undefined)
+    setTargetNRIC('')
 
     // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)
