@@ -17,14 +17,23 @@ export const AuthProvider = ({ children }: AuthProps) => {
   const toast = useToast()
 
   const initOfficerInfo = useCallback(async (): Promise<void> => {
-    const officerWhoamiResDto = await AuthService.whoAmI()
-    setIsAuthenticated(officerWhoamiResDto.authenticated)
-    // return early if officer is not authenticated
-    if (!officerWhoamiResDto.authenticated) return
-    // TypeScript discriminated union can infer officerWhoamiResDto is OfficerWhoamiSuccess
-    setOfficerEmail(officerWhoamiResDto.email)
-    setOfficerAgency(officerWhoamiResDto.agencyShortName)
-  }, [])
+    await AuthService.whoAmI()
+      .then((officerWhoamiResDto) => {
+        setIsAuthenticated(officerWhoamiResDto.authenticated)
+        // return early if officer is not authenticated
+        if (!officerWhoamiResDto.authenticated) return
+        // TypeScript discriminated union can infer officerWhoamiResDto is OfficerWhoamiSuccess
+        setOfficerEmail(officerWhoamiResDto.email)
+        setOfficerAgency(officerWhoamiResDto.agencyShortName)
+      })
+      .catch((error: AxiosError) => {
+        toast({
+          title: 'Error',
+          description: getApiErrorMessage(error),
+          status: 'warning',
+        })
+      })
+  }, [toast])
 
   useEffect(() => {
     void initOfficerInfo()
