@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   ServiceUnavailableException,
 } from '@nestjs/common'
 import axios, { AxiosError, AxiosInstance } from 'axios'
@@ -15,6 +16,15 @@ import {
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 
+import {
+  AUTHZ_ENDPOINT,
+  NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
+  NOTIFICATION_ENDPOINT,
+  NOTIFICATION_REQUEST_ERROR_MESSAGE,
+  NOTIFICATION_RESPONSE_ERROR_MESSAGE,
+  PUBLIC_KEY_ENDPOINT,
+  SGNOTIFY_UNAVAILABLE_MESSAGE,
+} from './constants'
 import {
   AuthResPayload,
   GetSGNotifyJwksDto,
@@ -58,29 +68,35 @@ export class SGNotifyService {
 
   /**
    * Function that gets public key from SGNotify discovery endpoint and returns it as a JWK
+   * This is called only once during initialization
    */
   async getPublicKeysSigEnc(): Promise<[Key, Key]> {
-    const url = '/.well-known/ntf-authz-keys'
     // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
-    try {
-      const { data } = await this.client.get<GetSGNotifyJwksDto>(url)
-      const publicKeySig = await jose.importJWK(
-        data.keys.filter((key) => key.use === 'sig')[0],
-        'ES256',
-      )
-      const publicKeyEnc = await jose.importJWK(
-        data.keys.filter((key) => key.use === 'enc')[0],
-        'ES256',
-      )
-      return [publicKeySig, publicKeyEnc]
-    } catch (e) {
+    const { data } = await this.client
+      .get<GetSGNotifyJwksDto>(PUBLIC_KEY_ENDPOINT)
+      .catch((error) => {
+        this.logger.error(
+          `Error when getting public key from SGNotify discovery endpoint.
+          Error: ${error}`,
+        )
+        throw new InternalServerErrorException(
+          '`Error when getting public key from SGNotify discovery endpoint.`',
+        )
+      })
+    const sigKeyJwk = data.keys.find((key) => key.use === 'sig')
+    const encKeyJwk = data.keys.find((key) => key.use === 'enc')
+    if (!sigKeyJwk || !encKeyJwk) {
       this.logger.error(
-        `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+        `Either signature or encryption key not found in SGNotify discovery endpoint.
+        Received data: ${data}`,
       )
-      throw new ServiceUnavailableException(
-        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
+      throw new InternalServerErrorException(
+        'Either signature or encryption key not found in SGNotify discovery endpoint',
       )
     }
+    const publicKeySig = await jose.importJWK(sigKeyJwk, 'ES256')
+    const publicKeyEnc = await jose.importJWK(encKeyJwk, 'ES256')
+    return [publicKeySig, publicKeyEnc]
   }
 
   /**
@@ -104,29 +120,33 @@ export class SGNotifyService {
 
   /**
    * sends notification by calling SGNotify authz and notification endpoints
+   * decrypts notificationResPayload and adds requestId to SGNotifyParams
+   * @returns SGNotifyParams
+   * (actual updating of db not done by this function)
    */
   async sendNotification(notification: Notification): Promise<SGNotifyParams> {
     const { modalityParams: sgNotifyParams } = notification
     const notificationRequestPayload =
       await convertParamsToNotificationRequestPayload(sgNotifyParams).catch(
-        (e) => {
+        (error) => {
           this.logger.error(
-            `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+            `Error when converting notification params to SGNotify request payload.
+            Payload sent: ${sgNotifyParams}
+            Error: ${error}`,
           )
-          throw new BadRequestException(
-            'Error with notification request. Please contact us if you encounter this error.', // displayed on frontend
-          )
+          // ask user to inform us of this error as it means something wrong with the params supplied
+          throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
         },
       )
     const [authzToken, jweObject] = await Promise.all([
       this.getAuthzToken(),
       this.signAndEncryptPayload(notificationRequestPayload),
     ])
-    try {
-      const {
-        data: { jwe },
-      } = await this.client.post<PostSGNotifyJweResDto>(
-        'v1/notification/requests',
+    const {
+      data: { jwe },
+    } = await this.client
+      .post<PostSGNotifyJweResDto>(
+        NOTIFICATION_ENDPOINT,
         {
           jwe: jweObject,
         },
@@ -136,32 +156,41 @@ export class SGNotifyService {
           },
         },
       )
-      const notificationResPayload = (await this.decryptAndVerifyPayload(
-        jwe,
-      )) as NotificationResPayload
-      return {
-        ...sgNotifyParams,
-        requestId: notificationResPayload.request_id,
-        sgNotifyLongMessageParams: {
-          ...sgNotifyParams.sgNotifyLongMessageParams,
-        },
-        status: SGNotifyNotificationStatus.SENT_BY_SERVER,
-      }
-    } catch (e) {
-      if ((e as AxiosError).response?.status === 404) {
+      .catch((error) => {
+        // this is an expected error; user does not have Singpass mobile app installed
+        if ((error as AxiosError).response?.status === 404) {
+          this.logger.log(
+            `NRIC ${notification.recipientId} provided not found.`,
+          )
+          throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
+        }
+        // catch residual errors
         this.logger.error(
-          `NRIC ${notification.recipientId} provided not found.`,
+          `Unexpected error when sending notification to SGNotify.
+          Payload sent:${notificationRequestPayload}
+          Error: ${error}`,
         )
-        throw new BadRequestException(
-          'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.', // displayed on frontend
-        )
-      }
+        throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
+      })
+    const notificationResPayload = (await this.decryptAndVerifyPayload(
+      jwe,
+    ).catch((error) => {
       this.logger.error(
-        `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
+        `Error when decrypting and verifying notification response payload.
+        Payload received: ${jwe}
+        Error: ${error}`,
       )
-      throw new ServiceUnavailableException(
-        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
-      )
+      // different error message since this (1) happens after notification is sent; (2) but is still consequential as requestId is not updated (function halts prematurely)
+      // as such, asked user to contact us if they see this
+      throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
+    })) as NotificationResPayload
+    return {
+      ...sgNotifyParams,
+      requestId: notificationResPayload.request_id,
+      sgNotifyLongMessageParams: {
+        ...sgNotifyParams.sgNotifyLongMessageParams,
+      },
+      status: SGNotifyNotificationStatus.SENT_BY_SERVER,
     }
   }
 
@@ -175,9 +204,9 @@ export class SGNotifyService {
       client_id: clientId,
       client_secret: clientSecret,
     })
-    try {
-      const { data } = await this.client.post<PostSGNotifyAuthzResDto>(
-        '/v1/oauth2/token',
+    const { data } = await this.client
+      .post<PostSGNotifyAuthzResDto>(
+        AUTHZ_ENDPOINT,
         {
           client_id: clientId,
           client_secret: clientSecret,
@@ -189,24 +218,35 @@ export class SGNotifyService {
           },
         },
       )
-      const authResPayload = (await this.decryptAndVerifyPayload(
-        data.token,
-      )) as AuthResPayload
-      return authResPayload.access_token
-    } catch (e) {
-      if ((e as AxiosError).response?.status === 401) {
+      .catch((error) => {
+        // should not happen unless our credentials are revoked
+        if ((error as AxiosError).response?.status === 401) {
+          this.logger.error(
+            `SGNotify credentials are invalid.
+            authJweObject: ${authJweObject}
+            Error: ${error}.`,
+          )
+        }
+        // catch residual errors; besides 401,other errors cannot be meaningfully handled on our side
         this.logger.error(
-          `SGNotify credentials are invalid.\nError: ${e}.\nauthJweObject: ${authJweObject}`,
+          `Error when getting authz token from SGNotify.
+          authJweObject: ${authJweObject}
+          Error: ${error}`,
         )
-      } else {
-        this.logger.error(
-          `Internal server error when calling SGNotify endpoint.\nError: ${e}`,
-        )
-      }
-      throw new ServiceUnavailableException(
-        'Unable to send notification due to an error with Singpass. Please try again later.', // displayed on frontend
+        // throw same error regardless of error type
+        throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
+      })
+    const authResPayload = (await this.decryptAndVerifyPayload(
+      data.token,
+    ).catch((error) => {
+      this.logger.error(
+        `Error when decrypting and verifying authz token.
+        token: ${data.token}
+        Error: ${error}`,
       )
-    }
+      throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
+    })) as AuthResPayload
+    return authResPayload.access_token
   }
 
   /**
@@ -216,7 +256,6 @@ export class SGNotifyService {
   async decryptAndVerifyPayload(
     encryptedPayload: string,
   ): Promise<SGNotifyResPayload> {
-    // TODO: error handling if decryption fails for some reason
     const { plaintext } = await jose.compactDecrypt(
       encryptedPayload,
       this.ecPrivateKey,

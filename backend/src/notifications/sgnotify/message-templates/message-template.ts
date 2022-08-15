@@ -147,7 +147,9 @@ export const convertParamsToNotificationRequestPayload = async (
     uin: nric,
   })
   await validateOrReject(notificationRequest).catch((errors) => {
-    throw new Error(`Invalid notification request: ${errors}`)
+    throw new Error(`Invalid notification request: 
+    Notification request: ${notificationRequest}
+    Error: ${errors}`)
   })
   return {
     notification_req: notificationRequest,
