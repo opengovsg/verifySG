@@ -1,8 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
-import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import morgan from 'morgan'
 
 import { Logger } from 'core/providers'
+
 import { safeJsonParse } from '../utils/common'
 
 const morganJsonFormat = {

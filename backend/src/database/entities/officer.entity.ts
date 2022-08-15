@@ -1,15 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  Check,
   Column,
   CreateDateColumn,
-  OneToMany,
+  Entity,
   ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { Notification } from './notification.entity'
 import { Agency } from './agency.entity'
+import { Notification } from './notification.entity'
 
 @Entity({ name: 'officer' })
 export class Officer {
@@ -17,6 +18,7 @@ export class Officer {
   id: number
 
   @Column('varchar', { unique: true, nullable: false, length: 255 })
+  @Check('email = lower(email)')
   email: string
 
   @Column('varchar', { nullable: true, length: 255 })

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
-import { ConfigService } from 'core/providers'
 import { KeyHashService } from 'common/providers/key-hash.service'
+import { ConfigService } from 'core/providers'
 
 @Injectable()
 export class AuthAdminService {

@@ -1,13 +1,11 @@
 {
-  "name": "frontend-govt",
-  "private": true,
+  "name": "checkwho-frontend-govt",
   "proxy": "http://localhost:8080",
   "scripts": {
-    "start": "PORT=3000 react-app-rewired start",
+    "dev": "PORT=3000 react-app-rewired start",
     "build": "cross-env CI=false INLINE_RUNTIME_CHUNK=false react-app-rewired build",
-    "test": "react-app-rewired test",
+    "test": "react-app-rewired test --passWithNoTests",
     "eject": "react-scripts eject",
-    "dev": "npm run start",
     "lint": "eslint ./ --ignore-path .gitignore && prettier . -c",
     "lint:fix": "eslint ./ --ignore-path .gitignore --fix && prettier . -c --write",
     "pre-commit": "lint-staged"
@@ -23,6 +21,7 @@
     "axios": "^0.25.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.2.10",
+    "history": "^5.3.0",
     "libphonenumber-js": "^1.9.49",
     "nric": "^1.2.2",
     "react": "17.0.2",
@@ -40,20 +39,23 @@
     "@types/react-dom": "^17.0.2",
     "@types/react-router-dom": "^5.1.7",
     "@types/sanitize-html": "^2.6.2",
-    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
     "cross-env": "^7.0.3",
     "eslint": "8.7.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
-    "prettier": "^2.5.1",
-    "react-app-rewire-alias": "^1.1.4",
+    "prettier": "2.7.1",
+    "react-app-alias-ex": "^2.1.0",
     "react-app-rewired": "^2.1.8",
     "react-scripts": "^5.0.0",
-    "typescript": "4.6.3"
+    "typescript": "4.7.4"
   },
   "lint-staged": {
     "**/*.(js|jsx|ts|tsx)": [

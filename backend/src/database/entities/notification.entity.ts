@@ -1,15 +1,17 @@
 import {
-  Entity,
+  Check,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 
-import { Officer } from './officer.entity'
 import { SGNotifyParams } from '../../notifications/sgnotify/utils'
+
+import { Officer } from './officer.entity'
 
 export enum NotificationType {
   SGNOTIFY = 'SGNOTIFY',
@@ -60,6 +62,7 @@ export class Notification {
   notificationType: NotificationType
 
   @Column('varchar', { length: 9, nullable: false })
+  @Check('recipient_id = upper(recipient_id)')
   recipientId: string
 
   @Column({
@@ -68,9 +71,6 @@ export class Notification {
     default: NotificationStatus.NOT_SENT,
   })
   status: NotificationStatus
-
-  @Column('text', { nullable: true, default: null })
-  callScope: string
 
   @Column({ type: 'jsonb' })
   modalityParams: ModalityParams

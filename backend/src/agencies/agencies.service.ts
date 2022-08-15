@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
-import { normalizeEmail, parseEmailDomain } from 'common/utils'
-
-import { CreateAgencyDto, UpdateAgencyDto, GetAgencyDto } from './dto'
 
 import { Agency } from 'database/entities/agency.entity'
+
+import { CreateAgencyReqDto, UpdateAgencyReqDto } from './dto'
+
+import { AgencyResDto } from '~shared/types/api'
+import { normalizeEmail, parseEmailDomain } from '~shared/utils/email'
 
 @Injectable()
 export class AgenciesService {
@@ -13,7 +15,7 @@ export class AgenciesService {
     @InjectRepository(Agency) private agencyRepository: Repository<Agency>,
   ) {}
 
-  async createAgency(createAgencyDto: CreateAgencyDto): Promise<Agency> {
+  async createAgency(createAgencyDto: CreateAgencyReqDto): Promise<Agency> {
     const { id: agencyId } = createAgencyDto
     await this.agencyRepository.insert(createAgencyDto)
     const agency = await this.findById(agencyId)
@@ -21,17 +23,20 @@ export class AgenciesService {
     return agency
   }
 
-  async findById(agencyId: string): Promise<Agency | undefined> {
+  async findById(agencyId: string): Promise<Agency | null> {
     return this.agencyRepository.findOne({
       where: { id: agencyId },
     })
   }
 
-  async findByEmail(email: string): Promise<Agency | undefined> {
-    email = normalizeEmail(email)
-    return this.agencyRepository.findOne({
-      where: `'${parseEmailDomain(email)}' = ANY (email_domains)`,
-    })
+  async findByEmail(email: string): Promise<Agency | null> {
+    const emailDomain = parseEmailDomain(normalizeEmail(email))
+    return this.agencyRepository
+      .createQueryBuilder('agency')
+      .where(':emailDomain = ANY (agency.emailDomains)', {
+        emailDomain,
+      })
+      .getOne()
   }
 
   async findAgenciesById(agencyIds: string[]): Promise<Agency[]> {
@@ -44,7 +49,7 @@ export class AgenciesService {
 
   async updateAgency(
     agencyId: string,
-    updateAgencyDto: UpdateAgencyDto,
+    updateAgencyDto: UpdateAgencyReqDto,
   ): Promise<Agency> {
     const agencyToUpdate = await this.findById(agencyId)
     if (!agencyToUpdate) {
@@ -60,7 +65,7 @@ export class AgenciesService {
     return compoundId.split(delimiter)
   }
 
-  mapToDto(agency: Agency): GetAgencyDto {
+  mapToDto(agency: Agency): AgencyResDto {
     const { id, name, logoUrl } = agency
     return { id, name, logoUrl }
   }

@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common'
 import { RouterModule } from '@nestjs/core'
 
+import { AgenciesModule } from './agencies/agencies.module'
+import { AuthOfficerModule } from './auth-officer/auth-officer.module'
+import { EnvModule } from './env/env.module'
 import { HealthModule } from './health/health.module'
 import { NotificationsModule } from './notifications/notifications.module'
 import { OfficersModule } from './officers/officers.module'
-import { AuthOfficerModule } from './auth-officer/auth-officer.module'
-import { AgenciesModule } from './agencies/agencies.module'
-import { SentryModule } from './sentry/sentry.module'
 
 const apiModules = [
   HealthModule,
-  SentryModule,
+  EnvModule,
   NotificationsModule,
   OfficersModule,
   AuthOfficerModule,

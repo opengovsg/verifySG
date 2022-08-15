@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 
-import { MailerService } from 'common/providers/mailer.service'
 import { AgenciesService } from 'agencies/agencies.service'
+import { MailerService } from 'common/providers/mailer.service'
+import { Logger } from 'core/providers'
 
+import { Officer } from '../database/entities'
+import { OfficersService } from '../officers/officers.service'
 import { OtpService, OTPVerificationResult } from '../otps/otp.service'
 
-import { Logger } from 'core/providers'
-import { normalizeEmail } from '../common/utils'
-import { OfficersService } from '../officers/officers.service'
-import { Officer } from '../database/entities'
+import { normalizeEmail } from '~shared/utils/email'
 
 @Injectable()
 export class AuthOfficerService {
@@ -20,19 +20,21 @@ export class AuthOfficerService {
     private logger: Logger,
   ) {}
 
-  async sendOtp(email: string): Promise<void> {
+  async sendOtp(email: string, ipAddress: string): Promise<void> {
     email = normalizeEmail(email)
     // check email whitelist
     const agency = await this.agencyService.findByEmail(email)
     if (!agency) throw new Error(`Email '${email}' not whitelisted`)
-
     const { otp, timeLeftMinutes } = await this.otpService.getOtp(email)
+    const subject = `One-Time Password (OTP) for CheckWho is ${otp}`
     const htmlBody = `Your OTP is <b>${otp}</b>. It will expire in ${timeLeftMinutes} minutes.
     Please use this to login to your account.
-    <p>If your OTP does not work, please request for a new one.</p>`
+    <p>If your OTP does not work, please request for a new one.</p>
+    <p>This login attempt was made from the IP: ${ipAddress}. If you did not attempt to log in to CheckWho,
+you may choose to investigate this IP to address further.</p>`
 
     this.logger.log(`Sending mail to ${email}`)
-    await this.mailerService.sendMail(htmlBody, email)
+    await this.mailerService.sendMail(subject, htmlBody, email)
   }
 
   async verifyOtp(email: string, otp: string): Promise<Officer | undefined> {
@@ -40,7 +42,7 @@ export class AuthOfficerService {
     const verificationResult = await this.otpService.verifyOtp(email, otp)
     switch (verificationResult) {
       case OTPVerificationResult.SUCCESS: {
-        return await this.officersService.findOrInsert({ email })
+        return await this.officersService.findOrInsertByEmail(email)
       }
       // not sure whether to log additional info for failed verification
       case OTPVerificationResult.EXPIRED_OTP: {

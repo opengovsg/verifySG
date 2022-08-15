@@ -9,6 +9,7 @@
  * no deletedAt as OTPs that are successfully logged in are hard deleted
  */
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -22,6 +23,7 @@ export class OTP {
   id: number
 
   @Column('varchar', { nullable: false, length: 255 })
+  @Check('email = lower(email)')
   email: string
 
   @Column('varchar', { nullable: false, length: 255 })

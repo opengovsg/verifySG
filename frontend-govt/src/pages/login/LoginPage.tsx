@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { Center, Flex, Image, VStack } from '@chakra-ui/react'
 import { GovtMasthead } from '@opengovsg/design-system-react'
 
-// import assets
-import Logo from '../../assets/CheckWhoLogo.svg'
-import SignInSplash from '../../assets/SignInSplash.svg'
-import EmailForm from '../../components/EmailForm'
-import OTPForm from '../../components/OTPForm'
+import Logo from '@/assets/CheckWhoLogo.svg'
+import SignInSplash from '@/assets/SignInSplash.svg'
+import EmailForm from '@/components/EmailForm'
+import OTPForm from '@/components/OTPForm'
+import { normalizeEmail } from '~shared/utils'
 
 interface LoginPageProps {
   onLogin?: () => void
@@ -35,7 +35,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           >
             <Image src={Logo} w={{ base: '273px' }} />
             {!email ? (
-              <EmailForm onSubmit={(email) => setEmail(email)} />
+              <EmailForm
+                onSubmit={(email) => setEmail(normalizeEmail(email))}
+              />
             ) : (
               <OTPForm email={email} onSubmit={() => onLogin?.()} />
             )}

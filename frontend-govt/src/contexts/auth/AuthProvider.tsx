@@ -1,45 +1,71 @@
-import { ReactChild, ReactChildren, useEffect, useState } from 'react'
-
-import { AuthService } from '../../services/AuthService'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { useToast } from '@opengovsg/design-system-react'
+import { getApiErrorMessage } from '@services/ApiService'
+import { AuthService } from '@services/AuthService'
+import { AxiosError } from 'axios'
 
 import { AuthContext } from './AuthContext'
 
-// auth provider props & declaration
 interface AuthProps {
-  children: ReactChild | ReactChildren
+  children: ReactNode
 }
 
-// returns a
 export const AuthProvider = ({ children }: AuthProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(
-    false,
-  )
-  const [officer, setOfficer] = useState<string>('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [officerEmail, setOfficerEmail] = useState('')
+  const [officerAgency, setOfficerAgency] = useState('')
+  const toast = useToast()
 
-  const getOfficer = async (): Promise<void> => {
-    const retrievedOfficer = await AuthService.whoAmI()
-    if ('email' in retrievedOfficer) {
-      setOfficer(retrievedOfficer.email)
-      setIsAuthenticated(true)
-    }
-  }
+  const initOfficerInfo = useCallback(async (): Promise<void> => {
+    await AuthService.whoAmI()
+      .then((officerWhoamiResDto) => {
+        setIsAuthenticated(officerWhoamiResDto.authenticated)
+        // return early if officer is not authenticated
+        if (!officerWhoamiResDto.authenticated) return
+        // TypeScript discriminated union can infer officerWhoamiResDto is OfficerWhoamiSuccess
+        setOfficerEmail(officerWhoamiResDto.email)
+        setOfficerAgency(officerWhoamiResDto.agencyShortName)
+      })
+      .catch((error: AxiosError) => {
+        toast({
+          title: 'Error',
+          description: `Something went wrong while calling whoami endpoint. ${getApiErrorMessage(
+            error,
+          )}`,
+          status: 'warning',
+        })
+      })
+  }, [toast])
 
   useEffect(() => {
-    getOfficer()
-  }, [getOfficer])
+    void initOfficerInfo()
+  }, [initOfficerInfo])
 
   const logout = async (): Promise<void> => {
     await AuthService.logout()
-    setIsAuthenticated(false)
-    setOfficer('')
+      .then(() => {
+        setIsAuthenticated(false)
+        setOfficerEmail('')
+        setOfficerAgency('')
+      })
+      .catch((error: AxiosError) => {
+        toast({
+          title: 'Error',
+          description: `Something went wrong while calling logout endpoint. ${getApiErrorMessage(
+            error,
+          )}`,
+          status: 'warning',
+        })
+      })
   }
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        officer,
-        getOfficer,
+        officerEmail,
+        officerAgency,
+        initOfficerInfo,
         logout,
       }}
     >

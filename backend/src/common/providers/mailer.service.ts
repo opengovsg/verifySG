@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { Logger } from 'core/providers'
-import { ConfigSchema } from 'core/config.schema'
-
 import axios from 'axios'
 
-import { ConfigService } from 'core/providers'
+import { ConfigSchema } from 'core/config.schema'
+import { ConfigService, Logger } from 'core/providers'
 
 @Injectable()
 export class MailerService {
@@ -14,14 +12,18 @@ export class MailerService {
     this.config = this.configService.get('postman')
   }
 
-  sendMail = async (body: string, recipient: string): Promise<void> => {
+  sendMail = async (
+    subject: string,
+    body: string,
+    recipient: string,
+  ): Promise<void> => {
     if (this.configService.get('environment') === 'development')
-      return this.logger.log(JSON.stringify(body, null, 2))
+      return this.logger.log(JSON.stringify({ subject, body }, null, 2))
 
     const mail = {
       recipient,
       from: 'CheckWho.gov.sg <donotreply@mail.postman.gov.sg>',
-      subject: 'One-Time Password (OTP) for CheckWho',
+      subject,
       body,
     }
 

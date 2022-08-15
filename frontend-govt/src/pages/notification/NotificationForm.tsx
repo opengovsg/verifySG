@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Heading, StackItem, VStack } from '@chakra-ui/react'
+import { requiresFeedbackForm } from '@constants/feedback-form-metadata'
+import { FEEDBACKFORM_ROUTE } from '@constants/routes'
 import {
   Button,
   FormErrorMessage,
@@ -11,13 +13,13 @@ import {
   Input,
   useToast,
 } from '@opengovsg/design-system-react'
+import { NotificationService } from '@services/NotificationService'
 import nric from 'nric'
 
-import HeaderContainer from '../../components/HeaderContainer'
-import MessagePreview from '../../components/MessagePreview'
-import { FEEDBACKFORM_ROUTE } from '../../constants/routes'
-import { useNotificationData } from '../../contexts/notification/NotificationDataContext'
-import { NotificationService } from '../../services/NotificationService'
+import HeaderContainer from '@/components/HeaderContainer'
+import MessagePreview from '@/components/MessagePreview'
+import { useAuth } from '@/contexts/auth/AuthContext'
+import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 
 interface NotificationFormData {
   nric: string
@@ -50,14 +52,24 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     duration: 6000,
   })
   const history = useHistory()
+  const { officerAgency } = useAuth()
 
   // handle submission logic
   const submissionHandler = (data: NotificationFormData) => {
     sendNotification.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        setTargetNRIC(data.nric)
-        history.push(FEEDBACKFORM_ROUTE)
+        if (requiresFeedbackForm(officerAgency)) {
+          setTargetNRIC(data.nric)
+          history.push(FEEDBACKFORM_ROUTE)
+          return
+        }
+        reset(
+          { nric: '' },
+          {
+            keepValues: false,
+          },
+        )
       },
     })
   }

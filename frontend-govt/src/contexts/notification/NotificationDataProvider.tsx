@@ -10,15 +10,13 @@ interface NotificationDataProps {
 export const NotificationDataProvider = ({
   children,
 }: NotificationDataProps) => {
-  const [targetNRIC, setTargetNRIC] = useState<string | undefined>()
+  const [targetNRIC, setTargetNRIC] = useState('')
 
   return (
     <NotificationDataContext.Provider
       value={{
         targetNRIC,
-        setTargetNRIC: (nric) => {
-          setTargetNRIC(nric)
-        },
+        setTargetNRIC,
       }}
     >
       {children}

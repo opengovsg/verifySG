@@ -1,8 +1,5 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
-
-import LoadingSpinner from '../components/LoadingSpinner'
-import ProfileGuard from '../components/ProfileGuard'
 import {
   FEEDBACKFORM_ROUTE,
   LOGIN_ROUTE,
@@ -10,14 +7,17 @@ import {
   PROFILE_ROUTE,
   ROOT_ROUTE,
   WELCOME_ROUTE,
-} from '../constants/routes'
-import FeedbackForm from '../pages/feedback'
-import NotificationForm from '../pages/notification'
-import ProfileForm from '../pages/profile'
-import WelcomePage from '../pages/welcome'
+} from '@constants/routes'
 
 import { PrivateRoute } from './PrivateRoute'
 import { PublicRoute } from './PublicRoute'
+
+import LoadingSpinner from '@/components/LoadingSpinner'
+import ProfileGuard from '@/components/ProfileGuard'
+import FeedbackForm from '@/pages/feedback'
+import NotificationForm from '@/pages/notification'
+import ProfileForm from '@/pages/profile'
+import WelcomePage from '@/pages/welcome'
 
 const LoginPage = lazy(() => import('../pages/login'))
 

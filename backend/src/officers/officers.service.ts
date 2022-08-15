@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
-import { Officer } from '../database/entities'
 import { InjectRepository } from '@nestjs/typeorm'
-import {
-  OfficerDto,
-  UpdateOfficerProfileDto,
-  GetOfficerProfileDto,
-} from './dto'
+import { Repository } from 'typeorm'
 
 import { AgenciesService } from 'agencies/agencies.service'
-import { normalizeEmail } from '../common/utils'
+
+import { Officer } from '../database/entities'
+
+import { OfficerDto, UpdateOfficerResDto } from '~shared/types/api'
+import { normalizeEmail } from '~shared/utils/email'
 
 @Injectable()
 export class OfficersService {
@@ -18,29 +16,30 @@ export class OfficersService {
     private agencyService: AgenciesService,
   ) {}
 
-  async findOrInsert(officer: OfficerDto): Promise<Officer> {
-    const email = normalizeEmail(officer.email)
-    const foundOfficer = await this.findByEmail(email)
+  async findOrInsertByEmail(email: string): Promise<Officer> {
+    const officerEmail = normalizeEmail(email)
+    const foundOfficer = await this.findByEmail(officerEmail)
 
     if (foundOfficer) return foundOfficer
-    return await this.createOfficer(officer)
+    return await this.createOfficerByEmail(officerEmail)
   }
 
-  async createOfficer(officer: OfficerDto): Promise<Officer> {
-    const agency = await this.agencyService.findByEmail(officer.email)
-    if (!agency) throw new Error(`No agency for ${officer.email} found`)
+  async createOfficerByEmail(email: string): Promise<Officer> {
+    const agency = await this.agencyService.findByEmail(email)
+    if (!agency) throw new Error(`No agency for ${email} found`)
 
-    const officerToAdd = this.officerRepository.create({ ...officer, agency })
+    const officerToAdd = this.officerRepository.create({ email, agency })
     return this.officerRepository.save(officerToAdd)
   }
 
-  async findById(id: number): Promise<Officer | undefined> {
-    return this.officerRepository.findOne(id, {
+  async findById(id: number): Promise<Officer | null> {
+    return this.officerRepository.findOne({
+      where: { id },
       relations: ['agency'],
     })
   }
 
-  async findByEmail(email: string): Promise<Officer | undefined> {
+  async findByEmail(email: string): Promise<Officer | null> {
     email = normalizeEmail(email)
     return this.officerRepository.findOne({
       where: { email },
@@ -50,16 +49,16 @@ export class OfficersService {
 
   async updateOfficer(
     id: number,
-    officerDetails: UpdateOfficerProfileDto,
+    officerDetails: UpdateOfficerResDto,
   ): Promise<void> {
-    const officerToUpdate = await this.officerRepository.findOne(id)
+    const officerToUpdate = await this.officerRepository.findOneBy({ id })
     if (!officerToUpdate) {
       throw new Error(`Officer ${id} not found`)
     }
     await this.officerRepository.update({ id }, officerDetails)
   }
 
-  mapToDto(officer: Officer): GetOfficerProfileDto {
+  mapToDto(officer: Officer): OfficerDto {
     const { id, name, position, agency } = officer
     return {
       id,

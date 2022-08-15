@@ -3,18 +3,23 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import {
+  ModalityParams,
   Notification,
   NotificationType,
-  ModalityParams,
 } from 'database/entities'
-import { SendNotificationResponseDto, SendNotificationDto } from './dto'
 import { OfficersService } from 'officers/officers.service'
+
+import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
-  normalizeNric,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
-import { SGNotifyService } from './sgnotify/sgnotify.service'
+
+import {
+  SendNotificationReqDto,
+  SendNotificationResDto,
+} from '~shared/types/api'
+import { normalizeNric } from '~shared/utils/nric'
 
 @Injectable()
 export class NotificationsService {
@@ -25,8 +30,9 @@ export class NotificationsService {
     private sgNotifyService: SGNotifyService,
   ) {}
 
-  async findById(id: number): Promise<Notification | undefined> {
-    return this.notificationRepository.findOne(id, {
+  async findById(id: number): Promise<Notification | null> {
+    return this.notificationRepository.findOne({
+      where: { id },
       relations: ['officer', 'officer.agency'],
     })
   }
@@ -39,19 +45,20 @@ export class NotificationsService {
    */
   async createNotification(
     officerId: number,
-    notificationBody: SendNotificationDto,
-  ): Promise<Notification | undefined> {
-    const { callScope, nric } = notificationBody
+    notificationBody: SendNotificationReqDto,
+  ): Promise<Notification | null> {
+    const { nric } = notificationBody
     const normalizedNric = normalizeNric(nric)
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException('Officer not found')
+    if (!officer.name || !officer.position)
+      throw new BadRequestException('Officer must have name and position')
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      callScope,
       modalityParams: generateNewSGNotifyParams(
         logoUrl,
         agencyName,
@@ -101,8 +108,8 @@ export class NotificationsService {
    */
   async sendNotification(
     officerId: number,
-    body: SendNotificationDto,
-  ): Promise<SendNotificationResponseDto> {
+    body: SendNotificationReqDto,
+  ): Promise<SendNotificationResDto> {
     const inserted = await this.createNotification(officerId, body)
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
@@ -115,12 +122,11 @@ export class NotificationsService {
     return this.mapToDto(updated)
   }
 
-  mapToDto(notification: Notification): SendNotificationResponseDto {
-    const { id, officer, createdAt, callScope } = notification
+  mapToDto(notification: Notification): SendNotificationResDto {
+    const { id, officer, createdAt } = notification
     return {
       id,
       createdAt,
-      callScope,
       officer: this.officersService.mapToDto(officer),
     }
   }

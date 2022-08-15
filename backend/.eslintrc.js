@@ -16,12 +16,21 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'simple-import-sort', 'import'],
   root: true,
-  ignorePatterns: ['.eslintrc.js', 'jest.config.ts', '/src/scripts/*'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'jest.config.ts',
+    '/src/scripts/*',
+    'jest-testcontainers-config.js',
+    'jest.env.js',
+  ],
   rules: {
     'no-console': 'warn',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', ignoreRestSiblings: true },
+    ],
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
@@ -35,5 +44,30 @@ module.exports = {
         },
       },
     ],
+    // Rules for auto sort of imports
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [
+          // Side effect imports.
+          ['^\\u0000'],
+          // Packages.
+          // Things that start with a letter (or digit or underscore), or
+          // `@` followed by a letter.
+          ['^@?\\w'],
+          // Absolute imports, must include `/` and cannot include `@`
+          ['^([\\w-]+)/'],
+          // Parent imports. Put `..` last.
+          ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+        ],
+      },
+    ],
+    'simple-import-sort/exports': 'error',
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
+    'import/no-extraneous-dependencies': 'error',
   },
 }

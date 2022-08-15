@@ -10,12 +10,19 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerDto, OfficerWhoamiDto } from 'officers/dto'
-import { AuthOfficerService } from './auth-officer.service'
-import { ConfigService, Logger } from 'core/providers'
-import { OtpAuthVerifyDto } from './dto/otp-auth-verify.dto'
 import { OfficerId } from 'common/decorators'
+import { ConfigService, Logger } from 'core/providers'
+
+import { getRequestIp } from '../common/utils'
 import { OfficersService } from '../officers/officers.service'
+
+import { AuthOfficerService } from './auth-officer.service'
+
+import {
+  GetOtpReqDto,
+  OfficerWhoamiResDto,
+  VerifyOtpReqDto,
+} from '~shared/types/api'
 
 @Controller('auth-officers')
 export class AuthOfficerController {
@@ -27,10 +34,14 @@ export class AuthOfficerController {
   ) {}
 
   @Post()
-  async sendOTP(@Body() body: OfficerDto): Promise<void> {
+  async sendOTP(
+    @Body() body: GetOtpReqDto,
+    @Req() req: Request,
+  ): Promise<void> {
     const { email } = body
     try {
-      return await this.authOfficerService.sendOtp(email)
+      const ipAddress = getRequestIp(req)
+      return await this.authOfficerService.sendOtp(email, ipAddress)
     } catch (err) {
       throw new BadRequestException(
         err instanceof Error ? err.message : 'Failed to send OTP',
@@ -40,7 +51,7 @@ export class AuthOfficerController {
 
   @Post('verify')
   async verifyOTP(
-    @Body() body: OtpAuthVerifyDto,
+    @Body() body: VerifyOtpReqDto,
     @Req() req: Request,
   ): Promise<void> {
     const { email, otp } = body
@@ -49,16 +60,16 @@ export class AuthOfficerController {
   }
 
   @Get('whoami')
-  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiDto> {
+  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiResDto> {
     if (!officerId) {
-      return { message: 'No logged in officer' }
+      return { authenticated: false, message: 'No logged in officer' }
     }
     const officer = await this.officersService.findById(officerId)
     if (!officer) {
       throw new NotFoundException('No officer with this officer ID found')
     }
-    const { email } = officer
-    return { email }
+    const { email, agency } = officer
+    return { authenticated: true, email, agencyShortName: agency.id }
   }
 
   @Post('logout')

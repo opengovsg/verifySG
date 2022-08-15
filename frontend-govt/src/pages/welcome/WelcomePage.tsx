@@ -1,11 +1,11 @@
 import { BiPlus } from 'react-icons/bi'
 import { useHistory } from 'react-router-dom'
 import { Image, Text, VStack } from '@chakra-ui/react'
+import { PROFILE_ROUTE } from '@constants/routes'
 import { Button } from '@opengovsg/design-system-react'
 
-import WelcomeSplash from '../../assets/WelcomeSplash.svg'
-import HeaderContainer from '../../components/HeaderContainer'
-import { PROFILE_ROUTE } from '../../constants/routes'
+import WelcomeSplash from '@/assets/WelcomeSplash.svg'
+import HeaderContainer from '@/components/HeaderContainer'
 
 export const WelcomePage: React.FC = () => {
   const history = useHistory()

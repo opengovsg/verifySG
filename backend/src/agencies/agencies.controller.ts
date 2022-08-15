@@ -1,19 +1,20 @@
 import {
   BadRequestException,
-  NotFoundException,
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Put,
+  NotFoundException,
   Param,
+  Post,
+  Put,
   UseGuards,
 } from '@nestjs/common'
-import { AgenciesService } from './agencies.service'
-import { CreateAgencyDto, UpdateAgencyDto } from './dto'
 
 import { AuthAdminGuard } from 'auth-admin/guards/auth-admin.guard'
 import { Agency } from 'database/entities/agency.entity'
+
+import { AgenciesService } from './agencies.service'
+import { CreateAgencyReqDto, UpdateAgencyReqDto } from './dto'
 
 @UseGuards(AuthAdminGuard)
 @Controller('agencies')
@@ -21,7 +22,7 @@ export class AgenciesController {
   constructor(private readonly agencyService: AgenciesService) {}
 
   @Post()
-  async create(@Body() createAgencyDto: CreateAgencyDto): Promise<Agency> {
+  async create(@Body() createAgencyDto: CreateAgencyReqDto): Promise<Agency> {
     try {
       return await this.agencyService.createAgency(createAgencyDto)
     } catch (err) {
@@ -49,7 +50,7 @@ export class AgenciesController {
   @Put(':id')
   async update(
     @Param('id') agencyId: string,
-    @Body() updateAgencyDto: UpdateAgencyDto,
+    @Body() updateAgencyDto: UpdateAgencyReqDto,
   ): Promise<Agency> {
     try {
       return await this.agencyService.updateAgency(agencyId, updateAgencyDto)

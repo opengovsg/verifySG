@@ -3,13 +3,14 @@ import { BiLogOutCircle, BiUser } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useHistory } from 'react-router-dom'
 import { Flex, HStack, Image, TabList, Tabs } from '@chakra-ui/react'
+import { NOTIFICATIONFORM_ROUTE, PROFILE_ROUTE } from '@constants/routes'
 import { Tab } from '@opengovsg/design-system-react'
+import { OfficerService } from '@services/OfficerService'
 
-import Logo from '../../assets/CheckWhoLogo.svg'
-import { NOTIFICATIONFORM_ROUTE, PROFILE_ROUTE } from '../../constants/routes'
-import { useAuth } from '../../contexts/auth/AuthContext'
-import { OfficerService } from '../../services/OfficerService'
 import Avatar from '../Avatar'
+
+import Logo from '@/assets/CheckWhoLogo.svg'
+import { useAuth } from '@/contexts/auth/AuthContext'
 
 interface NavlinkProps {
   label: string
@@ -18,13 +19,9 @@ interface NavlinkProps {
 
 interface HeaderProps {
   navlinks?: Array<NavlinkProps>
-  navbarHeight: string
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  navlinks,
-  navbarHeight = '8vh',
-}) => {
+export const Header: React.FC<HeaderProps> = ({ navlinks }) => {
   const history = useHistory()
   const [officerName, setOfficerName] = useState<string | undefined>()
 
@@ -39,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <Flex
-      h={navbarHeight}
+      py="0.5rem"
       w="100vw"
       borderBottom="1px solid"
       borderBottomColor="#DADEE3"
