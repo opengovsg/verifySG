@@ -2,8 +2,9 @@ import { createContext, useContext } from 'react'
 
 interface AuthContext {
   isAuthenticated: boolean | undefined
-  officer: string
-  getOfficer: () => Promise<void>
+  officerEmail: string
+  officerAgency: string
+  initOfficerInfo: () => Promise<void>
   logout: () => Promise<void>
 }
 

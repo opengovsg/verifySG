@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 
 interface NotificationDataContext {
   targetNRIC: string | undefined
-  setTargetNRIC: (nric: string | undefined) => void
+  setTargetNRIC: (nric: string) => void
 }
 
 // specify defaults for notification context
