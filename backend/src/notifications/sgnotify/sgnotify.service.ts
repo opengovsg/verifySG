@@ -21,6 +21,7 @@ import {
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
   NOTIFICATION_ENDPOINT,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
+  NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from './constants'
@@ -133,6 +134,7 @@ export class SGNotifyService {
             Payload sent: ${sgNotifyParams}
             Error: ${error}`,
           )
+          // ask user to inform us of this error as it means something wrong with the params supplied
           throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
         },
       )
@@ -178,8 +180,9 @@ export class SGNotifyService {
         Payload received: ${jwe}
         Error: ${error}`,
       )
-      throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
-      // no need to throw ServiceUnavailable Exception as this error arises after notification is sent
+      // different error message since this (1) happens after notification is sent; (2) but is still consequential as requestId is not updated (function halts prematurely)
+      // as such, asked user to contact us if they see this
+      throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
     })) as NotificationResPayload
     return {
       ...sgNotifyParams,

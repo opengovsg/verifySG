@@ -15,4 +15,7 @@ export const NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE =
   'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.'
 
 export const NOTIFICATION_REQUEST_ERROR_MESSAGE =
-  'Error with notification request. Please contact us if you encounter this error.' // displayed on frontend
+  'Unable to send notification due a problem with notification request. Please contact us if you encounter this error.'
+
+export const NOTIFICATION_RESPONSE_ERROR_MESSAGE =
+  'Your notification has been sent but we encountered an error. Please contact us if you encounter this error.'
