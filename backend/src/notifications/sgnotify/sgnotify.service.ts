@@ -75,7 +75,8 @@ export class SGNotifyService {
       .get<GetSGNotifyJwksDto>(PUBLIC_KEY_ENDPOINT)
       .catch((error) => {
         this.logger.error(
-          `Error when getting public key from SGNotify discovery endpoint.\nError: ${error}`,
+          `Error when getting public key from SGNotify discovery endpoint.
+          Error: ${error}`,
         )
         throw new InternalServerErrorException(
           '`Error when getting public key from SGNotify discovery endpoint.`',
@@ -85,7 +86,8 @@ export class SGNotifyService {
     const encKeyJwk = data.keys.find((key) => key.use === 'enc')
     if (!sigKeyJwk || !encKeyJwk) {
       this.logger.error(
-        `Either signature or encryption key not found in SGNotify discovery endpoint.\nRetrieved data: ${data}`,
+        `Either signature or encryption key not found in SGNotify discovery endpoint.
+        Received data: ${data}`,
       )
       throw new InternalServerErrorException(
         'Either signature or encryption key not found in SGNotify discovery endpoint',
@@ -125,11 +127,11 @@ export class SGNotifyService {
     const { modalityParams: sgNotifyParams } = notification
     const notificationRequestPayload =
       await convertParamsToNotificationRequestPayload(sgNotifyParams).catch(
-        (e) => {
+        (error) => {
           this.logger.error(
             `Error when converting notification params to SGNotify request payload.
             Payload sent: ${sgNotifyParams}
-            Error: ${e}`,
+            Error: ${error}`,
           )
           throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
         },
@@ -172,7 +174,9 @@ export class SGNotifyService {
       jwe,
     ).catch((error) => {
       this.logger.error(
-        `Error when decrypting and verifying notification response payload.\nError: ${error}`,
+        `Error when decrypting and verifying notification response payload.
+        Payload received: ${jwe}
+        Error: ${error}`,
       )
       throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
       // no need to throw ServiceUnavailable Exception as this error arises after notification is sent
@@ -222,7 +226,9 @@ export class SGNotifyService {
         }
         // catch residual errors; besides 401,other errors cannot be meaningfully handled on our side
         this.logger.error(
-          `Error when getting authz token from SGNotify.\nError: ${error}`,
+          `Error when getting authz token from SGNotify.
+          authJweObject: ${authJweObject}
+          Error: ${error}`,
         )
         // throw same error regardless of error type
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
@@ -247,7 +253,6 @@ export class SGNotifyService {
   async decryptAndVerifyPayload(
     encryptedPayload: string,
   ): Promise<SGNotifyResPayload> {
-    // TODO: error handling if decryption fails for some reason
     const { plaintext } = await jose.compactDecrypt(
       encryptedPayload,
       this.ecPrivateKey,
