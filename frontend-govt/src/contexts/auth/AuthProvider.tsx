@@ -29,7 +29,9 @@ export const AuthProvider = ({ children }: AuthProps) => {
       .catch((error: AxiosError) => {
         toast({
           title: 'Error',
-          description: getApiErrorMessage(error),
+          description: `Something went wrong while calling whoami endpoint. ${getApiErrorMessage(
+            error,
+          )}`,
           status: 'warning',
         })
       })
@@ -49,7 +51,9 @@ export const AuthProvider = ({ children }: AuthProps) => {
       .catch((error: AxiosError) => {
         toast({
           title: 'Error',
-          description: getApiErrorMessage(error),
+          description: `Something went wrong while calling logout endpoint. ${getApiErrorMessage(
+            error,
+          )}`,
           status: 'warning',
         })
       })
