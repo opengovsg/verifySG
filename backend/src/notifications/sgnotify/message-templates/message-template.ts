@@ -152,9 +152,9 @@ export const generateNewSGNotifyParams = async (
   return sgNotifyParams
 }
 
-export const convertParamsToNotificationRequestPayload = async (
+export const convertParamsToNotificationRequestPayload = (
   sgNotifyParams: SGNotifyParams,
-): Promise<SGNotifyNotificationRequestPayload> => {
+): SGNotifyNotificationRequestPayload => {
   const {
     agencyLogoUrl,
     agencyShortName,

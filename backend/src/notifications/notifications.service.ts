@@ -18,6 +18,7 @@ import {
   generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
+import { NOTIFICATION_REQUEST_ERROR_MESSAGE } from './constants'
 
 import {
   SendNotificationReqDto,
@@ -88,9 +89,7 @@ export class NotificationsService {
         this.logger.error(
           `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
         )
-        throw new BadRequestException(
-          'Error with notification request. Please contact us if you encounter this error.', // displayed on frontend
-        )
+        throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
       }),
     })
     const addedNotification = await this.notificationRepository.save(

@@ -15,16 +15,15 @@ import {
   Notification,
   SGNotifyNotificationStatus,
 } from '../../database/entities'
-
 import {
   AUTHZ_ENDPOINT,
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
   NOTIFICATION_ENDPOINT,
-  NOTIFICATION_REQUEST_ERROR_MESSAGE,
   NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
-} from './constants'
+} from '../constants'
+
 import {
   AuthResPayload,
   GetSGNotifyJwksDto,
@@ -127,7 +126,7 @@ export class SGNotifyService {
   async sendNotification(notification: Notification): Promise<SGNotifyParams> {
     const { modalityParams: sgNotifyParams } = notification
     const notificationRequestPayload =
-      await convertParamsToNotificationRequestPayload(sgNotifyParams)
+      convertParamsToNotificationRequestPayload(sgNotifyParams)
     const [authzToken, jweObject] = await Promise.all([
       this.getAuthzToken(),
       this.signAndEncryptPayload(notificationRequestPayload),
