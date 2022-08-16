@@ -64,7 +64,7 @@ export const OTPForm: React.FC<OTPFormProps> = ({ email, onSubmit }) => {
 
   // handle OTP resending
   const resendOTP = () => {
-    AuthService.getOtp({ email })
+    void AuthService.getOtp({ email })
     setResendTimer(RESEND_WAIT_TIME / 1000)
     setCanResend(false)
   }
