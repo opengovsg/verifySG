@@ -65,7 +65,6 @@ const useNotificationForm = () => {
   const history = useHistory()
   const { officerAgency } = useAuth()
 
-  // handle submission logic
   const { data: messageTemplates, isLoading } = useQuery(
     ['messageTemplates'], // query key must be in array in React 18
     MessageTemplateService.getMessageTemplates,
@@ -96,10 +95,6 @@ const useNotificationForm = () => {
       (option) => option.value === targetValue,
     )
     return option ?? null
-  }
-
-  const isMessageTemplateChosen = (selectedOption: string): boolean => {
-    return !!getMessageTemplateOptionByValue(selectedOption)
   }
 
   const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
@@ -148,11 +143,6 @@ const useNotificationForm = () => {
     })
   }
 
-  const msgTemplateValidation = {
-    validate: (value: string) =>
-      isMessageTemplateChosen(value) || 'Please select a message template',
-  }
-
   const onSubmit = handleSubmit(submissionHandler)
 
   const templateParams = getSGNotifyMessageTemplateParamsByMsgTemplateKey(
@@ -165,7 +155,6 @@ const useNotificationForm = () => {
     onSubmit,
     clearInputs,
     templateParams,
-    msgTemplateValidation,
     formMethods,
     messageTemplateOptions,
     isLoading,
@@ -179,7 +168,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
     onSubmit,
     clearInputs,
     templateParams,
-    msgTemplateValidation,
     formMethods,
     messageTemplateOptions,
     isLoading,
@@ -259,7 +247,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <TemplateSelectionMenu
                     control={control}
                     messageTemplateOptions={messageTemplateOptions}
-                    msgTemplateValidation={msgTemplateValidation}
                     getMessageTemplateOptionByValue={
                       getMessageTemplateOptionByValue
                     }
@@ -308,9 +295,6 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 interface TemplateSelectionMenuProps {
   control: Control<NotificationFormData>
   messageTemplateOptions: MessageTemplateOption[]
-  msgTemplateValidation: {
-    validate: (value: string) => true | 'Please select a message template'
-  }
   getMessageTemplateOptionByValue: (
     target: string,
   ) => MessageTemplateOption | null
@@ -319,14 +303,12 @@ interface TemplateSelectionMenuProps {
 const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
   control,
   messageTemplateOptions,
-  msgTemplateValidation,
   getMessageTemplateOptionByValue,
 }) => {
   return (
     <Controller
       name="msgTemplateKey"
       control={control}
-      rules={msgTemplateValidation}
       render={({
         field: {
           onChange: controllerOnChange,
