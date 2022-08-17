@@ -91,8 +91,11 @@ const useNotificationForm = () => {
 
   const getMessageTemplateOptionByValue = (
     targetValue: string,
-  ): MessageTemplateOption | undefined => {
-    return messageTemplateOptions.find((option) => option.value === targetValue)
+  ): MessageTemplateOption | null => {
+    const option = messageTemplateOptions.find(
+      (option) => option.value === targetValue,
+    )
+    return option ?? null
   }
 
   const isMessageTemplateChosen = (selectedOption: string): boolean => {
@@ -310,7 +313,7 @@ interface TemplateSelectionMenuProps {
   }
   getMessageTemplateOptionByValue: (
     target: string,
-  ) => MessageTemplateOption | undefined
+  ) => MessageTemplateOption | null
 }
 
 const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
