@@ -14,3 +14,10 @@ export const OfficerAgency = createParamDecorator(
     return request.session.officerAgency
   },
 )
+
+export const OfficerEmail = createParamDecorator(
+  (_data: never, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest() as Request
+    return request.session.officerEmail
+  },
+)

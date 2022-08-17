@@ -3,14 +3,13 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Post,
   Req,
   Res,
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerId } from 'common/decorators'
+import { OfficerAgency, OfficerEmail, OfficerId } from 'common/decorators'
 import { ConfigService, Logger } from 'core/providers'
 
 import { getRequestIp } from '../common/utils'
@@ -58,21 +57,25 @@ export class AuthOfficerController {
     const officer = await this.authOfficerService.verifyOtp(email, otp)
     if (officer) {
       req.session.officerId = officer.id
+      req.session.officerEmail = officer.email
       req.session.officerAgency = officer.agency.id
     }
   }
 
   @Get('whoami')
-  async whoami(@OfficerId() officerId: number): Promise<OfficerWhoamiResDto> {
+  async whoami(
+    @OfficerId() officerId: number,
+    @OfficerEmail() officerEmail: string,
+    @OfficerAgency() officerAgency: string,
+  ): Promise<OfficerWhoamiResDto> {
     if (!officerId) {
       return { authenticated: false, message: 'No logged in officer' }
     }
-    const officer = await this.officersService.findById(officerId)
-    if (!officer) {
-      throw new NotFoundException('No officer with this officer ID found')
+    return {
+      authenticated: true,
+      email: officerEmail,
+      agencyShortName: officerAgency,
     }
-    const { email, agency } = officer
-    return { authenticated: true, email, agencyShortName: agency.id }
   }
 
   @Post('logout')
