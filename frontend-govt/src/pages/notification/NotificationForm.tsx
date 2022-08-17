@@ -139,12 +139,8 @@ const useNotificationForm = () => {
           history.push(FEEDBACKFORM_ROUTE)
           return
         }
-        reset(
-          { nric: '' },
-          {
-            keepValues: false,
-          },
-        )
+        // upon successful notification, reset NRIC but keep selected message template
+        setValue('nric', '')
       },
     })
   }
