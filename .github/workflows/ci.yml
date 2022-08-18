@@ -6,8 +6,8 @@ on:
 env:
   PRODUCTION_BRANCH: refs/heads/master
   STAGING_BRANCH: refs/heads/staging
-  EB_STAGING_APPLICATION: checkwho-staging-application
-  EB_STAGING_ENVIRONMENT: checkwho-staging-environment
+  EB_STAGING_APPLICATION: Checkwho-staging-2
+  EB_STAGING_ENVIRONMENT: Checkwhostaging2-env
   EB_PRODUCTION_APPLICATION: checkwho-production-application
   EB_PRODUCTION_ENVIRONMENT: checkwho-production-environment
 jobs:
