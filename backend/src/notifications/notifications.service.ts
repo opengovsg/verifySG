@@ -6,7 +6,6 @@ import {
   ModalityParams,
   Notification,
   NotificationType,
-  Officer,
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
@@ -46,19 +45,27 @@ export class NotificationsService {
 
   /**
    * Create a new notification and insert into database
-   * @param officerId officer sending the notification
+   * @param officerId officer sending the notification from session
+   * @param officerAgency agency of officer sending the notification from session
    * @param notificationBody params for notification (call scope and nric for now)
    * @return created notification if successful, else throw error
    */
   async createNotification(
     officerId: number,
+    officerAgency: string,
     notificationBody: SendNotificationReqDto,
   ): Promise<Notification | null> {
     const { msgTemplateKey, nric } = notificationBody
-    const officer = await this.validateCreateNotificationArgs(
-      officerId,
-      msgTemplateKey,
-    )
+    const isMessageTemplateValid =
+      await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
+        msgTemplateKey,
+        officerAgency,
+      )
+    if (!isMessageTemplateValid)
+      // either message template does not exist OR belongs to a different agency
+      throw new BadRequestException('Provided message template invalid')
+    const officer = await this.officersService.findById(officerId)
+    if (!officer) throw new BadRequestException('Officer not found')
     if (!officer.name || !officer.position)
       throw new BadRequestException('Officer must have name and position')
     const normalizedNric = normalizeNric(nric)
@@ -97,26 +104,6 @@ export class NotificationsService {
     )
     return this.findById(addedNotification.id)
   }
-  // return Officer to save one db query
-  async validateCreateNotificationArgs(
-    officerId: number,
-    msgTemplateKey: string,
-  ): Promise<Officer> {
-    const officer = await this.officersService.findById(officerId)
-    if (!officer) throw new BadRequestException('Officer not found')
-    const { agency } = await this.officersService.mapToDto(officer)
-    const { id: agencyId } = agency
-    const isMessageTemplateValid =
-      await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
-        msgTemplateKey,
-        agencyId,
-      )
-    if (!isMessageTemplateValid) {
-      // either message template does not exist OR belongs to a different agency
-      throw new BadRequestException('Provided message template invalid')
-    }
-    return officer
-  }
 
   /**
    * Update previously created notification.
@@ -148,13 +135,19 @@ export class NotificationsService {
    * Insert notification into database, sends notification to user, and updates notification status based on response
    *
    * @param officerId id of officer creating the call from session
+   * @param officerAgency agency of officer sending the notification from sessionkl
    * @param body contains callScope and nric from frontend
    */
   async sendNotification(
     officerId: number,
+    officerAgency: string,
     body: SendNotificationReqDto,
   ): Promise<SendNotificationResDto> {
-    const inserted = await this.createNotification(officerId, body)
+    const inserted = await this.createNotification(
+      officerId,
+      officerAgency,
+      body,
+    )
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
       inserted,
