@@ -49,7 +49,6 @@ export const AppRouter = (): JSX.Element => {
         <PrivateRoute exact path={FEEDBACKFORM_ROUTE}>
           <FeedbackForm />
         </PrivateRoute>
-        {/* TODO: add 404 page */}
         <Route path="*">
           <Error404Page />
         </Route>
