@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-import { OfficerAgency, OfficerEmail, OfficerId } from 'common/decorators'
 import { ConfigService, Logger } from 'core/providers'
 
+import { OfficerInfo, OfficerInfoInterface } from '../common/decorators'
 import { getRequestIp } from '../common/utils'
 import { OfficersService } from '../officers/officers.service'
 
@@ -64,10 +64,9 @@ export class AuthOfficerController {
 
   @Get('whoami')
   async whoami(
-    @OfficerId() officerId: number,
-    @OfficerEmail() officerEmail: string,
-    @OfficerAgency() officerAgency: string,
+    @OfficerInfo() officerInfo: OfficerInfoInterface,
   ): Promise<OfficerWhoamiResDto> {
+    const { officerId, officerAgency, officerEmail } = officerInfo
     if (!officerId) {
       return { authenticated: false, message: 'No logged in officer' }
     }
