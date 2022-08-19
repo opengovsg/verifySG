@@ -17,7 +17,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          "The purpose of this call is to follow up on your recent feedback to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.",
+          'The purpose of this call is to follow up on your recent feedback to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.',
       },
     },
   },
@@ -43,7 +43,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          "The purpose of this call is to follow up on your recent police report to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller's identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.",
+          'The purpose of this call is to follow up on your recent police report to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.',
       },
     },
   },
@@ -56,7 +56,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          "The purpose of this call is to follow up on your recent feedback on OGP's services",
+          'The purpose of this call is to follow up on your recent feedback on OGP’s services.',
       },
     },
   },
@@ -69,7 +69,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          "This call is to let you know you've been an all-around great person!",
+          'This call is to let you know you’ve been an all-around great person!',
       },
     },
   },
@@ -95,7 +95,46 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          'This call is regarding your Jobs Growth Incentive (JGI) matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+          'This call is regarding Jobs Growth Incentive (JGI) matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+      },
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-hrp',
+    menu: 'Home Recovery Programme',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.',
+      },
+    },
+  },
+  {
+    agencyId: 'ECDA',
+    key: 'ecda-generic',
+    menu: 'Generic',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.',
+      },
+    },
+  },
+  {
+    agencyId: 'MSF',
+    key: 'msf-generic',
+    menu: 'Generic',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.',
       },
     },
   },
