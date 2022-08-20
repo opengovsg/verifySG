@@ -26,6 +26,7 @@ module.exports = {
   ],
   rules: {
     'no-console': 'warn',
+    '@typescript-eslint/no-floating-promises': ['error'],
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/member-delimiter-style': [
       'error',

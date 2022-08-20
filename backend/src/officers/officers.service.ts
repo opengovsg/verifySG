@@ -6,7 +6,7 @@ import { AgenciesService } from 'agencies/agencies.service'
 
 import { Officer } from '../database/entities'
 
-import { OfficerDto, UpdateOfficerResDto } from '~shared/types/api'
+import { OfficerDto, UpdateOfficerReqDto } from '~shared/types/api'
 import { normalizeEmail } from '~shared/utils/email'
 
 @Injectable()
@@ -49,7 +49,7 @@ export class OfficersService {
 
   async updateOfficer(
     id: number,
-    officerDetails: UpdateOfficerResDto,
+    officerDetails: UpdateOfficerReqDto,
   ): Promise<void> {
     const officerToUpdate = await this.officerRepository.findOneBy({ id })
     if (!officerToUpdate) {

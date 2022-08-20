@@ -7,8 +7,18 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
-  ignorePatterns: ['build', 'tsconfig.json', '.eslintrc.js'],
-  env: { es6: true },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.json',
+    sourceType: 'module',
+    ignorePatterns: [
+      'build',
+      'tsconfig.json',
+      '.eslintrc.js',
+      'config-overrides.js',
+    ],
+  },
+  env: { es6: true, node: true },
   root: true,
   settings: {
     react: {
@@ -33,6 +43,7 @@ module.exports = {
         },
       },
     ],
+    '@typescript-eslint/no-floating-promises': ['error'],
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     'no-console': 'warn',

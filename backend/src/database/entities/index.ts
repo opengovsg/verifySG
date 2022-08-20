@@ -1,4 +1,5 @@
 export * from './agency.entity'
+export * from './message-template.entity'
 export * from './notification.entity'
 export * from './officer.entity'
 export * from './otp.entity'

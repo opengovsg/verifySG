@@ -18,12 +18,6 @@ export const agenciesData: AgencyData[] = [
     emailDomains: ['spf.gov.sg'],
   },
   {
-    id: 'MSF',
-    name: 'Ministry of Ministry of Social and Family Development',
-    logoUrl: 'https://file.go.gov.sg/checkwho-msf-logo.png',
-    emailDomains: ['msf.gov.sg'],
-  },
-  {
     id: 'ECDA',
     name: 'Early Childhood Development Agency',
     logoUrl: 'https://file.go.gov.sg/checkwho-ecda-logo.png',
@@ -40,5 +34,11 @@ export const agenciesData: AgencyData[] = [
     name: 'Ministry of Health',
     logoUrl: 'https://file.go.gov.sg/moh-logo.png',
     emailDomains: ['moh.gov.sg'],
+  },
+  {
+    id: 'MSF',
+    name: 'Ministry of Social and Family Development',
+    logoUrl: 'https://file.go.gov.sg/checkwho-msf-logo.png',
+    emailDomains: ['msf.gov.sg'],
   },
 ]

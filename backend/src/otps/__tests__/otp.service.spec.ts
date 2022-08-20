@@ -55,7 +55,7 @@ describe('OtpService', () => {
     expect(logger).toBeDefined()
   })
 
-  it('otp happy path', async () => {
+  test('otp happy path', async () => {
     /*
      * User requests OTP
      * User submits valid OTP
@@ -80,7 +80,7 @@ describe('OtpService', () => {
     expect(otpAfterVerification).toBeNull() // otp is deleted after successful verification
   })
 
-  it('invalid otp path 1: invalid and retry', async () => {
+  test('invalid otp path 1: invalid and retry', async () => {
     /*
      * User requests OTP
      * User submits invalid OTP
@@ -104,7 +104,7 @@ describe('OtpService', () => {
     )
     expect(otpVerificationResult2).toBe(OTPVerificationResult.SUCCESS)
   })
-  it('invalid otp path 2: max attempts', async () => {
+  test('invalid otp path 2: max attempts', async () => {
     /*
      * User requests OTP
      * User submits invalid OTP 10 times
@@ -143,7 +143,7 @@ describe('OtpService', () => {
       OTPVerificationResult.MAX_ATTEMPTS_REACHED,
     )
   })
-  it('invalid otp path 3: expired otp', async () => {
+  test('invalid otp path 3: expired otp', async () => {
     /*
      * User requests OTP
      * User submits expired OTP
@@ -167,7 +167,7 @@ describe('OtpService', () => {
     expect(otpVerificationResult).toBe(OTPVerificationResult.EXPIRED_OTP)
     mockExpiredOtp.mockRestore()
   })
-  it('cannot find OTP in db scenario 1: hitting endpoint directly', async () => {
+  test('nonexistent OTP in db scenario 1: hitting endpoint directly', async () => {
     /* User submits OTP with no corresponding email in db
      * Scenario 1: user is hitting endpoint directly (suspicious!)
      * Expected result: User fails with OTPVerificationResult.INCORRECT_OTP
@@ -184,7 +184,7 @@ describe('OtpService', () => {
     expect(otpVerificationResult).toBe(OTPVerificationResult.INCORRECT_OTP)
     expect(logger.warn).toHaveBeenCalled()
   })
-  it('cannot find OTP in db scenario 2: two consecutive correct OTP submissions', async () => {
+  it('nonexistent OTP in db scenario 2: two consecutive correct OTP submissions', async () => {
     /* User submits OTP with no corresponding email in db
      * Scenario 2: user is submitting two consecutive correct OTPs
      * Expected result: User fails with OTPVerificationResult.INCORRECT_OTP
@@ -205,7 +205,7 @@ describe('OtpService', () => {
     )
     expect(logger.warn).toHaveBeenCalled()
   })
-  it('prev OTP invalidated by new OTP request', async () => {
+  test('prev OTP invalidated by new OTP request', async () => {
     /*
      * User requests OTP A
      * User requests new OTP B

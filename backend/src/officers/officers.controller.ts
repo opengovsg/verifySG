@@ -9,11 +9,12 @@ import {
 } from '@nestjs/common'
 
 import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
-import { OfficerId } from 'common/decorators'
+
+import { OfficerInfo, OfficerInfoInterface } from '../common/decorators'
 
 import { OfficersService } from './officers.service'
 
-import { OfficerResDto, UpdateOfficerResDto } from '~shared/types/api'
+import { OfficerResDto, UpdateOfficerReqDto } from '~shared/types/api'
 
 @Controller('officers')
 export class OfficersController {
@@ -21,8 +22,10 @@ export class OfficersController {
 
   @Get()
   @UseGuards(AuthOfficerGuard)
-  async getOfficer(@OfficerId() officerId: number): Promise<OfficerResDto> {
-    const officer = await this.officersService.findById(officerId)
+  async getOfficer(
+    @OfficerInfo() officerInfo: OfficerInfoInterface,
+  ): Promise<OfficerResDto> {
+    const officer = await this.officersService.findById(officerInfo.officerId)
     if (!officer) throw new NotFoundException('Officer not found')
     return this.officersService.mapToDto(officer)
   }
@@ -30,11 +33,14 @@ export class OfficersController {
   @Post('update')
   @UseGuards(AuthOfficerGuard)
   async updateOfficer(
-    @OfficerId() officerId: number,
-    @Body() officerDetails: UpdateOfficerResDto,
+    @OfficerInfo() officerInfo: OfficerInfoInterface,
+    @Body() officerDetails: UpdateOfficerReqDto,
   ): Promise<void> {
     try {
-      await this.officersService.updateOfficer(officerId, officerDetails)
+      await this.officersService.updateOfficer(
+        officerInfo.officerId,
+        officerDetails,
+      )
     } catch (err) {
       throw new BadRequestException(
         err instanceof Error ? err.message : 'Failed to update officer details',
