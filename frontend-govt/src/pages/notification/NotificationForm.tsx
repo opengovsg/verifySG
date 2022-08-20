@@ -143,7 +143,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                     },
                   })}
                   onBlur={() => {
-                    trigger('nric')
+                    void trigger('nric')
                   }}
                   onFocus={() => {
                     clearErrors('nric')

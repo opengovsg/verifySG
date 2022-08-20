@@ -16,8 +16,10 @@
     "jsx": "preserve",
     "incremental": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true
   },
-  "include": ["src"],
+  "include": ["src", ".eslintrc.js", "config-overrides.js"],
   "exclude": ["node_modules", "old"]
 }

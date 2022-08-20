@@ -21,7 +21,7 @@ import { theme } from '@/theme'
 import { EnvResDto } from '~shared/types/api'
 
 // If Sentry params are specified, init sentry.
-axios.get<EnvResDto>('/api/env').then((res) => {
+void axios.get<EnvResDto>('/api/env').then((res) => {
   const { dsn, env } = res.data
   if (dsn && env) {
     Sentry.init({
