@@ -1,22 +1,18 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
-import { InjectConnection } from '@nestjs/typeorm'
 import { TypeormStore } from 'connect-typeorm'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import session from 'express-session'
-import { Connection } from 'typeorm'
+import { DataSource } from 'typeorm'
 
 import { ConfigService } from 'core/providers'
 import { Session } from 'database/entities'
 
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
-  private middleware: RequestHandler
+  private readonly middleware: RequestHandler
 
-  constructor(
-    private config: ConfigService,
-    @InjectConnection() connection: Connection,
-  ) {
-    const sessionRepository = connection.getRepository(Session)
+  constructor(private config: ConfigService, private dataSource: DataSource) {
+    const sessionRepository = dataSource.getRepository(Session)
 
     this.middleware = session({
       resave: false,

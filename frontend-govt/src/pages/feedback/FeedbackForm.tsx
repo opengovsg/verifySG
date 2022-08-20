@@ -23,13 +23,13 @@ export const FeedbackForm: React.FC = () => {
     formUrl,
     nameFieldId,
     positionFieldId,
-    // TODO: add this after message template is implemented
-    // messageTemplateKeyFieldId,
+    messageTemplateKeyFieldId,
     nricFieldId,
   } = getFormMetadata(officerAgency)
 
   const [embedLink, setEmbedLink] = useState<string | undefined>()
-  const { targetNRIC, setTargetNRIC } = useNotificationData()
+  const { targetNRIC, setTargetNRIC, msgTemplateKey, setMsgTemplateKey } =
+    useNotificationData()
   const history = useHistory()
 
   const getPrefillLink = (ogLink: string, prefills: FormFieldPrefill[]) =>
@@ -63,12 +63,11 @@ export const FeedbackForm: React.FC = () => {
           value: targetNRIC,
         },
       ]
-      // if (messageTemplateKeyFieldId) prefills.push(
-      //   {
-      //     fieldId: messageTemplateKeyFieldId,
-      //     value: messageTemplateKey
-      //   }
-      // )
+      if (messageTemplateKeyFieldId)
+        prefills.push({
+          fieldId: messageTemplateKeyFieldId,
+          value: msgTemplateKey,
+        })
       setEmbedLink(getPrefillLink(formUrl, prefills))
     },
   })
@@ -76,6 +75,7 @@ export const FeedbackForm: React.FC = () => {
   const returnToNotificationForm = () => {
     // clear nric in notificationDataContext
     setTargetNRIC('')
+    setMsgTemplateKey('')
 
     // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)

@@ -9,11 +9,15 @@ import {
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
+import { Logger } from '../core/providers'
+import { MessageTemplatesService } from '../message-templates/message-templates.service'
+
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
+import { NOTIFICATION_REQUEST_ERROR_MESSAGE } from './constants'
 
 import {
   SendNotificationReqDto,
@@ -26,47 +30,74 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
+    private messageTemplatesService: MessageTemplatesService,
     private officersService: OfficersService,
     private sgNotifyService: SGNotifyService,
+    private logger: Logger,
   ) {}
 
   async findById(id: number): Promise<Notification | null> {
     return this.notificationRepository.findOne({
       where: { id },
-      relations: ['officer', 'officer.agency'],
+      relations: ['officer', 'officer.agency', 'messageTemplate'],
     })
   }
 
   /**
    * Create a new notification and insert into database
-   * @param officerId officer sending the notification
+   * @param officerId officer sending the notification from session
+   * @param officerAgency agency of officer sending the notification from session
    * @param notificationBody params for notification (call scope and nric for now)
    * @return created notification if successful, else throw error
    */
   async createNotification(
     officerId: number,
+    officerAgency: string,
     notificationBody: SendNotificationReqDto,
   ): Promise<Notification | null> {
-    const { nric } = notificationBody
-    const normalizedNric = normalizeNric(nric)
+    const { msgTemplateKey, nric } = notificationBody
+    const isMessageTemplateValid =
+      await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
+        msgTemplateKey,
+        officerAgency,
+      )
+    if (!isMessageTemplateValid)
+      // either message template does not exist OR belongs to a different agency
+      throw new BadRequestException('Provided message template invalid')
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException('Officer not found')
     if (!officer.name || !officer.position)
       throw new BadRequestException('Officer must have name and position')
+    const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
+    const { id: messageTemplateId, sgNotifyMessageTemplateParams } =
+      await this.messageTemplatesService.getSGNotifyMessageTemplateParams(
+        msgTemplateKey,
+      )
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
+      messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      modalityParams: generateNewSGNotifyParams(
-        logoUrl,
-        agencyName,
+      modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
-        agencyShortName,
-        officer.name,
-        officer.position,
-      ),
+        {
+          agencyShortName,
+          agencyName,
+          agencyLogoUrl: logoUrl,
+        },
+        {
+          officerName: officer.name,
+          officerPosition: officer.position,
+        },
+        sgNotifyMessageTemplateParams,
+      ).catch((e) => {
+        this.logger.error(
+          `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+        )
+        throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
+      }),
     })
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,
@@ -104,16 +135,22 @@ export class NotificationsService {
    * Insert notification into database, sends notification to user, and updates notification status based on response
    *
    * @param officerId id of officer creating the call from session
+   * @param officerAgency agency of officer sending the notification from sessionkl
    * @param body contains callScope and nric from frontend
    */
   async sendNotification(
     officerId: number,
+    officerAgency: string,
     body: SendNotificationReqDto,
   ): Promise<SendNotificationResDto> {
-    const inserted = await this.createNotification(officerId, body)
+    const inserted = await this.createNotification(
+      officerId,
+      officerAgency,
+      body,
+    )
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-      inserted,
+      inserted.modalityParams,
     )
     const updated = await this.updateNotification(
       inserted.id,
@@ -123,10 +160,11 @@ export class NotificationsService {
   }
 
   mapToDto(notification: Notification): SendNotificationResDto {
-    const { id, officer, createdAt } = notification
+    const { officer, createdAt, messageTemplate } = notification
     return {
-      id,
       createdAt,
+      messageTemplate:
+        this.messageTemplatesService.mapToResDto(messageTemplate),
       officer: this.officersService.mapToDto(officer),
     }
   }

@@ -1,12 +1,15 @@
 import { IsArray, IsString, IsUrl, MaxLength } from 'class-validator'
 import { JWTPayload } from 'jose'
 
+import { IsNric } from '~shared/decorators'
+
 export class SGNotifyNotificationRequestPayload implements JWTPayload {
   notification_req: SGNotifyNotificationRequest;
 
   [propName: string]: unknown
 }
 
+// a subset of SGNotifyParams
 export class SGNotifyNotificationRequest {
   @IsString()
   // TODO: convert into enum and use IsEnum()
@@ -36,8 +39,7 @@ export class SGNotifyNotificationRequest {
   @MaxLength(50)
   title: string
 
-  // TODO: use @IsNric() after https://github.com/opengovsg/CheckWho/pull/399 is merged in
-  @IsString()
+  @IsNric()
   uin: string
 
   @IsArray()

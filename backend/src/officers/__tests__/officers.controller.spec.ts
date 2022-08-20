@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { AgenciesService } from 'agencies/agencies.service'
 
 import { AuthOfficerGuard } from '../../auth-officer/guards/auth-officer.guard'
+import { OfficerInfoInterface } from '../../common/decorators'
 import { OfficersController } from '../officers.controller'
 import { OfficersService } from '../officers.service'
 
@@ -13,6 +14,18 @@ const mockOfficer = {
   email: 'benjamin_tan@spf.gov.sg',
   name: 'Benjamin Tan',
   position: 'Commissioner of Police',
+}
+
+const mockOfficerInfoDecoratorValid: OfficerInfoInterface = {
+  officerId: mockOfficer.id,
+  officerEmail: mockOfficer.email,
+  officerAgency: 'SPF',
+}
+
+const mockOfficerInfoDecoratorInvalid: OfficerInfoInterface = {
+  officerId: 123456,
+  officerEmail: 'not_exist@spf.gov.sg',
+  officerAgency: 'SPF',
 }
 
 describe('OfficersController', () => {
@@ -54,20 +67,20 @@ describe('OfficersController', () => {
   })
 
   it('should get officer by id', async () => {
-    const officer = await controller.getOfficer(mockOfficer.id)
+    const officer = await controller.getOfficer(mockOfficerInfoDecoratorValid)
     expect(mockOfficersService.findById).toHaveBeenCalledWith(mockOfficer.id)
     expect(officer).toEqual(mockOfficer)
   })
 
   it('should throw NotFoundException', async () => {
-    await expect(controller.getOfficer(123456)).rejects.toThrow(
-      NotFoundException,
-    )
+    await expect(
+      controller.getOfficer(mockOfficerInfoDecoratorInvalid),
+    ).rejects.toThrow(NotFoundException)
     expect(mockOfficersService.findById).toHaveBeenCalledWith(123456)
   })
 
   test('updateOfficer happy path', async () => {
-    await controller.updateOfficer(mockOfficer.id, {
+    await controller.updateOfficer(mockOfficerInfoDecoratorValid, {
       name: mockOfficer.name,
       position: mockOfficer.position,
     })
@@ -83,7 +96,7 @@ describe('OfficersController', () => {
 
   test('updateOfficer unhappy path', async () => {
     await expect(
-      controller.updateOfficer(123456, {
+      controller.updateOfficer(mockOfficerInfoDecoratorInvalid, {
         name: mockOfficer.name,
         position: mockOfficer.position,
       }),
