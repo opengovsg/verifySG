@@ -11,10 +11,7 @@ import { JWTPayload } from 'jose'
 
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
-import {
-  Notification,
-  SGNotifyNotificationStatus,
-} from '../../database/entities'
+import { SGNotifyNotificationStatus } from '../../database/entities'
 import {
   AUTHZ_ENDPOINT,
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
@@ -123,8 +120,9 @@ export class SGNotifyService {
    * @returns SGNotifyParams
    * (actual updating of db not done by this function)
    */
-  async sendNotification(notification: Notification): Promise<SGNotifyParams> {
-    const { modalityParams: sgNotifyParams } = notification
+  async sendNotification(
+    sgNotifyParams: SGNotifyParams,
+  ): Promise<SGNotifyParams> {
     const notificationRequestPayload =
       convertParamsToNotificationRequestPayload(sgNotifyParams)
     const [authzToken, jweObject] = await Promise.all([
@@ -148,9 +146,7 @@ export class SGNotifyService {
       .catch((error) => {
         // this is an expected error; user does not have Singpass mobile app installed
         if ((error as AxiosError).response?.status === 404) {
-          this.logger.log(
-            `NRIC ${notification.recipientId} provided not found.`,
-          )
+          this.logger.log(`NRIC ${sgNotifyParams.nric} provided not found.`)
           throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
         }
         // catch residual errors

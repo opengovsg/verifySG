@@ -150,7 +150,7 @@ export class NotificationsService {
     )
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-      inserted,
+      inserted.modalityParams,
     )
     const updated = await this.updateNotification(
       inserted.id,
