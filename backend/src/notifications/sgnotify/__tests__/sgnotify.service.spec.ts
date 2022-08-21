@@ -1,11 +1,22 @@
-import { InternalServerErrorException } from '@nestjs/common'
+import {
+  BadGatewayException,
+  BadRequestException,
+  InternalServerErrorException,
+  ServiceUnavailableException,
+} from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { rest } from 'msw'
 
 import { CoreModule } from '../../../core/core.module'
 import { Logger } from '../../../core/providers'
 import { mockValidSGNotifyParams } from '../../__tests__/notifications.service.spec'
-import { PUBLIC_KEY_ENDPOINT } from '../../constants'
+import {
+  NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
+  NOTIFICATION_ENDPOINT,
+  NOTIFICATION_RESPONSE_ERROR_MESSAGE,
+  PUBLIC_KEY_ENDPOINT,
+  SGNOTIFY_UNAVAILABLE_MESSAGE,
+} from '../../constants'
 import { AuthResPayload, NotificationResPayload } from '../dto'
 import { sgNotifyMockApi } from '../mock-server/handlers'
 import { server } from '../mock-server/server'
@@ -23,6 +34,14 @@ const mockNotificationResPayload: NotificationResPayload = {
   aud: 'aud',
   exp: 1,
   request_id: 'requestId',
+}
+
+const invalidNotificationResPayload: Omit<
+  NotificationResPayload,
+  'request_id'
+> = {
+  aud: 'aud',
+  exp: 1,
 }
 
 describe('SGNotifyService initialize', () => {
@@ -158,12 +177,103 @@ describe('SGNotifyService sendNotification', () => {
   afterAll(() => server.close())
 
   test('send notification happy path', async () => {
-    // await service.initialize()
     const mockDecryptAndVerify = jest
       .spyOn(service, 'decryptAndVerifyPayload')
       .mockResolvedValueOnce(mockAuthResPayload) // returned at the end of authz request
       .mockResolvedValueOnce(mockNotificationResPayload) // returned at the end of notification request
     await service.sendNotification(mockValidSGNotifyParams)
+    mockDecryptAndVerify.mockRestore()
+  })
+  test('expected 404 error: recipient NRIC does not have Singpass', async () => {
+    jest.spyOn(logger, 'log')
+    const mockDecryptAndVerify = jest
+      .spyOn(service, 'decryptAndVerifyPayload')
+      .mockResolvedValueOnce(mockAuthResPayload)
+    server.use(
+      rest.post(
+        sgNotifyMockApi(NOTIFICATION_ENDPOINT),
+        async (_req, res, ctx) => {
+          return res(
+            ctx.status(404),
+            ctx.json({
+              error: 'recipient NRIC does not have Singpass',
+            }),
+          )
+        },
+      ),
+    )
+    await expect(
+      service.sendNotification(mockValidSGNotifyParams),
+    ).rejects.toEqual(
+      new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE),
+    )
+    expect(logger.log).toHaveBeenCalled()
+    mockDecryptAndVerify.mockRestore()
+  })
+  test('unexpected error when calling notification endpoint', async () => {
+    jest.spyOn(logger, 'error')
+    const mockDecryptAndVerify = jest
+      .spyOn(service, 'decryptAndVerifyPayload')
+      .mockResolvedValueOnce(mockAuthResPayload)
+    server.use(
+      rest.post(
+        sgNotifyMockApi(NOTIFICATION_ENDPOINT),
+        async (_req, res, ctx) => {
+          return res(ctx.status(500), ctx.json({ error: 'unexpected error' }))
+        },
+      ),
+    )
+    await expect(
+      service.sendNotification(mockValidSGNotifyParams),
+    ).rejects.toEqual(
+      new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalled()
+    mockDecryptAndVerify.mockRestore()
+  })
+  test('error while decrypting authz token', async () => {
+    jest.spyOn(logger, 'error')
+    const mockDecryptAndVerify = jest
+      .spyOn(service, 'decryptAndVerifyPayload')
+      .mockRejectedValueOnce(new Error('error while decrypting authz token'))
+    await expect(
+      service.sendNotification(mockValidSGNotifyParams),
+    ).rejects.toEqual(
+      new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalled()
+    mockDecryptAndVerify.mockRestore()
+  })
+  test('error while decrypting notification response payload', async () => {
+    jest.spyOn(logger, 'error')
+    const mockDecryptAndVerify = jest
+      .spyOn(service, 'decryptAndVerifyPayload')
+      .mockResolvedValueOnce(mockAuthResPayload)
+      .mockRejectedValueOnce(
+        new Error('error while decrypting notification response payload'),
+      )
+    await expect(
+      service.sendNotification(mockValidSGNotifyParams),
+    ).rejects.toEqual(
+      new BadGatewayException(NOTIFICATION_RESPONSE_ERROR_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalled()
+    mockDecryptAndVerify.mockRestore()
+  })
+  it('should throw an error if notification response payload does not have request_id', async () => {
+    jest.spyOn(logger, 'error')
+    const mockDecryptAndVerify = jest
+      .spyOn(service, 'decryptAndVerifyPayload')
+      .mockResolvedValueOnce(mockAuthResPayload)
+      .mockResolvedValueOnce(
+        invalidNotificationResPayload as NotificationResPayload, // to induce error
+      )
+    await expect(
+      service.sendNotification(mockValidSGNotifyParams),
+    ).rejects.toEqual(
+      new BadGatewayException(NOTIFICATION_RESPONSE_ERROR_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalled()
     mockDecryptAndVerify.mockRestore()
   })
 })

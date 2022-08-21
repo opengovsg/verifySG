@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   BadRequestException,
   Injectable,
   InternalServerErrorException,
@@ -149,7 +150,6 @@ export class SGNotifyService {
     const {
       data: { jwe },
     } = await this.client
-      // TODO: mock this endpoint (catch different errors)
       .post<PostSGNotifyJweResDto>(
         NOTIFICATION_ENDPOINT,
         {
@@ -175,7 +175,6 @@ export class SGNotifyService {
         )
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
-    // TODO: mock failure to decrypt here
     const notificationResPayload = (await this.decryptAndVerifyPayload(
       jwe,
     ).catch((error) => {
@@ -186,7 +185,7 @@ export class SGNotifyService {
       )
       // different error message since this (1) happens after notification is sent; (2) but is still consequential as requestId is not updated (function halts prematurely)
       // as such, asked user to contact us if they see this
-      throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
+      throw new BadGatewayException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
     })) as NotificationResPayload
     if (!notificationResPayload.request_id) {
       this.logger.error(
@@ -194,7 +193,7 @@ export class SGNotifyService {
           notificationResPayload,
         )}`,
       )
-      throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
+      throw new BadGatewayException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
     }
     return {
       ...sgNotifyParams,
@@ -217,7 +216,6 @@ export class SGNotifyService {
       client_secret: clientSecret,
     })
     const { data } = await this.client
-      // TODO: mock this endpoint
       .post<PostSGNotifyAuthzResDto>(
         AUTHZ_ENDPOINT,
         {
@@ -249,7 +247,6 @@ export class SGNotifyService {
         // throw same error regardless of error type
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
-    // TODO: mock failure to decrypt here
     const authResPayload = (await this.decryptAndVerifyPayload(
       data.token,
     ).catch((error) => {
