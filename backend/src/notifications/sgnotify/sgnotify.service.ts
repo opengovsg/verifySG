@@ -9,6 +9,11 @@ import crypto from 'crypto'
 import * as jose from 'jose'
 import { JWTPayload } from 'jose'
 
+import {
+  CompactJWEHeaderParameters,
+  JWTHeaderParameters,
+} from 'jose/dist/types/types'
+
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
 import { SGNotifyNotificationStatus } from '../../database/entities'
@@ -84,7 +89,7 @@ export class SGNotifyService {
     if (!sigKeyJwk || !encKeyJwk) {
       this.logger.error(
         `Either signature or encryption key not found in SGNotify discovery endpoint.
-        Received data: ${data}`,
+        Received data: ${JSON.stringify(data)}`,
       )
       throw new InternalServerErrorException(
         'Either signature or encryption key not found in SGNotify discovery endpoint',
@@ -144,7 +149,7 @@ export class SGNotifyService {
     const {
       data: { jwe },
     } = await this.client
-      // mock this endpoint (catch different errors)
+      // TODO: mock this endpoint (catch different errors)
       .post<PostSGNotifyJweResDto>(
         NOTIFICATION_ENDPOINT,
         {
@@ -165,24 +170,32 @@ export class SGNotifyService {
         // catch residual errors
         this.logger.error(
           `Unexpected error when sending notification to SGNotify.
-          Payload sent:${notificationRequestPayload}
+          Payload sent:${JSON.stringify(notificationRequestPayload)}
           Error: ${error}`,
         )
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
-    // mock failure to decrypt here
+    // TODO: mock failure to decrypt here
     const notificationResPayload = (await this.decryptAndVerifyPayload(
       jwe,
     ).catch((error) => {
       this.logger.error(
         `Error when decrypting and verifying notification response payload.
-        Payload received: ${jwe}
+        Payload received: ${JSON.stringify(jwe)}
         Error: ${error}`,
       )
       // different error message since this (1) happens after notification is sent; (2) but is still consequential as requestId is not updated (function halts prematurely)
       // as such, asked user to contact us if they see this
       throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
     })) as NotificationResPayload
+    if (!notificationResPayload.request_id) {
+      this.logger.error(
+        `Successfully decrypted notificationResPayload, but request_id not found. ${JSON.stringify(
+          notificationResPayload,
+        )}`,
+      )
+      throw new BadRequestException(NOTIFICATION_RESPONSE_ERROR_MESSAGE)
+    }
     return {
       ...sgNotifyParams,
       requestId: notificationResPayload.request_id,
@@ -204,7 +217,7 @@ export class SGNotifyService {
       client_secret: clientSecret,
     })
     const { data } = await this.client
-      // mock this endpoint
+      // TODO: mock this endpoint
       .post<PostSGNotifyAuthzResDto>(
         AUTHZ_ENDPOINT,
         {
@@ -236,13 +249,13 @@ export class SGNotifyService {
         // throw same error regardless of error type
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
-    // mock failure to decrypt here
+    // TODO: mock failure to decrypt here
     const authResPayload = (await this.decryptAndVerifyPayload(
       data.token,
     ).catch((error) => {
       this.logger.error(
         `Error when decrypting and verifying authz token.
-        token: ${data.token}
+        token: ${JSON.stringify(data.token)}
         Error: ${error}`,
       )
       throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
@@ -257,16 +270,11 @@ export class SGNotifyService {
   async decryptAndVerifyPayload(
     encryptedPayload: string,
   ): Promise<SGNotifyResPayload> {
-    const { plaintext } = await jose.compactDecrypt(
+    return decryptAndVerifyPayloadStatic(
       encryptedPayload,
       this.ecPrivateKey,
-    )
-    const signedJWT = new TextDecoder().decode(plaintext)
-    const { payload } = await jose.jwtVerify(
-      signedJWT,
       this.SGNotifyPublicKeySig,
     )
-    return payload as SGNotifyResPayload
   }
 
   /**
@@ -275,21 +283,53 @@ export class SGNotifyService {
    */
   async signAndEncryptPayload(payload: JWTPayload): Promise<string> {
     const { eServiceId } = this.config
-    const signedJWT = await new jose.SignJWT(payload)
-      .setExpirationTime('2m')
-      .setProtectedHeader({
+    return encryptAndSignPayloadStatic(
+      payload,
+      '2m',
+      {
         typ: 'JWT',
         alg: 'ES256',
         kid: eServiceId,
-      })
-      .sign(this.ecPrivateKey)
-
-    return await new jose.CompactEncrypt(new TextEncoder().encode(signedJWT))
-      .setProtectedHeader({
+      },
+      {
         alg: 'ECDH-ES+A256KW',
         enc: 'A256GCM',
         cty: 'JWT',
-      })
-      .encrypt(this.SGNotifyPublicKeyEnc)
+      },
+      this.ecPrivateKey,
+      this.SGNotifyPublicKeyEnc,
+    )
   }
+}
+
+// extracted out for ease of testing in the future
+export const decryptAndVerifyPayloadStatic = async (
+  encryptedPayload: string,
+  ecPrivateKey: Key,
+  publicKey: Key,
+) => {
+  const { plaintext } = await jose.compactDecrypt(
+    encryptedPayload,
+    ecPrivateKey,
+  )
+  const signedJWT = new TextDecoder().decode(plaintext)
+  const { payload } = await jose.jwtVerify(signedJWT, publicKey)
+  return payload as SGNotifyResPayload
+}
+
+export const encryptAndSignPayloadStatic = async (
+  payload: JWTPayload,
+  expirationTime: string,
+  jwtHeaderParameters: JWTHeaderParameters,
+  jweHeaderParameters: CompactJWEHeaderParameters,
+  ecPrivateKey: Key,
+  publicKey: Key,
+) => {
+  const signedJWT = await new jose.SignJWT(payload)
+    .setExpirationTime(expirationTime)
+    .setProtectedHeader(jwtHeaderParameters)
+    .sign(ecPrivateKey)
+  return await new jose.CompactEncrypt(new TextEncoder().encode(signedJWT))
+    .setProtectedHeader(jweHeaderParameters)
+    .encrypt(publicKey)
 }

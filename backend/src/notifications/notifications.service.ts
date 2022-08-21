@@ -57,6 +57,7 @@ export class NotificationsService {
   ): Promise<Notification | null> {
     const { msgTemplateKey, nric } = notificationBody
     const isMessageTemplateValid =
+      // mock failure here
       await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
         msgTemplateKey,
         officerAgency,
@@ -80,6 +81,7 @@ export class NotificationsService {
       messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
+      // mock failure here
       modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
         {
@@ -149,6 +151,7 @@ export class NotificationsService {
       body,
     )
     if (!inserted) throw new BadRequestException('Notification not created')
+    // mock failure here
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
       inserted.modalityParams,
     )

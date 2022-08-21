@@ -23,6 +23,19 @@ import { SGNotifyService } from '../sgnotify/sgnotify.service'
 import { SendNotificationReqDto } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils'
 
+export const mockValidSGNotifyParams: SGNotifyParams = {
+  agencyShortName: 'SPF',
+  agencyLogoUrl: 'https://file.go.gov.sg/spf-logo.png',
+  title: 'Notification title',
+  shortMessage: 'Notification short message',
+  nric: 'S1234567D',
+  templateId: SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+  sgNotifyLongMessageParams: {
+    param: 'value',
+  },
+  status: SGNotifyNotificationStatus.NOT_SENT,
+}
+
 describe('NotificationsService', () => {
   let service: NotificationsService
   let repository: Repository<Notification>
@@ -68,20 +81,6 @@ describe('NotificationsService', () => {
   const mockSendNotificationReqDto: SendNotificationReqDto = {
     nric: 'S1234567D',
     msgTemplateKey: mockMessageTemplate.key,
-  }
-
-  const mockValidSGNotifyParams: SGNotifyParams = {
-    agencyShortName: 'SPF',
-    agencyLogoUrl: 'https://file.go.gov.sg/spf-logo.png',
-    title: 'Notification title',
-    shortMessage: 'Notification short message',
-    nric: 'S1234567D',
-    templateId:
-      SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
-    sgNotifyLongMessageParams: {
-      param: 'value',
-    },
-    status: SGNotifyNotificationStatus.NOT_SENT,
   }
 
   beforeAll(async () => {

@@ -10,7 +10,7 @@ export const NOTIFICATION_RESPONSE_ERROR_MESSAGE =
 export const PUBLIC_KEY_ENDPOINT = '/.well-known/ntf-authz-keys'
 
 // send post request to trigger notification
-export const NOTIFICATION_ENDPOINT = 'v1/notification/requests'
+export const NOTIFICATION_ENDPOINT = '/v1/notification/requests'
 
 export const AUTHZ_ENDPOINT = '/v1/oauth2/token'
 

@@ -4,10 +4,26 @@ import { rest } from 'msw'
 
 import { CoreModule } from '../../../core/core.module'
 import { ConfigService, Logger } from '../../../core/providers'
+import { mockValidSGNotifyParams } from '../../__tests__/notifications.service.spec'
 import { PUBLIC_KEY_ENDPOINT } from '../../constants'
+import { AuthResPayload, NotificationResPayload } from '../dto'
 import { sgNotifyMockApi } from '../mock-server/handlers'
 import { server } from '../mock-server/server'
 import { SGNotifyService } from '../sgnotify.service'
+
+const mockAuthResPayload: AuthResPayload = {
+  access_token: 'accessToken',
+  aud: 'aud',
+  exp: 1,
+  token_type: 'tokenType',
+  scope: 'scope',
+}
+
+const mockNotificationResPayload: NotificationResPayload = {
+  aud: 'aud',
+  exp: 1,
+  request_id: 'requestId',
+}
 
 describe('SGNotifyService', () => {
   let service: SGNotifyService
@@ -79,32 +95,35 @@ describe('SGNotifyService', () => {
     it('should log error and throw exception if something goes wrong while importing public keys', async () => {
       jest.spyOn(logger, 'error')
       server.use(
-        rest.get(sgNotifyMockApi(PUBLIC_KEY_ENDPOINT), async (_, res, ctx) => {
-          return res(
-            // purposely omitted required fields to cause error
-            ctx.json({
-              keys: [
-                {
-                  kty: 'EC',
-                  use: 'sig',
-                  crv: 'P-256',
-                  kid: 'ntf-stg-01',
-                  x: '',
-                  y: '',
-                },
-                {
-                  kty: 'EC',
-                  use: 'enc',
-                  crv: 'P-256',
-                  kid: 'ntf-stg-01',
-                  x: '',
-                  y: '',
-                  alg: 'ECDH-ES+A256KW',
-                },
-              ],
-            }),
-          )
-        }),
+        rest.get(
+          sgNotifyMockApi(PUBLIC_KEY_ENDPOINT),
+          async (_req, res, ctx) => {
+            return res(
+              // purposely omitted required fields to cause error
+              ctx.json({
+                keys: [
+                  {
+                    kty: 'EC',
+                    use: 'sig',
+                    crv: 'P-256',
+                    kid: 'ntf-stg-01',
+                    x: '',
+                    y: '',
+                  },
+                  {
+                    kty: 'EC',
+                    use: 'enc',
+                    crv: 'P-256',
+                    kid: 'ntf-stg-01',
+                    x: '',
+                    y: '',
+                    alg: 'ECDH-ES+A256KW',
+                  },
+                ],
+              }),
+            )
+          },
+        ),
       )
       await expect(service.initialize()).rejects.toEqual(
         new InternalServerErrorException(
@@ -115,6 +134,14 @@ describe('SGNotifyService', () => {
     })
   })
   describe('sendNotification', () => {
-    // TODO
+    test('send notification happy path', async () => {
+      await service.initialize()
+      const mockDecryptAndVerify = jest
+        .spyOn(service, 'decryptAndVerifyPayload')
+        .mockResolvedValueOnce(mockAuthResPayload) // returned at the end of authz request
+        .mockResolvedValueOnce(mockNotificationResPayload) // returned at the end of notification request
+      await service.sendNotification(mockValidSGNotifyParams)
+      mockDecryptAndVerify.mockRestore()
+    })
   })
 })

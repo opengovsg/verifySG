@@ -39,12 +39,20 @@ export const handlers = [
       }),
     )
   }),
+  // TODO: figure out SGNotify's crypto set up and mock a version with keys that are actually internally coherent
   rest.post(sgNotifyMockApi(NOTIFICATION_ENDPOINT), async (_req, res, ctx) => {
-    // TODO
-    return res(ctx.json({}))
+    return res(
+      ctx.json({
+        jwe: {},
+      }),
+    )
   }),
   rest.post(sgNotifyMockApi(AUTHZ_ENDPOINT), async (_req, res, ctx) => {
     // TODO
-    return res(ctx.json({}))
+    return res(
+      ctx.json({
+        token: {},
+      }),
+    )
   }),
 ]
