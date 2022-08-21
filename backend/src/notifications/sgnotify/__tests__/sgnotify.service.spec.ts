@@ -1,7 +1,6 @@
 import {
   BadGatewayException,
   BadRequestException,
-  InternalServerErrorException,
   ServiceUnavailableException,
 } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
@@ -15,6 +14,9 @@ import {
   NOTIFICATION_ENDPOINT,
   NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
+  PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR,
+  PUBLIC_KEY_IMPORT_ERROR,
+  PUBLIC_KEY_NOT_FOUND_ERROR,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from '../../constants'
 import { AuthResPayload, NotificationResPayload } from '../dto'
@@ -84,9 +86,7 @@ describe('SGNotifyService initialize', () => {
       }),
     )
     await expect(service.initialize()).rejects.toEqual(
-      new InternalServerErrorException(
-        'Error when getting public key from SGNotify discovery endpoint.',
-      ),
+      new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR),
     )
     expect(logger.error).toHaveBeenCalled()
   })
@@ -102,9 +102,7 @@ describe('SGNotifyService initialize', () => {
       }),
     )
     await expect(service.initialize()).rejects.toEqual(
-      new InternalServerErrorException(
-        'Either signature or encryption key not found in SGNotify discovery endpoint',
-      ),
+      new BadGatewayException(PUBLIC_KEY_NOT_FOUND_ERROR),
     )
     expect(logger.error).toHaveBeenCalled()
   })
@@ -139,9 +137,7 @@ describe('SGNotifyService initialize', () => {
       }),
     )
     await expect(service.initialize()).rejects.toEqual(
-      new InternalServerErrorException(
-        'Error when importing public key from SGNotify discovery endpoint',
-      ),
+      new BadGatewayException(PUBLIC_KEY_IMPORT_ERROR),
     )
     expect(logger.error).toHaveBeenCalled()
   })

@@ -2,7 +2,6 @@ import {
   BadGatewayException,
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   ServiceUnavailableException,
 } from '@nestjs/common'
 import axios, { AxiosError, AxiosInstance } from 'axios'
@@ -24,6 +23,9 @@ import {
   NOTIFICATION_ENDPOINT,
   NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
+  PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR,
+  PUBLIC_KEY_IMPORT_ERROR,
+  PUBLIC_KEY_NOT_FOUND_ERROR,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from '../constants'
 
@@ -81,9 +83,7 @@ export class SGNotifyService {
           `Error when getting public key from SGNotify discovery endpoint.
           Error: ${error}`,
         )
-        throw new InternalServerErrorException(
-          'Error when getting public key from SGNotify discovery endpoint.',
-        )
+        throw new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR)
       })
     const sigKeyJwk = data.keys.find((key) => key.use === 'sig')
     const encKeyJwk = data.keys.find((key) => key.use === 'enc')
@@ -92,9 +92,7 @@ export class SGNotifyService {
         `Either signature or encryption key not found in SGNotify discovery endpoint.
         Received data: ${JSON.stringify(data)}`,
       )
-      throw new InternalServerErrorException(
-        'Either signature or encryption key not found in SGNotify discovery endpoint',
-      )
+      throw new BadGatewayException(PUBLIC_KEY_NOT_FOUND_ERROR)
     }
     const [publicKeySig, publicKeyEnc] = await Promise.all([
       jose.importJWK(sigKeyJwk, 'ES256'),
@@ -106,9 +104,7 @@ export class SGNotifyService {
         Encryption key: ${JSON.stringify(encKeyJwk)}
         Error: ${error}`,
       )
-      throw new InternalServerErrorException(
-        'Error when importing public key from SGNotify discovery endpoint',
-      )
+      throw new BadGatewayException(PUBLIC_KEY_IMPORT_ERROR)
     })
     return [publicKeySig, publicKeyEnc]
   }

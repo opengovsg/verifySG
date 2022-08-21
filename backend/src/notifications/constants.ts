@@ -5,7 +5,7 @@ export const NOTIFICATION_REQUEST_ERROR_MESSAGE =
 export const NOTIFICATION_RESPONSE_ERROR_MESSAGE =
   'Your notification has been sent but we encountered an error. Please contact us if you encounter this error.'
 
-// SGNotify SGNotify SGNotify SGNotify SGNotify SGNotify SGNotify SGNotify API routes
+// SGNotify related constants
 // to get public keys for signature and encryption
 export const PUBLIC_KEY_ENDPOINT = '/.well-known/ntf-authz-keys'
 
@@ -20,3 +20,13 @@ export const SGNOTIFY_UNAVAILABLE_MESSAGE =
 
 export const NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE =
   'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.'
+
+// logger messages upon encountering errors
+export const PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR =
+  'Error when getting public key from SGNotify discovery endpoint.'
+
+export const PUBLIC_KEY_NOT_FOUND_ERROR =
+  'Either signature or encryption key not found in SGNotify discovery endpoint'
+
+export const PUBLIC_KEY_IMPORT_ERROR =
+  'Error when importing public key from SGNotify discovery endpoint'
