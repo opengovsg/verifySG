@@ -101,8 +101,8 @@ export class SGNotifyService {
     ]).catch((error) => {
       this.logger.error(
         `Error when importing public key from SGNotify discovery endpoint.
-        Signature key: ${sigKeyJwk}
-        Encryption key: ${encKeyJwk}
+        Signature key: ${JSON.stringify(sigKeyJwk)}
+        Encryption key: ${JSON.stringify(encKeyJwk)}
         Error: ${error}`,
       )
       throw new InternalServerErrorException(
@@ -236,14 +236,14 @@ export class SGNotifyService {
         if ((error as AxiosError).response?.status === 401) {
           this.logger.error(
             `SGNotify credentials are invalid.
-            authJweObject: ${authJweObject}
+            authJweObject: ${JSON.stringify(authJweObject)}
             Error: ${error}.`,
           )
         }
         // catch residual errors; besides 401,other errors cannot be meaningfully handled on our side
         this.logger.error(
           `Error when getting authz token from SGNotify.
-          authJweObject: ${authJweObject}
+          authJweObject: ${JSON.stringify(authJweObject)}
           Error: ${error}`,
         )
         // throw same error regardless of error type
