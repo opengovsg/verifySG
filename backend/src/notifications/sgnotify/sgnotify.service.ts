@@ -64,7 +64,7 @@ export class SGNotifyService {
 
   /**
    * Function that gets public key from SGNotify discovery endpoint and returns it as a JWK
-   * This is called only once during initialization
+   *This is called only once during initialization
    */
   async getPublicKeysSigEnc(): Promise<[Key, Key]> {
     // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
@@ -76,7 +76,7 @@ export class SGNotifyService {
           Error: ${error}`,
         )
         throw new InternalServerErrorException(
-          '`Error when getting public key from SGNotify discovery endpoint.`',
+          'Error when getting public key from SGNotify discovery endpoint.',
         )
       })
     const sigKeyJwk = data.keys.find((key) => key.use === 'sig')
@@ -90,8 +90,20 @@ export class SGNotifyService {
         'Either signature or encryption key not found in SGNotify discovery endpoint',
       )
     }
-    const publicKeySig = await jose.importJWK(sigKeyJwk, 'ES256')
-    const publicKeyEnc = await jose.importJWK(encKeyJwk, 'ES256')
+    const [publicKeySig, publicKeyEnc] = await Promise.all([
+      jose.importJWK(sigKeyJwk, 'ES256'),
+      jose.importJWK(encKeyJwk, 'ES256'),
+    ]).catch((error) => {
+      this.logger.error(
+        `Error when importing public key from SGNotify discovery endpoint.
+        Signature key: ${sigKeyJwk}
+        Encryption key: ${encKeyJwk}
+        Error: ${error}`,
+      )
+      throw new InternalServerErrorException(
+        'Error when importing public key from SGNotify discovery endpoint',
+      )
+    })
     return [publicKeySig, publicKeyEnc]
   }
 
@@ -132,6 +144,7 @@ export class SGNotifyService {
     const {
       data: { jwe },
     } = await this.client
+      // mock this endpoint (catch different errors)
       .post<PostSGNotifyJweResDto>(
         NOTIFICATION_ENDPOINT,
         {
@@ -157,6 +170,7 @@ export class SGNotifyService {
         )
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
+    // mock failure to decrypt here
     const notificationResPayload = (await this.decryptAndVerifyPayload(
       jwe,
     ).catch((error) => {
@@ -190,6 +204,7 @@ export class SGNotifyService {
       client_secret: clientSecret,
     })
     const { data } = await this.client
+      // mock this endpoint
       .post<PostSGNotifyAuthzResDto>(
         AUTHZ_ENDPOINT,
         {
@@ -221,6 +236,7 @@ export class SGNotifyService {
         // throw same error regardless of error type
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
+    // mock failure to decrypt here
     const authResPayload = (await this.decryptAndVerifyPayload(
       data.token,
     ).catch((error) => {
