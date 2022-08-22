@@ -17,7 +17,12 @@ import {
   generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
-import { NOTIFICATION_REQUEST_ERROR_MESSAGE } from './constants'
+import {
+  INVALID_MESSAGE_TEMPLATE,
+  NOTIFICATION_REQUEST_ERROR_MESSAGE,
+  OFFICER_NAME_AND_POSITION,
+  OFFICER_NOT_FOUND,
+} from './constants'
 
 import {
   SendNotificationReqDto,
@@ -57,18 +62,17 @@ export class NotificationsService {
   ): Promise<Notification | null> {
     const { msgTemplateKey, nric } = notificationBody
     const isMessageTemplateValid =
-      // mock failure here
       await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
         msgTemplateKey,
         officerAgency,
       )
     if (!isMessageTemplateValid)
       // either message template does not exist OR belongs to a different agency
-      throw new BadRequestException('Provided message template invalid')
+      throw new BadRequestException(INVALID_MESSAGE_TEMPLATE)
     const officer = await this.officersService.findById(officerId)
-    if (!officer) throw new BadRequestException('Officer not found')
+    if (!officer) throw new BadRequestException(OFFICER_NOT_FOUND)
     if (!officer.name || !officer.position)
-      throw new BadRequestException('Officer must have name and position')
+      throw new BadRequestException(OFFICER_NAME_AND_POSITION)
     const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
@@ -81,7 +85,7 @@ export class NotificationsService {
       messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      // mock failure here
+      // TODO: mock failure here
       modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
         {
@@ -151,7 +155,7 @@ export class NotificationsService {
       body,
     )
     if (!inserted) throw new BadRequestException('Notification not created')
-    // mock failure here
+    // TODO: mock failure here
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
       inserted.modalityParams,
     )

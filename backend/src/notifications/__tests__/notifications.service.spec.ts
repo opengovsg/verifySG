@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest'
+import { BadRequestException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -10,12 +11,19 @@ import {
   Agency,
   MessageTemplate,
   Notification,
+  NotificationType,
   Officer,
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { MessageTemplatesService } from '../../message-templates/message-templates.service'
 import { OfficersService } from '../../officers/officers.service'
+import {
+  INVALID_MESSAGE_TEMPLATE,
+  NOTIFICATION_REQUEST_ERROR_MESSAGE,
+  OFFICER_NAME_AND_POSITION,
+  OFFICER_NOT_FOUND,
+} from '../constants'
 import { NotificationsService } from '../notifications.service'
 import { SGNotifyParams } from '../sgnotify/message-templates/message-template'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
@@ -143,10 +151,206 @@ describe('NotificationsService', () => {
     expect(logger).toBeDefined()
   })
   describe('createNotification', () => {
-    it('should create notification successfully', async () => {
-      // TODO
+    test('create notification happy path', async () => {
+      const createdNotification = await service.createNotification(
+        mockOfficer.id,
+        mockOfficer.agency.id,
+        mockSendNotificationReqDto,
+      )
+      // this passes even for partial match; thus not all fields are added
+      expect(createdNotification).toMatchObject({
+        id: expect.any(Number),
+        notificationType: NotificationType.SGNOTIFY,
+        status: SGNotifyNotificationStatus.NOT_SENT,
+        recipientId: mockSendNotificationReqDto.nric,
+        modalityParams: {
+          agencyLogoUrl: mockAgency.logoUrl,
+          agencyShortName: mockAgency.id,
+          nric: mockSendNotificationReqDto.nric,
+          templateId:
+            mockMessageTemplate.sgNotifyMessageTemplateParams.templateId,
+          sgNotifyLongMessageParams: {
+            agency: mockAgency.name,
+            call_details:
+              mockMessageTemplate.sgNotifyMessageTemplateParams
+                .longMessageParams.call_details,
+            officer_name: `<u>${mockOfficer.name}</u>`,
+            position: `<u>${mockOfficer.position}</u>`,
+          },
+        },
+        messageTemplate: {
+          id: mockMessageTemplate.id,
+          key: mockMessageTemplate.key,
+          menu: mockMessageTemplate.menu,
+          sgNotifyMessageTemplateParams: {
+            longMessageParams: {
+              call_details:
+                mockMessageTemplate.sgNotifyMessageTemplateParams
+                  .longMessageParams.call_details,
+            },
+            templateId:
+              mockMessageTemplate.sgNotifyMessageTemplateParams.templateId,
+          },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+          deletedAt: null,
+        },
+        officer: {
+          id: mockOfficer.id,
+          email: mockOfficer.email,
+          name: mockOfficer.name,
+          position: mockOfficer.position,
+          agency: {
+            id: mockAgency.id,
+            name: mockAgency.name,
+            logoUrl: mockAgency.logoUrl,
+            emailDomains: mockAgency.emailDomains,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+          },
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        deletedAt: null,
+      })
     })
-    // TODO: handle error cases
+    test('message template not in db', async () => {
+      const mockMessageTemplateNotInDb: MessageTemplate =
+        createMock<MessageTemplate>({
+          id: 2,
+          key: 'template_key_not_in_db',
+        })
+      const mockSendNotificationReqDtoNotInDb: SendNotificationReqDto = {
+        nric: 'S1234567D',
+        msgTemplateKey: mockMessageTemplateNotInDb.key,
+      }
+      await expect(
+        service.createNotification(
+          mockOfficer.id,
+          mockOfficer.agency.id,
+          mockSendNotificationReqDtoNotInDb,
+        ),
+      ).rejects.toEqual(new BadRequestException(INVALID_MESSAGE_TEMPLATE))
+    })
+    test('message template belongs to another agency', async () => {
+      const mockAnotherAgency: Agency = createMock<Agency>({
+        id: 'IRAS',
+        name: 'Inland Revenue Authority of Singapore',
+        emailDomains: ['iras.gov.sg'],
+      })
+      const mockMessageTemplateAnotherAgency: MessageTemplate =
+        createMock<MessageTemplate>({
+          id: 3,
+          key: 'template_key_another_agency',
+          agency: mockAnotherAgency,
+          menu: 'some menu',
+          sgNotifyMessageTemplateParams: {
+            templateId:
+              SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+            longMessageParams: {
+              call_details: 'blah',
+            },
+          },
+        })
+      const mockSendNotificationReqDtoAnotherAgency: SendNotificationReqDto = {
+        nric: 'S1234567D',
+        msgTemplateKey: mockMessageTemplateAnotherAgency.key,
+      }
+      await agenciesRepository.save(
+        Object.assign(new Agency(), mockAnotherAgency),
+      )
+      await messageTemplatesRepository.save(
+        Object.assign(new MessageTemplate(), mockMessageTemplateAnotherAgency),
+      )
+      await expect(
+        service.createNotification(
+          mockOfficer.id,
+          mockOfficer.agency.id,
+          mockSendNotificationReqDtoAnotherAgency,
+        ),
+      ).rejects.toEqual(new BadRequestException(INVALID_MESSAGE_TEMPLATE))
+    })
+    it('should throw error officer not found', async () => {
+      await expect(
+        service.createNotification(
+          mockOfficer.id + 123456,
+          mockOfficer.agency.id,
+          mockSendNotificationReqDto,
+        ),
+      ).rejects.toEqual(new BadRequestException(OFFICER_NOT_FOUND))
+    })
+    it('should throw error officer does not have name and position', async () => {
+      const mockOfficerWithoutNamePosition: Officer = createMock<Officer>({
+        id: 2,
+        email: 'benjamin_tan2@spf.gov.sg',
+        name: '',
+        position: '',
+        agency: mockAgency,
+      })
+      await officersRepository.save(
+        Object.assign(new Officer(), mockOfficerWithoutNamePosition),
+      )
+      await expect(
+        service.createNotification(
+          mockOfficerWithoutNamePosition.id,
+          mockOfficerWithoutNamePosition.agency.id,
+          mockSendNotificationReqDto,
+        ),
+      ).rejects.toEqual(new BadRequestException(OFFICER_NAME_AND_POSITION))
+    })
+  })
+  it('invalid SGNotifyParams: agency name too long', async () => {
+    const mockAgencyNameTooLong: Agency = createMock<Agency>({
+      id: 'MINISTRY OF SOCIAL AND FAMILY DEVELOPMENT FILLER FILLER FILLER FILLER', // need to be all caps because of db constraint
+      name: 'Ministry of Social and Family Development',
+      emailDomains: ['msf.gov.sg'],
+      logoUrl: 'https://file.go.gov.sg/msf-logo.png',
+    })
+    const mockMSFOfficer: Officer = createMock<Officer>({
+      id: 2,
+      email: 'benjamin_tan@msf.gov.sg',
+      name: 'Benjamin Tan',
+      position: 'Commissioner of Police',
+      agency: mockAgencyNameTooLong,
+    })
+
+    const mockMSFMessageTemplate: MessageTemplate = createMock<MessageTemplate>(
+      {
+        id: 2,
+        key: 'msf_template_key',
+        agency: mockAgencyNameTooLong,
+        menu: 'Option description in menu',
+        sgNotifyMessageTemplateParams: {
+          templateId:
+            SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+          longMessageParams: {
+            call_details: 'Call details',
+          },
+        },
+      },
+    )
+    await agenciesRepository.save(
+      Object.assign(new Agency(), mockAgencyNameTooLong),
+    )
+    await officersRepository.save(Object.assign(new Officer(), mockMSFOfficer))
+    await messageTemplatesRepository.save(
+      Object.assign(new MessageTemplate(), mockMSFMessageTemplate),
+    )
+    jest.spyOn(logger, 'error')
+    await expect(
+      service.createNotification(mockMSFOfficer.id, mockMSFOfficer.agency.id, {
+        nric: 'S1234567D',
+        msgTemplateKey: mockMSFMessageTemplate.key,
+      }),
+    ).rejects.toEqual(
+      new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining('Invalid parameters in notification request'),
+    )
   })
   describe('sendNotification', () => {
     it('should send notification successfully', async () => {

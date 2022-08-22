@@ -5,6 +5,12 @@ export const NOTIFICATION_REQUEST_ERROR_MESSAGE =
 export const NOTIFICATION_RESPONSE_ERROR_MESSAGE =
   'Your notification has been sent but we encountered an error. Please contact us if you encounter this error.'
 
+export const INVALID_MESSAGE_TEMPLATE = 'Provided message template invalid'
+
+export const OFFICER_NOT_FOUND = 'Officer not found'
+
+export const OFFICER_NAME_AND_POSITION = 'Officer must have name and position'
+
 // SGNotify related constants
 // to get public keys for signature and encryption
 export const PUBLIC_KEY_ENDPOINT = '/.well-known/ntf-authz-keys'
