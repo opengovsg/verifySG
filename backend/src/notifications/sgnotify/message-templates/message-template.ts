@@ -144,6 +144,7 @@ export const generateNewSGNotifyParams = async (
       break
     default:
       // strictly speaking untrue; we wish to avoid supporting specific templates as far as possible
+      // also, in terms of throwing error, this would've been caught in the above sgNotifyTitle and sgNotifyShortMessage functions
       throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
   await validateOrReject(sgNotifyParams).catch((errors) => {

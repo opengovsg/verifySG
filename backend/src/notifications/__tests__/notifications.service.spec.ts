@@ -302,6 +302,41 @@ describe('NotificationsService', () => {
       ).rejects.toEqual(new BadRequestException(OFFICER_NAME_AND_POSITION))
     })
   })
+  it('invalid SGNotifyParams: unsupported SGNotify template', async () => {
+    const mockMessageTemplateInvalidSGNotifyTemplate =
+      createMock<MessageTemplate>({
+        key: 'template_key_invalid_sgnotify_template',
+        agency: mockAgency,
+        menu: 'some menu',
+        sgNotifyMessageTemplateParams: {
+          templateId:
+            'unsupported_SGNotify_template' as SGNotifyMessageTemplateId,
+          longMessageParams: {
+            call_details: 'blah',
+          },
+        },
+      })
+    await messageTemplatesRepository.save(
+      Object.assign(
+        new MessageTemplate(),
+        mockMessageTemplateInvalidSGNotifyTemplate,
+      ),
+    )
+    jest.spyOn(logger, 'error')
+    await expect(
+      service.createNotification(mockOfficer.id, mockOfficer.agency.id, {
+        nric: 'S1234567D',
+        msgTemplateKey: mockMessageTemplateInvalidSGNotifyTemplate.key,
+      }),
+    ).rejects.toEqual(
+      new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE),
+    )
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `templateId: ${mockMessageTemplateInvalidSGNotifyTemplate.sgNotifyMessageTemplateParams.templateId}`,
+      ),
+    )
+  })
   it('invalid SGNotifyParams: agency name too long', async () => {
     const mockAgencyNameTooLong: Agency = createMock<Agency>({
       id: 'MINISTRY OF SOCIAL AND FAMILY DEVELOPMENT FILLER FILLER FILLER FILLER', // need to be all caps because of db constraint
