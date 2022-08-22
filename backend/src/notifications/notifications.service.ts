@@ -141,7 +141,7 @@ export class NotificationsService {
    * Insert notification into database, sends notification to user, and updates notification status based on response
    *
    * @param officerId id of officer creating the call from session
-   * @param officerAgency agency of officer sending the notification from sessionkl
+   * @param officerAgency agency of officer sending the notification from session
    * @param body contains callScope and nric from frontend
    */
   async sendNotification(
@@ -155,7 +155,6 @@ export class NotificationsService {
       body,
     )
     if (!inserted) throw new BadRequestException('Notification not created')
-    // TODO: mock failure here
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
       inserted.modalityParams,
     )

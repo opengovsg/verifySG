@@ -11,6 +11,7 @@ import {
   Agency,
   MessageTemplate,
   Notification,
+  NotificationStatus,
   NotificationType,
   Officer,
   SGNotifyNotificationStatus,
@@ -372,12 +373,84 @@ describe('NotificationsService', () => {
       expect(mockSGNotifySendSuccess).toHaveBeenCalled()
       mockSGNotifySendSuccess.mockRestore()
     })
+    // honestly, cannot conceive how this would happen; would throw error instead
+    test('throw error if insertion fails somehow', async () => {
+      const mockCreateNotificationReturnNull = jest
+        .spyOn(service, 'createNotification')
+        .mockResolvedValue(null)
+      await expect(
+        service.sendNotification(
+          mockOfficer.id,
+          mockAgency.id,
+          mockSendNotificationReqDto,
+        ),
+      ).rejects.toEqual(new BadRequestException('Notification not created'))
+      mockCreateNotificationReturnNull.mockRestore()
+    })
   })
-  // TODO: handle error cases
   describe('updateNotification', () => {
     it('should update notification successfully', async () => {
-      // TODO
+      // able to use this since earlier tests passed
+      const createdNotification = await service.createNotification(
+        mockOfficer.id,
+        mockOfficer.agency.id,
+        mockSendNotificationReqDto,
+      )
+      const mockSGNotifySendSuccess = jest
+        .spyOn(sgNotifyService, 'sendNotification')
+        .mockResolvedValue({
+          ...mockValidSGNotifyParams,
+          requestId: '123456',
+          sgNotifyLongMessageParams: {
+            ...mockValidSGNotifyParams.sgNotifyLongMessageParams,
+          },
+          status: SGNotifyNotificationStatus.SENT_BY_SERVER,
+        })
+      const modalityParamsUpdated = await sgNotifyService.sendNotification(
+        (createdNotification as Notification).modalityParams,
+      )
+      const updatedNotification = await service.updateNotification(
+        (createdNotification as Notification).id,
+        modalityParamsUpdated,
+      )
+      expect(updatedNotification.status).toEqual(NotificationStatus.SENT)
+      expect(updatedNotification.modalityParams).toEqual(modalityParamsUpdated)
+      mockSGNotifySendSuccess.mockRestore()
     })
-    // TODO: handle error cases
+    test('throw error if findById fails somehow', async () => {
+      const createdNotification = await service.createNotification(
+        mockOfficer.id,
+        mockOfficer.agency.id,
+        mockSendNotificationReqDto,
+      )
+      const mockSGNotifySendSuccess = jest
+        .spyOn(sgNotifyService, 'sendNotification')
+        .mockResolvedValue({
+          ...mockValidSGNotifyParams,
+          requestId: '123456',
+          sgNotifyLongMessageParams: {
+            ...mockValidSGNotifyParams.sgNotifyLongMessageParams,
+          },
+          status: SGNotifyNotificationStatus.SENT_BY_SERVER,
+        })
+      const modalityParamsUpdated = await sgNotifyService.sendNotification(
+        (createdNotification as Notification).modalityParams,
+      )
+      const mockFindByIdReturnNull = jest
+        .spyOn(service, 'findById')
+        .mockResolvedValue(null)
+      await expect(
+        service.updateNotification(
+          (createdNotification as Notification).id,
+          modalityParamsUpdated,
+        ),
+      ).rejects.toEqual(
+        new BadRequestException(
+          `Notification ${(createdNotification as Notification).id} not found`,
+        ),
+      )
+      mockSGNotifySendSuccess.mockRestore()
+      mockFindByIdReturnNull.mockRestore()
+    })
   })
 })
