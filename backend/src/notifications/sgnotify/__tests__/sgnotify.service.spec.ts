@@ -8,6 +8,7 @@ import { rest } from 'msw'
 
 import { CoreModule } from '../../../core/core.module'
 import { Logger } from '../../../core/providers'
+import { SGNotifyNotificationStatus } from '../../../database/entities'
 import { mockValidSGNotifyParams } from '../../__tests__/notifications.service.spec'
 import {
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
@@ -177,7 +178,14 @@ describe('SGNotifyService sendNotification', () => {
       .spyOn(service, 'decryptAndVerifyPayload')
       .mockResolvedValueOnce(mockAuthResPayload) // returned at the end of authz request
       .mockResolvedValueOnce(mockNotificationResPayload) // returned at the end of notification request
-    await service.sendNotification(mockValidSGNotifyParams)
+    const updatedModalityParams = await service.sendNotification(
+      mockValidSGNotifyParams,
+    )
+    expect(updatedModalityParams).toEqual({
+      ...mockValidSGNotifyParams,
+      requestId: mockNotificationResPayload.request_id,
+      status: SGNotifyNotificationStatus.SENT_BY_SERVER,
+    })
     mockDecryptAndVerify.mockRestore()
   })
   test('expected 404 error: recipient NRIC does not have Singpass', async () => {
