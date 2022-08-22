@@ -233,13 +233,14 @@ export class SGNotifyService {
             authJweObject: ${JSON.stringify(authJweObject)}
             Error: ${error}.`,
           )
-        }
-        // catch residual errors; besides 401,other errors cannot be meaningfully handled on our side
-        this.logger.error(
-          `Error when getting authz token from SGNotify.
+        } else {
+          // catch residual errors; besides 401, other errors cannot be meaningfully handled on our side
+          this.logger.error(
+            `Error when getting authz token from SGNotify.
           authJweObject: ${JSON.stringify(authJweObject)}
           Error: ${error}`,
-        )
+          )
+        }
         // throw same error regardless of error type
         throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
       })
@@ -258,7 +259,7 @@ export class SGNotifyService {
 
   /**
    * decrypt and verify encrypted payloads from SGNotify endpoint (used in both authz and notification endpoints)
-   * @return custom SGNotifyPayload that specifies the decrypted payload's shape
+   * @return custom SGNotifyResPayload that specifies the decrypted payload's shape
    */
   async decryptAndVerifyPayload(
     encryptedPayload: string,
@@ -271,7 +272,7 @@ export class SGNotifyService {
   }
 
   /**
-   * sign and encrpyt payload to be sent to SGNotify endpoint (used in both authz and notification endpoints)
+   * sign and encrypt payload to be sent to SGNotify endpoint (used in both authz and notification endpoints)
    * @return JWE object
    */
   async signAndEncryptPayload(payload: JWTPayload): Promise<string> {
