@@ -1,5 +1,6 @@
-import { Controller, Get, NotFoundException } from '@nestjs/common'
+import { Controller, Get, UseGuards } from '@nestjs/common'
 
+import { AuthOfficerGuard } from '../auth-officer/guards/auth-officer.guard'
 import { OfficerInfo, OfficerInfoInterface } from '../common/decorators'
 
 import { MessageTemplatesService } from './message-templates.service'
@@ -14,13 +15,11 @@ export class MessageTemplatesController {
    * Endpoint for frontend to call to get all message templates based on officer's agency
    */
   @Get()
+  @UseGuards(AuthOfficerGuard)
   async getAllMessageTemplatesByAgency(
     @OfficerInfo() officerInfo: OfficerInfoInterface,
   ): Promise<MessageTemplatesResDto> {
-    const { officerId, officerAgency } = officerInfo
-    if (!officerId || !officerAgency) {
-      throw new NotFoundException('Officer not logged in')
-    }
+    const { officerAgency } = officerInfo
     return await this.messageTemplatesService.getMessageTemplatesByAgencyId(
       officerAgency,
     )
