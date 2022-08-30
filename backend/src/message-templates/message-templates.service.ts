@@ -64,6 +64,7 @@ export class MessageTemplatesService {
       sgNotifyMessageTemplateParams,
     }
   }
+
   mapToResDto(
     messageTemplate: MessageTemplate,
   ): MessageTemplateSendNotificationResDto {

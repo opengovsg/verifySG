@@ -17,6 +17,11 @@ import {
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
+import {
+  mockAnotherAgency,
+  mockMessageTemplateAnotherAgency,
+  mockMessageTemplateNotInDb,
+} from '../../message-templates/__tests__/message-templates.service.spec'
 import { MessageTemplatesService } from '../../message-templates/message-templates.service'
 import { OfficersService } from '../../officers/officers.service'
 import {
@@ -128,6 +133,7 @@ describe('NotificationsService', () => {
     sgNotifyService = module.get<SGNotifyService>(SGNotifyService)
     logger = module.get<Logger>(Logger)
   })
+
   afterAll(async () => {
     await closeDatabase()
   })
@@ -151,6 +157,7 @@ describe('NotificationsService', () => {
     expect(sgNotifyService).toBeDefined()
     expect(logger).toBeDefined()
   })
+
   describe('createNotification', () => {
     test('create notification happy path', async () => {
       const createdNotification = await service.createNotification(
@@ -218,11 +225,6 @@ describe('NotificationsService', () => {
       })
     })
     test('message template not in db', async () => {
-      const mockMessageTemplateNotInDb: MessageTemplate =
-        createMock<MessageTemplate>({
-          id: 2,
-          key: 'template_key_not_in_db',
-        })
       const mockSendNotificationReqDtoNotInDb: SendNotificationReqDto = {
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateNotInDb.key,
@@ -236,25 +238,6 @@ describe('NotificationsService', () => {
       ).rejects.toEqual(new BadRequestException(INVALID_MESSAGE_TEMPLATE))
     })
     test('message template belongs to another agency', async () => {
-      const mockAnotherAgency: Agency = createMock<Agency>({
-        id: 'IRAS',
-        name: 'Inland Revenue Authority of Singapore',
-        emailDomains: ['iras.gov.sg'],
-      })
-      const mockMessageTemplateAnotherAgency: MessageTemplate =
-        createMock<MessageTemplate>({
-          id: 3,
-          key: 'template_key_another_agency',
-          agency: mockAnotherAgency,
-          menu: 'some menu',
-          sgNotifyMessageTemplateParams: {
-            templateId:
-              SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
-            longMessageParams: {
-              call_details: 'blah',
-            },
-          },
-        })
       const mockSendNotificationReqDtoAnotherAgency: SendNotificationReqDto = {
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateAnotherAgency.key,
@@ -388,6 +371,7 @@ describe('NotificationsService', () => {
       expect.stringContaining('Invalid parameters in notification request'),
     )
   })
+
   describe('sendNotification', () => {
     it('should send notification successfully', async () => {
       const mockSGNotifySendSuccess = jest
@@ -423,6 +407,7 @@ describe('NotificationsService', () => {
       mockCreateNotificationReturnNull.mockRestore()
     })
   })
+
   describe('updateNotification', () => {
     it('should update notification successfully', async () => {
       // able to use this since earlier tests passed

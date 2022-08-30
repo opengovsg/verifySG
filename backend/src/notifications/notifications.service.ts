@@ -85,7 +85,6 @@ export class NotificationsService {
       messageTemplate: { id: messageTemplateId },
       notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
-      // TODO: mock failure here
       modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
         {
