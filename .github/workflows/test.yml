@@ -1,0 +1,24 @@
+name: Hello from AWS
+
+on:
+  push:
+
+permissions:
+  id-token: write
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ap-southeast-1
+          role-to-assume: arn:aws:iam::770684653428:role/CheckWho-staging-github-actions-role-c7da184
+
+      # - name: Print AWS SSM Parameter
+      #   run: aws ssm get-parameter --name=hello_aws-gh-oidc --query Parameter.Value
+
+      - name: Print assumed role
+        run: aws sts get-caller-identity

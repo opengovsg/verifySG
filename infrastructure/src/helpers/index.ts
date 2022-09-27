@@ -1,5 +1,6 @@
 export * from './config'
 export * from './ecs'
+export * from './github'
 export * from './rds'
 // export * from './types'
 export * from './vpc'
