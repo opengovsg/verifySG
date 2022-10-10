@@ -53,7 +53,7 @@ const main = async () => {
   try {
     const dataSource = new DataSource(connectionConfig)
     await dataSource.initialize()
-    await createAgencies(dataSource)
+    await createAgencies(dataSource) // to skip when we only want to add new message templates
     await loadMessageTemplates(dataSource)
   } catch (e) {
     console.error(e)
