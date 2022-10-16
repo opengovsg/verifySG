@@ -17,11 +17,7 @@ import {
   SGNotifyNotificationStatus,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
-import {
-  mockAnotherAgency,
-  mockMessageTemplateAnotherAgency,
-  mockMessageTemplateNotInDb,
-} from '../../message-templates/__tests__/message-templates.service.spec'
+import { mockMessageTemplateNotInDb } from '../../message-templates/__tests__/message-templates.service.spec'
 import { MessageTemplatesService } from '../../message-templates/message-templates.service'
 import { OfficersService } from '../../officers/officers.service'
 import {
@@ -238,6 +234,25 @@ describe('NotificationsService', () => {
       ).rejects.toEqual(new BadRequestException(INVALID_MESSAGE_TEMPLATE))
     })
     test('message template belongs to another agency', async () => {
+      const mockAnotherAgency: Agency = createMock<Agency>({
+        id: 'IRAS',
+        name: 'Inland Revenue Authority of Singapore',
+        emailDomains: ['iras.gov.sg'],
+      })
+      const mockMessageTemplateAnotherAgency: MessageTemplate =
+        createMock<MessageTemplate>({
+          id: 3,
+          key: 'template_key_another_agency',
+          agency: mockAnotherAgency,
+          menu: 'some menu',
+          sgNotifyMessageTemplateParams: {
+            templateId:
+              SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
+            longMessageParams: {
+              call_details: 'blah',
+            },
+          },
+        })
       const mockSendNotificationReqDtoAnotherAgency: SendNotificationReqDto = {
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateAnotherAgency.key,
