@@ -23,9 +23,9 @@ import {
   NOTIFICATION_ENDPOINT,
   NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
-  PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR,
+  PUBLIC_KEY_ENDPOINT_UNAVAILABLE,
   PUBLIC_KEY_IMPORT_ERROR,
-  PUBLIC_KEY_NOT_FOUND_ERROR,
+  PUBLIC_KEY_NOT_FOUND,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from '../constants'
 
@@ -83,7 +83,7 @@ export class SGNotifyService {
           `Error when getting public key from SGNotify discovery endpoint.
           Error: ${error}`,
         )
-        throw new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR)
+        throw new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE)
       })
     const sigKeyJwk = data.keys.find((key) => key.use === 'sig')
     const encKeyJwk = data.keys.find((key) => key.use === 'enc')
@@ -92,7 +92,7 @@ export class SGNotifyService {
         `Either signature or encryption key not found in SGNotify discovery endpoint.
         Received data: ${JSON.stringify(data)}`,
       )
-      throw new BadGatewayException(PUBLIC_KEY_NOT_FOUND_ERROR)
+      throw new BadGatewayException(PUBLIC_KEY_NOT_FOUND)
     }
     const [publicKeySig, publicKeyEnc] = await Promise.all([
       jose.importJWK(sigKeyJwk, 'ES256'),

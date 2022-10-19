@@ -23,7 +23,7 @@ import { OfficersService } from '../../officers/officers.service'
 import {
   INVALID_MESSAGE_TEMPLATE,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
-  OFFICER_NAME_AND_POSITION,
+  OFFICER_MISSING_FIELDS,
   OFFICER_NOT_FOUND,
 } from '../constants'
 import { NotificationsService } from '../notifications.service'
@@ -297,7 +297,7 @@ describe('NotificationsService', () => {
           mockOfficerWithoutNamePosition.agency.id,
           mockSendNotificationReqDto,
         ),
-      ).rejects.toEqual(new BadRequestException(OFFICER_NAME_AND_POSITION))
+      ).rejects.toEqual(new BadRequestException(OFFICER_MISSING_FIELDS))
     })
   })
   it('invalid SGNotifyParams: unsupported SGNotify template', async () => {

@@ -15,9 +15,9 @@ import {
   NOTIFICATION_ENDPOINT,
   NOTIFICATION_RESPONSE_ERROR_MESSAGE,
   PUBLIC_KEY_ENDPOINT,
-  PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR,
+  PUBLIC_KEY_ENDPOINT_UNAVAILABLE,
   PUBLIC_KEY_IMPORT_ERROR,
-  PUBLIC_KEY_NOT_FOUND_ERROR,
+  PUBLIC_KEY_NOT_FOUND,
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from '../../constants'
 import { AuthResPayload, NotificationResPayload } from '../dto'
@@ -87,7 +87,7 @@ describe('SGNotifyService initialize', () => {
       }),
     )
     await expect(service.initialize()).rejects.toEqual(
-      new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE_ERROR),
+      new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE),
     )
     expect(logger.error).toHaveBeenCalled()
   })
@@ -103,7 +103,7 @@ describe('SGNotifyService initialize', () => {
       }),
     )
     await expect(service.initialize()).rejects.toEqual(
-      new BadGatewayException(PUBLIC_KEY_NOT_FOUND_ERROR),
+      new BadGatewayException(PUBLIC_KEY_NOT_FOUND),
     )
     expect(logger.error).toHaveBeenCalled()
   })

@@ -20,7 +20,7 @@ import {
 import {
   INVALID_MESSAGE_TEMPLATE,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
-  OFFICER_NAME_AND_POSITION,
+  OFFICER_MISSING_FIELDS,
   OFFICER_NOT_FOUND,
 } from './constants'
 
@@ -72,7 +72,7 @@ export class NotificationsService {
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException(OFFICER_NOT_FOUND)
     if (!officer.name || !officer.position)
-      throw new BadRequestException(OFFICER_NAME_AND_POSITION)
+      throw new BadRequestException(OFFICER_MISSING_FIELDS)
     const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
