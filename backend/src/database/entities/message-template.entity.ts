@@ -13,7 +13,10 @@ import {
 import { Agency } from './agency.entity'
 import { Notification } from './notification.entity'
 
-import { SGNotifyMessageTemplateParams } from '~shared/types/api'
+import {
+  SGNotifyMessageTemplateParams,
+  SmsMessageTemplateParams,
+} from '~shared/types/api'
 
 @Entity({ name: 'message_template' })
 export class MessageTemplate {
@@ -27,9 +30,11 @@ export class MessageTemplate {
   @Column('varchar', { nullable: false, length: 255 })
   menu: string // shown to public officer user to inform selection
 
-  // set at the SGNotify level, so if WhatsApp support, just add another column
   @Column('jsonb', { nullable: false })
   sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
+
+  @Column('jsonb', { nullable: false })
+  smsMessageTemplateParams: SmsMessageTemplateParams
 
   @OneToMany(() => Notification, (notification) => notification.messageTemplate)
   notifications: Notification[]

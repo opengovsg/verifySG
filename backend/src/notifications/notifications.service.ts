@@ -15,6 +15,7 @@ import { MessageTemplatesService } from '../message-templates/message-templates.
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
+  SGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import {
@@ -126,8 +127,9 @@ export class NotificationsService {
     if (!notificationToUpdate)
       throw new BadRequestException(`Notification ${notificationId} not found`)
     // ideally, should check type of notification is indeed SGNotify
-    const notificationStatus =
-      sgNotifyParamsStatusToNotificationStatusMapper(modalityParams)
+    const notificationStatus = sgNotifyParamsStatusToNotificationStatusMapper(
+      modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
+    )
     return await this.notificationRepository.save({
       ...notificationToUpdate,
       status: notificationStatus,
@@ -155,7 +157,7 @@ export class NotificationsService {
     )
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-      inserted.modalityParams,
+      inserted.modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
     )
     const updated = await this.updateNotification(
       inserted.id,

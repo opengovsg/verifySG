@@ -7,6 +7,11 @@ export interface SGNotifyMessageTemplateParams {
   longMessageParams: Record<string, string> // exclude params recorded elsewhere like agency and officer info
 }
 
+export interface SmsMessageTemplateParams {
+  // TODO
+  todo: string
+}
+
 export class MessageTemplateDto {
   @IsString()
   @IsLowercase()
