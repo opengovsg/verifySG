@@ -17,7 +17,12 @@ import {
   generateNewSGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
-import { NOTIFICATION_REQUEST_ERROR_MESSAGE } from './constants'
+import {
+  INVALID_MESSAGE_TEMPLATE,
+  NOTIFICATION_REQUEST_ERROR_MESSAGE,
+  OFFICER_MISSING_FIELDS,
+  OFFICER_NOT_FOUND,
+} from './constants'
 
 import {
   SendNotificationReqDto,
@@ -63,11 +68,11 @@ export class NotificationsService {
       )
     if (!isMessageTemplateValid)
       // either message template does not exist OR belongs to a different agency
-      throw new BadRequestException('Provided message template invalid')
+      throw new BadRequestException(INVALID_MESSAGE_TEMPLATE)
     const officer = await this.officersService.findById(officerId)
-    if (!officer) throw new BadRequestException('Officer not found')
+    if (!officer) throw new BadRequestException(OFFICER_NOT_FOUND)
     if (!officer.name || !officer.position)
-      throw new BadRequestException('Officer must have name and position')
+      throw new BadRequestException(OFFICER_MISSING_FIELDS)
     const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
@@ -135,7 +140,7 @@ export class NotificationsService {
    * Insert notification into database, sends notification to user, and updates notification status based on response
    *
    * @param officerId id of officer creating the call from session
-   * @param officerAgency agency of officer sending the notification from sessionkl
+   * @param officerAgency agency of officer sending the notification from session
    * @param body contains callScope and nric from frontend
    */
   async sendNotification(
