@@ -24,6 +24,9 @@ export interface ConfigSchema {
     numAllowedAttempts: number
     numSaltRounds: number
   }
+  // uniqueParams: {
+  //   expiryPeriod: number
+  // }
   postman: {
     apiUrl: string
     apiKey: string
@@ -174,6 +177,14 @@ export const schema: Schema<ConfigSchema> = {
       format: Number,
     },
   },
+  // uniqueParams: {
+  //   expiryPeriod: {
+  //     doc: 'Validity of unique params, expressed in ms',
+  //     env: 'UNIQUE_PARAMS_EXPIRY_PERIOD',
+  //     default: 3 * 24 * 60 * 60 * 1000, // 3 days (arbitrary)
+  //     format: Number,
+  //   },
+  // },
   postman: {
     apiUrl: {
       doc: 'API endpoint for Postman.gov.sg',

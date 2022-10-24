@@ -92,7 +92,7 @@ export class OtpService {
     }
     if (numOfAttempts >= this.config.numAllowedAttempts) {
       if (numOfAttempts < POSTGRES_MAX_SMALLINT)
-        await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
+        void this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
       return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)

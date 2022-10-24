@@ -25,7 +25,6 @@ export class UniqueParam {
   @PrimaryGeneratedColumn()
   id: number
 
-  // pretty sure 255 is long enough; if not long enough, we can increase it?
   @Column('varchar', { unique: true, nullable: false, length: 255 })
   uniqueParamString: string
 
