@@ -58,17 +58,20 @@ typings/
 # dotenv environment variables file
 .env
 
-# next.js build output
-.next
-
-# VS Code settings
-.vscode/settings.json
-
 # Typescript build
 build
 backend/build
 frontend/build
 *.tsbuildinfo
 
+# Playwright files
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# VS Code settings
+.vscode/settings.json
+
 # JetBrains IDEs' settings
 .idea
+
