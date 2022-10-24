@@ -6,7 +6,8 @@ import { Logger } from 'core/providers'
 
 import { Officer } from '../database/entities'
 import { OfficersService } from '../officers/officers.service'
-import { OtpService, OTPVerificationResult } from '../otps/otp.service'
+
+import { OtpService, OTPVerificationResult } from './otps/otp.service'
 
 import { normalizeEmail } from '~shared/utils/email'
 

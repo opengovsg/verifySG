@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { Logger } from '../core/providers'
-import { DisplayData, UniqueParam } from '../database/entities'
+import { Logger } from '../../core/providers'
+import { DisplayData, UniqueParam } from '../../database/entities'
 
 import { generateUniqueParamString } from './unique-param-utils'
 

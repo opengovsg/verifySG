@@ -5,8 +5,8 @@ import { Repository } from 'typeorm'
 import { ConfigSchema } from 'core/config.schema'
 import { ConfigService, Logger } from 'core/providers'
 
-import { convertMillisecondsToMinutes } from '../common/utils'
-import { OTP } from '../database/entities'
+import { convertMillisecondsToMinutes } from '../../common/utils'
+import { OTP } from '../../database/entities'
 
 import { otpUtils } from './utils'
 
