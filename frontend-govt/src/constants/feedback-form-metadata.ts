@@ -8,21 +8,21 @@ interface feedbackFormMetadata {
 }
 
 export const feedbackFormMetadataArray: feedbackFormMetadata[] = [
-  {
-    agencyId: 'MOH',
-    formUrl: 'https://form.gov.sg/62ecbb0629bc220012bb2faf',
-    nameFieldId: '623d285ee46e5c0012d70649',
-    positionFieldId: '623d286e012667001232b83f',
-    nricFieldId: '623d31820126670012345b40',
-  },
-  {
-    agencyId: 'IRAS',
-    formUrl: 'https://form.gov.sg/62ecb869b2788000130e2b62',
-    nameFieldId: '623d285ee46e5c0012d70649',
-    positionFieldId: '623d286e012667001232b83f',
-    messageTemplateKeyFieldId: '62f716eab0318200127cedb3',
-    nricFieldId: '623d31820126670012345b40',
-  },
+  // {
+  //   agencyId: 'MOH',
+  //   formUrl: 'https://form.gov.sg/62ecbb0629bc220012bb2faf',
+  //   nameFieldId: '623d285ee46e5c0012d70649',
+  //   positionFieldId: '623d286e012667001232b83f',
+  //   nricFieldId: '623d31820126670012345b40',
+  // },
+  // {
+  //   agencyId: 'IRAS',
+  //   formUrl: 'https://form.gov.sg/62ecb869b2788000130e2b62',
+  //   nameFieldId: '623d285ee46e5c0012d70649',
+  //   positionFieldId: '623d286e012667001232b83f',
+  //   messageTemplateKeyFieldId: '62f716eab0318200127cedb3',
+  //   nricFieldId: '623d31820126670012345b40',
+  // },
 ]
 
 export const getFormMetadata = (
