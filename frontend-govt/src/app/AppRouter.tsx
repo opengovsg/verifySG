@@ -14,6 +14,7 @@ import { PublicRoute } from './PublicRoute'
 
 import LoadingSpinner from '@/components/LoadingSpinner'
 import ProfileGuard from '@/components/ProfileGuard'
+import Error404Page from '@/pages/error'
 import FeedbackForm from '@/pages/feedback'
 import NotificationForm from '@/pages/notification'
 import ProfileForm from '@/pages/profile'
@@ -48,8 +49,9 @@ export const AppRouter = (): JSX.Element => {
         <PrivateRoute exact path={FEEDBACKFORM_ROUTE}>
           <FeedbackForm />
         </PrivateRoute>
-        {/* TODO: add 404 page */}
-        <Route path="*">404</Route>
+        <Route path="*">
+          <Error404Page />
+        </Route>
       </Switch>
     </Suspense>
   )

@@ -16,7 +16,7 @@ const mockOfficer = {
   position: 'Commissioner of Police',
 }
 
-const mockOfficerInfoDecoratorValid: OfficerInfoInterface = {
+export const mockOfficerInfoDecoratorValid: OfficerInfoInterface = {
   officerId: mockOfficer.id,
   officerEmail: mockOfficer.email,
   officerAgency: 'SPF',
@@ -62,6 +62,12 @@ describe('OfficersController', () => {
     controller = module.get<OfficersController>(OfficersController)
   })
 
+  afterEach(() => {
+    mockOfficersService.findById.mockClear()
+    mockOfficersService.mapToDto.mockClear()
+    mockOfficersService.updateOfficer.mockClear()
+  })
+
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
@@ -70,6 +76,7 @@ describe('OfficersController', () => {
     const officer = await controller.getOfficer(mockOfficerInfoDecoratorValid)
     expect(mockOfficersService.findById).toHaveBeenCalledWith(mockOfficer.id)
     expect(officer).toEqual(mockOfficer)
+    expect(mockOfficersService.mapToDto).toHaveBeenCalledWith(mockOfficer)
   })
 
   it('should throw NotFoundException', async () => {
@@ -77,6 +84,7 @@ describe('OfficersController', () => {
       controller.getOfficer(mockOfficerInfoDecoratorInvalid),
     ).rejects.toThrow(NotFoundException)
     expect(mockOfficersService.findById).toHaveBeenCalledWith(123456)
+    expect(mockOfficersService.mapToDto).not.toHaveBeenCalled()
   })
 
   test('updateOfficer happy path', async () => {
@@ -91,7 +99,8 @@ describe('OfficersController', () => {
         position: mockOfficer.position,
       },
     )
-    expect(mockOfficersService.mapToDto).toHaveBeenCalledWith(mockOfficer)
+    expect(mockOfficersService.mapToDto).not.toHaveBeenCalled()
+    expect(mockOfficersService.findById).not.toHaveBeenCalled()
   })
 
   test('updateOfficer unhappy path', async () => {

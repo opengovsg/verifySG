@@ -138,4 +138,30 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-hrp',
+    menu: 'Home Recovery Programme',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.',
+      },
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-covid-positive-missed-call',
+    menu: 'COVID-19 Positive Missed Call',
+    sgNotifyMessageTemplateParams: {
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'MOH is trying to contact you as you have been tested positive for COVID-19. Our earlier attempts to call you failed.  As it is crucial to gather some information from you, we will be calling you again within the next one hour. Thank you.',
+      },
+    },
+  },
 ]
