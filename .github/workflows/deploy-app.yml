@@ -110,10 +110,17 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Set env vars conditionally
+        run: |
+          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
+            echo "CHECKWHO_URL=https://staging.checkwho.gov.sg" >> $GITHUB_ENV
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
+            echo "CHECKWHO_URL=https://checkwho.gov.sg" >> $GITHUB_ENV
+          fi
       - name: Run Playwright tests
         env:
-          CHECKWHO_URL: ${{ github.ref == 'refs/heads/master' && 'https://checkwho.gov.sg/' || 'https://staging.checkwho.gov.sg/' }}
           TEST_EMAIL: 'internal-testing@open.gov.sg'
+          # encrypted env variable, thus cannot echo based on $STAGING_BRANCH or $PRODUCTION_BRANCH
           TEST_NRIC: ${{ github.ref == 'refs/heads/master' && secrets.TESTING_NRIC_PROD || secrets.TESTING_NRIC_STAGING }}
         run: npx playwright test
       - uses: actions/upload-artifact@v3
