@@ -95,7 +95,8 @@ jobs:
           region: ap-southeast-1
           version_description: ${{ github.SHA }}
           deployment_package: deploy.zip
-          wait_for_deployment: false
+          wait_for_environment_recovery: 300 # 5 minutes
+
   e2e-test:
     name: End-to-End Playwright Tests
     needs: deploy
