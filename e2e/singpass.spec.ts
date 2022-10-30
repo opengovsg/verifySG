@@ -1,12 +1,8 @@
 import { test, expect, Page } from '@playwright/test'
 
-import { gmailHelper } from './gmailHelper'
+import { checkwhoUrl } from './global-setup'
 
-const STAGING_URL = 'https://staging.checkwho.gov.sg'
-
-const checkwhoFromEmail = 'donotreply@mail.postman.gov.sg'
-const checkwhoUrl =
-  process.env.CHECKWHO_URL || STAGING_URL
+const testRecipientNric = process.env.TEST_NRIC
 
 let page: Page;
 
@@ -19,31 +15,8 @@ test.afterAll(async () => {
 });
 
 test.describe.serial('Test sending Singpass notification', () => {
-  const testEmail = process.env.TEST_EMAIL
-  const testRecipientNric = process.env.TEST_NRIC
-
-  test('Login page renders properly', async () => {
-    await page.goto(checkwhoUrl)
-    // check that title exists
-    await expect(page).toHaveTitle(/CheckWho/)
-    // check that staging banner exists if on staging version
-    if (checkwhoUrl === STAGING_URL) {
-      const stagingBanner = page.locator('text=Staging CheckWho')
-      await expect(stagingBanner).toBeVisible()
-    }
-  })
-
-  test('Log in using testing email and OTP', async () => {
-    // enter email address into
-    await page.locator('#email').fill(testEmail)
-    await page.getByRole('button', { name: 'Get OTP'}).click()
-    const otp = await gmailHelper.getOTP(checkwhoFromEmail, testEmail)
-    await page.locator('#otp').fill(otp)
-    await page.getByRole('button', { name: 'Log in'}).click()
-  })
-
   test('Send valid notification successfully', async () => {
-    // must use fill instead of type for lazy-loading
+    await page.goto(`${checkwhoUrl}/notification`)
     await page.locator('[name="nric"]').fill(testRecipientNric)
     // select message template
     await page.locator('.css-1d8n9bt').click()

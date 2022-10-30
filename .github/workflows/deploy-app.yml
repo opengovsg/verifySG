@@ -121,7 +121,7 @@ jobs:
       - name: Run Playwright tests
         env:
           TEST_EMAIL: 'internal-testing@open.gov.sg'
-          # encrypted env variable, thus cannot echo based on $STAGING_BRANCH or $PRODUCTION_BRANCH
+          # encrypted secret env variable, thus cannot echo based on $STAGING_BRANCH or $PRODUCTION_BRANCH
           TEST_NRIC: ${{ github.ref == 'refs/heads/master' && secrets.TESTING_NRIC_PROD || secrets.TESTING_NRIC_STAGING }}
         run: npx playwright test
       - uses: actions/upload-artifact@v3

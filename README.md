@@ -29,6 +29,10 @@
     npm run dev:full # start Docker container and dev env together
     npm run dev # start dev env (user should start Docker container separately)
     ```
+  
+### Setup for End-to-End Tests
+
+- End-to-end tests have already been set up automatically on staging and prod. If you'd like to have it available on local, TODO
 
 ## Migrations
 

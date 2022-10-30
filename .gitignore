@@ -73,6 +73,7 @@ frontend/build
 e2e/credentials.json
 e2e/gmail_token.json
 e2e/.env
+e2e/storageState.json
 
 # VS Code settings
 .vscode/settings.json
