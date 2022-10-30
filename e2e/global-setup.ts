@@ -1,5 +1,5 @@
 import { chromium, expect, FullConfig } from '@playwright/test'
-import { gmailHelper } from './gmailHelper'
+import { gmailHelper } from './gmail-helper'
 
 const STAGING_URL = 'https://staging.checkwho.gov.sg'
 export const checkwhoUrl =
@@ -8,7 +8,7 @@ export const checkwhoUrl =
 const checkwhoFromEmail = 'donotreply@mail.postman.gov.sg'
 const testEmail = process.env.TEST_EMAIL
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_: FullConfig) {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
