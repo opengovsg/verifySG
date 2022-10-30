@@ -30,7 +30,7 @@ async function globalSetup(_: FullConfig) {
   await page.getByRole('button', { name: 'Log in'}).click()
 
   // Save signed-in state to 'storageState.json'.
-  await page.context().storageState({ path: 'storageState.json' });
+  await page.context().storageState({ path: './e2e/storageState.json' });
   await browser.close();
 }
 

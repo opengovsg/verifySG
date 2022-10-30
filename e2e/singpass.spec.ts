@@ -23,6 +23,7 @@ test.describe.serial('Test sending Singpass notification', () => {
     // select first option
     await page.locator('#react-select-4-option-0').click()
     // click send button and get response
+    // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([
       page.waitForResponse(`${checkwhoUrl}/api/notifications`),
       page.getByRole('button', { name: 'Notify call recipient' }).click(),
@@ -40,13 +41,3 @@ test.describe.serial('Test sending Singpass notification', () => {
     expect(response.ok()).toBeFalsy()
   })
 })
-
-/*
-* **Notifications - desktop view**
-- [ ] Should display message preview
-- [ ] When editing NRIC, should display NRIC in message preview
-- [ ] When sending notification to S3002862G - should show success
-- [ ] When sending notification to your own NRIC - should show failure (there's no Singpass staging account on your NRIC number)
-- [ ] Log out button works
-*
-* */

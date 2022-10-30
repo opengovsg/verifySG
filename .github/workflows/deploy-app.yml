@@ -111,6 +111,13 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Write Gmail creds files
+        env:
+          GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
+          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        run: |
+          echo $GMAIL_CREDENTIALS > e2e/credentials.json
+          echo $GMAIL_TOKEN > e2e/gmail_token.json
       - name: Set env vars conditionally
         run: |
           if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
