@@ -69,9 +69,13 @@ frontend/build
 /playwright-report/
 /playwright/.cache/
 
+# credentials for Playwright e2e tests
+e2e/credentials.json
+e2e/gmail_token.json
+e2e/.env
+
 # VS Code settings
 .vscode/settings.json
 
 # JetBrains IDEs' settings
 .idea
-
