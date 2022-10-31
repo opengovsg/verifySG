@@ -100,13 +100,14 @@ const useNotificationForm = () => {
   const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
     msgTemplateKey: string,
   ): SGNotifyMessageTemplateParams | undefined => {
-    if (!msgTemplateKey || !messageTemplates) {
-      return
-    }
+    if (!msgTemplateKey || !messageTemplates) return
+
     const messageTemplate = messageTemplates.find(
       (template) => template.key === msgTemplateKey,
     )
-    return messageTemplate?.sgNotifyMessageTemplateParams
+    if (!messageTemplate || !messageTemplate.sgNotifyMessageTemplateParams)
+      return
+    return messageTemplate.sgNotifyMessageTemplateParams
   }
 
   // query hook to mutate data
