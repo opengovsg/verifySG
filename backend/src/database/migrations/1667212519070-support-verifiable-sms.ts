@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class supportVerifiableSms1666429629143 implements MigrationInterface {
-  name = 'supportVerifiableSms1666429629143'
+export class supportVerifiableSms1667212519070 implements MigrationInterface {
+  name = 'supportVerifiableSms1667212519070'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "unique_param" ("id" SERIAL NOT NULL, "unique_param_string" character varying(255) NOT NULL, "display_data" jsonb NOT NULL, "num_of_queries" smallint NOT NULL DEFAULT '0', "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_8138e2ae69ad5d3b055182e4072" UNIQUE ("unique_param_string"), CONSTRAINT "PK_c077207ad22f0e071b60194d55d" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
-      `ALTER TABLE "message_template" ADD "sms_message_template_params" jsonb NOT NULL`,
+      `ALTER TABLE "message_template" ADD "sms_message_template_params" jsonb`,
     )
     await queryRunner.query(
       `ALTER TYPE "public"."notification_notification_type_enum" RENAME TO "notification_notification_type_enum_old"`,
@@ -22,9 +22,15 @@ export class supportVerifiableSms1666429629143 implements MigrationInterface {
     await queryRunner.query(
       `DROP TYPE "public"."notification_notification_type_enum_old"`,
     )
+    await queryRunner.query(
+      `ALTER TABLE "message_template" ALTER COLUMN "sg_notify_message_template_params" DROP NOT NULL`,
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "message_template" ALTER COLUMN "sg_notify_message_template_params" SET NOT NULL`,
+    )
     await queryRunner.query(
       `CREATE TYPE "public"."notification_notification_type_enum_old" AS ENUM('SGNOTIFY', 'WHATSAPP')`,
     )

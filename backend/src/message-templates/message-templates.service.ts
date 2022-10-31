@@ -50,6 +50,11 @@ export class MessageTemplatesService {
       )
     }
     const { id, sgNotifyMessageTemplateParams } = messageTemplate
+    if (!sgNotifyMessageTemplateParams) {
+      throw new BadRequestException(
+        `MessageTemplate with key ${key} does not have sgNotifyMessageTemplateParams`,
+      )
+    }
     return {
       id,
       sgNotifyMessageTemplateParams,
@@ -57,11 +62,17 @@ export class MessageTemplatesService {
   }
 
   mapToDto(messageTemplate: MessageTemplate): MessageTemplateDto {
-    const { key, menu, sgNotifyMessageTemplateParams } = messageTemplate
+    const {
+      key,
+      menu,
+      sgNotifyMessageTemplateParams,
+      smsMessageTemplateParams,
+    } = messageTemplate
     return {
       key,
       menu,
       sgNotifyMessageTemplateParams,
+      smsMessageTemplateParams,
     }
   }
 

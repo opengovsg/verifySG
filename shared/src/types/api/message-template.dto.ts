@@ -20,14 +20,16 @@ export class MessageTemplateDto {
   @IsString()
   menu: string
 
-  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
+  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams | null
+
+  smsMessageTemplateParams: SmsMessageTemplateParams | null
 }
 
 export type MessageTemplateResDto = MessageTemplateDto
 
 export type MessageTemplateSendNotificationResDto = Omit<
   MessageTemplateDto,
-  'sgNotifyMessageTemplateParams'
+  'sgNotifyMessageTemplateParams' | 'smsMessageTemplateParams'
 >
 
 export type MessageTemplatesResDto = MessageTemplateSendNotificationResDto[]

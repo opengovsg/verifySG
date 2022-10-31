@@ -30,11 +30,12 @@ export class MessageTemplate {
   @Column('varchar', { nullable: false, length: 255 })
   menu: string // shown to public officer user to inform selection
 
-  @Column('jsonb', { nullable: false })
-  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
+  // nullable because a message template now can be either SGNotify or SMS (but not both)
+  @Column('jsonb', { nullable: true })
+  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams | null
 
-  @Column('jsonb', { nullable: false })
-  smsMessageTemplateParams: SmsMessageTemplateParams
+  @Column('jsonb', { nullable: true })
+  smsMessageTemplateParams: SmsMessageTemplateParams | null
 
   @OneToMany(() => Notification, (notification) => notification.messageTemplate)
   notifications: Notification[]

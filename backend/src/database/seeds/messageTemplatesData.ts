@@ -20,6 +20,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'The purpose of this call is to follow up on your recent feedback to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'SPF',
@@ -33,6 +34,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'The purpose of this call is to follow up on your recent police report/feedback to the Police.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'SPF',
@@ -46,6 +48,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'The purpose of this call is to follow up on your recent police report to the Police.<br><br>This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u> to ensure that it matches the information provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'OGP',
@@ -59,6 +62,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'The purpose of this call is to follow up on your recent feedback on OGP’s services.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'OGP',
@@ -72,6 +76,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call is to let you know you’ve been an all-around great person!',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'IRAS',
@@ -85,6 +90,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call is regarding your tax matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'IRAS',
@@ -98,6 +104,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call is regarding Jobs Growth Incentive (JGI) matters and will be made in the next 10 minutes. You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'MOH',
@@ -111,6 +118,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'ECDA',
@@ -124,6 +132,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'MSF',
@@ -137,6 +146,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
           'This call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their <u>name</u> and <u>designation</u>, ensuring that it matches the information provided in this message.',
       },
     },
+    smsMessageTemplateParams: null,
   },
   {
     agencyId: 'MOH',
