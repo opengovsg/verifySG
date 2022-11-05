@@ -6,16 +6,14 @@ const saveResultsMessageTemplate = async (
 ) => {
   return await queryRunner.query(
     `INSERT INTO "message_template" (id, key, menu, params, created_at, updated_at, agency_id, type)
-     VALUES ${results
-       .map((result, idx): string => {
-         return `(${result.id}, '123', '123', $${
-           idx + 1
-         }, NOW(), NOW(), '123', 'SGNOTIFY')`
-       })
-       .join(',')} ON CONFLICT (id) DO
-     UPDATE
-     SET params = EXCLUDED.params`,
-    results.map((result) => JSON.stringify(result.params)),
+VALUES ${results
+      .map((result, idx): string => {
+        return `(${result.id}, '123', '123', $${
+          idx + 1
+        }, NOW(), NOW(), '123', 'SGNOTIFY')`
+      })
+      .join(',')} ON CONFLICT (id) DO UPDATE SET params = EXCLUDED.params`,
+    results.map((result) => result.params),
   )
 }
 
