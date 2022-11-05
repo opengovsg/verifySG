@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class supportVerifiableSms1667212519070 implements MigrationInterface {
-  name = 'supportVerifiableSms1667212519070'
+export class supportVerifiableSms1667638592843 implements MigrationInterface {
+  name = 'supportVerifiableSms1667638592843'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "unique_param" ("id" SERIAL NOT NULL, "unique_param_string" character varying(255) NOT NULL, "display_data" jsonb NOT NULL, "num_of_queries" smallint NOT NULL DEFAULT '0', "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_8138e2ae69ad5d3b055182e4072" UNIQUE ("unique_param_string"), CONSTRAINT "PK_c077207ad22f0e071b60194d55d" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "unique_param" ("id" SERIAL NOT NULL, "unique_param_string" character varying(255) NOT NULL, "display_data" jsonb NOT NULL, "num_of_queries" smallint NOT NULL DEFAULT '0', "expired_at" TIMESTAMP WITH TIME ZONE, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_8138e2ae69ad5d3b055182e4072" UNIQUE ("unique_param_string"), CONSTRAINT "PK_c077207ad22f0e071b60194d55d" PRIMARY KEY ("id"))`,
     )
     await queryRunner.query(
       `ALTER TABLE "message_template" ADD "sms_message_template_params" jsonb`,

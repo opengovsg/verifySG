@@ -14,16 +14,6 @@ export interface DisplayData {
   timestamp: Date
 }
 
-/* TODO: delete this discussion before merging
- * should we establish a one-to-one relationship between UniqueParam and Notification?
- * NO:
- * - only notifications of NotificationType.SMS will have a uniqueParamString
- * - we can add the uniqueParamString in ModalityParams, which can be query-able via SQL or TypeORM
- *
- * should we have a column to track expiry (e.g. expiredAt)?
- * good-to-have, but not necessary in MVP? or just create first?
- * */
-
 /**
  * Notification entity
  * @uniqueParamString the uniquely generated parameter generated for each message
@@ -45,8 +35,9 @@ export class UniqueParam {
   @Column('smallint', { nullable: false, default: 0 })
   numOfQueries: number
 
-  // @Column('timestamptz', { nullable: false })
-  // expiredAt: Date
+  // if null, then param is valid forever
+  @Column('timestamptz', { nullable: true })
+  expiredAt: Date
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
