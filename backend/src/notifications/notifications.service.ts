@@ -2,11 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import {
-  ModalityParams,
-  Notification,
-  NotificationType,
-} from 'database/entities'
+import { ModalityParams, Notification } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
 import { Logger } from '../core/providers'
@@ -28,6 +24,7 @@ import {
 import {
   SendNotificationReqDto,
   SendNotificationResDto,
+  SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
@@ -77,14 +74,13 @@ export class NotificationsService {
     const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
-    const { id: messageTemplateId, sgNotifyMessageTemplateParams } =
-      await this.messageTemplatesService.getSGNotifyMessageTemplateParams(
+    const { id: messageTemplateId, params } =
+      await this.messageTemplatesService.getMessageTemplateParams(
         msgTemplateKey,
       )
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
       messageTemplate: { id: messageTemplateId },
-      notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
       modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
@@ -97,7 +93,7 @@ export class NotificationsService {
           officerName: officer.name,
           officerPosition: officer.position,
         },
-        sgNotifyMessageTemplateParams,
+        params as SGNotifyMessageTemplateParams,
       ).catch((e) => {
         this.logger.error(
           `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,

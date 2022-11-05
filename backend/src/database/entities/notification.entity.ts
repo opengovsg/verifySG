@@ -14,11 +14,6 @@ import { SGNotifyParams, SMSParams } from '../../notifications/sgnotify/utils'
 import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'
 
-export enum NotificationType {
-  SGNOTIFY = 'SGNOTIFY',
-  SMS = 'SMS',
-}
-
 export enum NotificationStatus {
   NOT_SENT = 'NOT_SENT',
   SENT = 'SENT',
@@ -62,12 +57,6 @@ export class Notification {
     (messageTemplate) => messageTemplate.notifications,
   )
   messageTemplate: MessageTemplate
-
-  @Column({
-    type: 'enum',
-    enum: NotificationType,
-  })
-  notificationType: NotificationType
 
   @Column('varchar', { length: 9, nullable: false })
   @Check('recipient_id = upper(recipient_id)')

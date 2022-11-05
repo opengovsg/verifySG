@@ -12,7 +12,6 @@ import {
   MessageTemplate,
   Notification,
   NotificationStatus,
-  NotificationType,
   Officer,
   SGNotifyNotificationStatus,
 } from '../../database/entities'
@@ -30,7 +29,7 @@ import { NotificationsService } from '../notifications.service'
 import { SGNotifyParams } from '../sgnotify/message-templates/message-template'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
 
-import { SendNotificationReqDto } from '~shared/types/api'
+import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils'
 
 export const mockValidSGNotifyParams: SGNotifyParams = {
@@ -40,7 +39,7 @@ export const mockValidSGNotifyParams: SGNotifyParams = {
   shortMessage: 'Notification short message',
   nric: 'S1234567D',
   templateId: SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
-  sgNotifyLongMessageParams: {
+  params: {
     param: 'value',
   },
   status: SGNotifyNotificationStatus.NOT_SENT,
@@ -79,7 +78,9 @@ describe('NotificationsService', () => {
     key: 'template_key',
     agency: mockAgency,
     menu: 'Option description in menu',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -162,63 +163,60 @@ describe('NotificationsService', () => {
         mockSendNotificationReqDto,
       )
       // this passes even for partial match; thus not all fields are added
-      expect(createdNotification).toMatchObject({
-        id: expect.any(Number),
-        notificationType: NotificationType.SGNOTIFY,
-        status: SGNotifyNotificationStatus.NOT_SENT,
-        recipientId: mockSendNotificationReqDto.nric,
-        modalityParams: {
-          agencyLogoUrl: mockAgency.logoUrl,
-          agencyShortName: mockAgency.id,
-          nric: mockSendNotificationReqDto.nric,
-          templateId:
-            mockMessageTemplate.sgNotifyMessageTemplateParams?.templateId,
-          sgNotifyLongMessageParams: {
-            agency: mockAgency.name,
-            call_details:
-              mockMessageTemplate.sgNotifyMessageTemplateParams
-                ?.longMessageParams.call_details,
-            officer_name: `<u>${mockOfficer.name}</u>`,
-            position: `<u>${mockOfficer.position}</u>`,
-          },
-        },
-        messageTemplate: {
-          id: mockMessageTemplate.id,
-          key: mockMessageTemplate.key,
-          menu: mockMessageTemplate.menu,
-          sgNotifyMessageTemplateParams: {
-            longMessageParams: {
+      if (mockMessageTemplate.params.type === MessageTemplateType.SGNOTIFY) {
+        expect(createdNotification).toMatchObject({
+          id: expect.any(Number),
+          status: SGNotifyNotificationStatus.NOT_SENT,
+          recipientId: mockSendNotificationReqDto.nric,
+          modalityParams: {
+            agencyLogoUrl: mockAgency.logoUrl,
+            agencyShortName: mockAgency.id,
+            nric: mockSendNotificationReqDto.nric,
+            templateId: mockMessageTemplate.params.templateId,
+            sgNotifyLongMessageParams: {
+              agency: mockAgency.name,
               call_details:
-                mockMessageTemplate.sgNotifyMessageTemplateParams
-                  ?.longMessageParams.call_details,
+                mockMessageTemplate.params.longMessageParams.call_details,
+              officer_name: `<u>${mockOfficer.name}</u>`,
+              position: `<u>${mockOfficer.position}</u>`,
             },
-            templateId:
-              mockMessageTemplate.sgNotifyMessageTemplateParams?.templateId,
           },
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-          deletedAt: null,
-        },
-        officer: {
-          id: mockOfficer.id,
-          email: mockOfficer.email,
-          name: mockOfficer.name,
-          position: mockOfficer.position,
-          agency: {
-            id: mockAgency.id,
-            name: mockAgency.name,
-            logoUrl: mockAgency.logoUrl,
-            emailDomains: mockAgency.emailDomains,
+          messageTemplate: {
+            id: mockMessageTemplate.id,
+            key: mockMessageTemplate.key,
+            menu: mockMessageTemplate.menu,
+            params: {
+              longMessageParams: {
+                call_details:
+                  mockMessageTemplate.params.longMessageParams.call_details,
+              },
+              templateId: mockMessageTemplate.params.templateId,
+            },
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            deletedAt: null,
+          },
+          officer: {
+            id: mockOfficer.id,
+            email: mockOfficer.email,
+            name: mockOfficer.name,
+            position: mockOfficer.position,
+            agency: {
+              id: mockAgency.id,
+              name: mockAgency.name,
+              logoUrl: mockAgency.logoUrl,
+              emailDomains: mockAgency.emailDomains,
+              createdAt: expect.any(Date),
+              updatedAt: expect.any(Date),
+            },
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
           },
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
-        },
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-        deletedAt: null,
-      })
+          deletedAt: null,
+        })
+      }
     })
     test('message template not in db', async () => {
       const mockSendNotificationReqDtoNotInDb: SendNotificationReqDto = {
@@ -245,7 +243,9 @@ describe('NotificationsService', () => {
           key: 'template_key_another_agency',
           agency: mockAnotherAgency,
           menu: 'some menu',
-          sgNotifyMessageTemplateParams: {
+          type: MessageTemplateType.SGNOTIFY,
+          params: {
+            type: MessageTemplateType.SGNOTIFY,
             templateId:
               SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
             longMessageParams: {
@@ -306,7 +306,9 @@ describe('NotificationsService', () => {
         key: 'template_key_invalid_sgnotify_template',
         agency: mockAgency,
         menu: 'some menu',
-        sgNotifyMessageTemplateParams: {
+        type: MessageTemplateType.SGNOTIFY,
+        params: {
+          type: MessageTemplateType.SGNOTIFY,
           templateId:
             'unsupported_SGNotify_template' as SGNotifyMessageTemplateId,
           longMessageParams: {
@@ -329,11 +331,16 @@ describe('NotificationsService', () => {
     ).rejects.toEqual(
       new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE),
     )
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `templateId: ${mockMessageTemplateInvalidSGNotifyTemplate.sgNotifyMessageTemplateParams?.templateId}`,
-      ),
-    )
+    if (
+      mockMessageTemplateInvalidSGNotifyTemplate.params.type ===
+      MessageTemplateType.SGNOTIFY
+    ) {
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `templateId: ${mockMessageTemplateInvalidSGNotifyTemplate.params.templateId}`,
+        ),
+      )
+    }
   })
   it('invalid SGNotifyParams: agency name too long', async () => {
     const mockAgencyNameTooLong: Agency = createMock<Agency>({
@@ -356,7 +363,9 @@ describe('NotificationsService', () => {
         key: 'msf_template_key',
         agency: mockAgencyNameTooLong,
         menu: 'Option description in menu',
-        sgNotifyMessageTemplateParams: {
+        type: MessageTemplateType.SGNOTIFY,
+        params: {
+          type: MessageTemplateType.SGNOTIFY,
           templateId:
             SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
           longMessageParams: {
@@ -394,8 +403,8 @@ describe('NotificationsService', () => {
         .mockResolvedValue({
           ...mockValidSGNotifyParams,
           requestId: '123456',
-          sgNotifyLongMessageParams: {
-            ...mockValidSGNotifyParams.sgNotifyLongMessageParams,
+          params: {
+            ...mockValidSGNotifyParams.params,
           },
           status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         })
@@ -436,8 +445,8 @@ describe('NotificationsService', () => {
         .mockResolvedValue({
           ...mockValidSGNotifyParams,
           requestId: '123456',
-          sgNotifyLongMessageParams: {
-            ...mockValidSGNotifyParams.sgNotifyLongMessageParams,
+          params: {
+            ...mockValidSGNotifyParams.params,
           },
           status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         })
@@ -463,8 +472,8 @@ describe('NotificationsService', () => {
         .mockResolvedValue({
           ...mockValidSGNotifyParams,
           requestId: '123456',
-          sgNotifyLongMessageParams: {
-            ...mockValidSGNotifyParams.sgNotifyLongMessageParams,
+          params: {
+            ...mockValidSGNotifyParams.params,
           },
           status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         })

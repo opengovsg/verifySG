@@ -13,10 +13,7 @@ import {
 import { Agency } from './agency.entity'
 import { Notification } from './notification.entity'
 
-import {
-  SGNotifyMessageTemplateParams,
-  SmsMessageTemplateParams,
-} from '~shared/types/api'
+import { MessageTemplateParams, MessageTemplateType } from '~shared/types/api'
 
 @Entity({ name: 'message_template' })
 export class MessageTemplate {
@@ -30,12 +27,14 @@ export class MessageTemplate {
   @Column('varchar', { nullable: false, length: 255 })
   menu: string // shown to public officer user to inform selection
 
-  // nullable because a message template now can be either SGNotify or SMS (but not both)
-  @Column('jsonb', { nullable: true })
-  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams | null
+  @Column('jsonb', { nullable: false })
+  params: MessageTemplateParams
 
-  @Column('jsonb', { nullable: true })
-  smsMessageTemplateParams: SmsMessageTemplateParams | null
+  @Column({
+    type: 'enum',
+    enum: MessageTemplateType,
+  })
+  type: MessageTemplateType
 
   @OneToMany(() => Notification, (notification) => notification.messageTemplate)
   notifications: Notification[]

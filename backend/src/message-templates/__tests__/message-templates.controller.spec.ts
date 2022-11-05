@@ -22,7 +22,7 @@ const mockMessageTemplates: MessageTemplate[] = [
     key: 'template_key',
     agency: mockAgency,
     menu: 'Option description in menu',
-    sgNotifyMessageTemplateParams: {
+    params: {
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -35,7 +35,7 @@ const mockMessageTemplates: MessageTemplate[] = [
     key: 'template_key_2',
     agency: mockAgency,
     menu: 'Option description in menu',
-    sgNotifyMessageTemplateParams: {
+    params: {
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
       longMessageParams: {
