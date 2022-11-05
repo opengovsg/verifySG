@@ -5,135 +5,20 @@ on:
       - staging
       - master
 
-env:
-  PRODUCTION_BRANCH: refs/heads/master
-  STAGING_BRANCH: refs/heads/staging
-  EB_STAGING_APPLICATION: checkwho-staging-application
-  EB_STAGING_ENVIRONMENT: checkwho-staging-environment
-  EB_PRODUCTION_APPLICATION: checkwho-production-application
-  EB_PRODUCTION_ENVIRONMENT: checkwho-production-environment
+concurrency: deploy-non-serverless-${{ github.ref }}
 
 jobs:
-  deploy:
-    name: Deploy to Elastic Beanstalk
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build files
-        run: npm run build
-
-      - name: Upload deployment files
-        uses: actions/upload-artifact@v2
-        with:
-          name: deployment-files
-          path: |
-            package*.json
-            frontend-govt/package*.json
-            frontend-govt/build
-            backend/package*.json
-            backend/build
-            shared/package*.json
-            shared/build
-            .nvmrc
-            .npmrc
-            Buildfile
-
-      - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: deployment-files
-          path: deploy
-
-      - name: Generate .env file for backend so systems manager script knows the file path to pull from
-        run: |
-          cd deploy
-          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "ENV=staging" >> backend/.env
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "ENV=production" >> backend/.env
-          fi
-
-      - name: Generate deployment package
-        run: |
-          cd deploy
-          zip -r ../deploy.zip .
-
-      - name: Set branch specific env vars
-        run: |
-          timestamp=$(TZ=Asia/Singapore date '+%Y%m%d%H%M%S')
-          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "EB_ENVIRONMENT=$EB_STAGING_ENVIRONMENT" >> $GITHUB_ENV
-            echo "EB_APPLICATION=$EB_STAGING_APPLICATION" >> $GITHUB_ENV
-            echo "VERSION_LABEL=stg-$timestamp" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "EB_ENVIRONMENT=$EB_PRODUCTION_ENVIRONMENT" >> $GITHUB_ENV
-            echo "EB_APPLICATION=$EB_PRODUCTION_APPLICATION" >> $GITHUB_ENV
-            echo "VERSION_LABEL=prod-$timestamp" >> $GITHUB_ENV
-          fi
-
-      - name: Print branch specific env vars
-        run: |
-          echo EB_ENVIRONMENT=$EB_ENVIRONMENT
-          echo EB_APPLICATION=$EB_APPLICATION
-          echo VERSION_LABEL=$VERSION_LABEL
-
-      - name: Deploy to EB
-        uses: opengovsg/beanstalk-deploy@v18
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: ${{ env.EB_APPLICATION }}
-          environment_name: ${{ env.EB_ENVIRONMENT }}
-          version_label: ${{ env.VERSION_LABEL }}
-          region: ap-southeast-1
-          version_description: ${{ github.SHA }}
-          deployment_package: deploy.zip
-          wait_for_environment_recovery: 300 # 5 minutes
-
-  e2e-test:
-    name: End-to-End Playwright Tests
-    needs: deploy
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Write Gmail creds files
-        env:
-          GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
-          GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
-        run: |
-          echo $GMAIL_CREDENTIALS > e2e/credentials.json
-          echo $GMAIL_TOKEN > e2e/gmail_token.json
-      - name: Set env vars conditionally
-        run: |
-          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "CHECKWHO_URL=https://staging.checkwho.gov.sg" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "CHECKWHO_URL=https://checkwho.gov.sg" >> $GITHUB_ENV
-          fi
-      - name: Run Playwright tests
-        env:
-          TEST_EMAIL: 'internal-testing@open.gov.sg'
-          # encrypted secret env variable, thus cannot echo based on $STAGING_BRANCH or $PRODUCTION_BRANCH
-          TEST_NRIC: ${{ github.ref == 'refs/heads/master' && secrets.TESTING_NRIC_PROD || secrets.TESTING_NRIC_STAGING }}
-        run: npx playwright test
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+  ci:
+    name: Run CI (lint and test)
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+  deploy-eb:
+    name: Deploy frontend and backend to AWS Elastic Beanstalk
+    needs: ci
+    uses: ./.github/workflows/deploy-eb.yml
+    secrets: inherit
+  e2e:
+    name: End-to-end tests
+    needs: deploy-eb
+    uses: ./.github/workflows/e2e.yml
+    secrets: inherit

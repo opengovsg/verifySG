@@ -3,11 +3,10 @@ name: Lint and test
 on:
   push:
     branches:
-      - staging
       - develop
-      - master
   pull_request:
-    branches: [staging, develop, master]
+    branches: [develop]
+  workflow_call:
 
 jobs:
   lint-and-test:
