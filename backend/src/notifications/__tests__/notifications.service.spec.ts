@@ -172,12 +172,12 @@ describe('NotificationsService', () => {
           agencyShortName: mockAgency.id,
           nric: mockSendNotificationReqDto.nric,
           templateId:
-            mockMessageTemplate.sgNotifyMessageTemplateParams.templateId,
+            mockMessageTemplate.sgNotifyMessageTemplateParams?.templateId,
           sgNotifyLongMessageParams: {
             agency: mockAgency.name,
             call_details:
               mockMessageTemplate.sgNotifyMessageTemplateParams
-                .longMessageParams.call_details,
+                ?.longMessageParams.call_details,
             officer_name: `<u>${mockOfficer.name}</u>`,
             position: `<u>${mockOfficer.position}</u>`,
           },
@@ -190,10 +190,10 @@ describe('NotificationsService', () => {
             longMessageParams: {
               call_details:
                 mockMessageTemplate.sgNotifyMessageTemplateParams
-                  .longMessageParams.call_details,
+                  ?.longMessageParams.call_details,
             },
             templateId:
-              mockMessageTemplate.sgNotifyMessageTemplateParams.templateId,
+              mockMessageTemplate.sgNotifyMessageTemplateParams?.templateId,
           },
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
@@ -331,7 +331,7 @@ describe('NotificationsService', () => {
     )
     expect(logger.error).toHaveBeenCalledWith(
       expect.stringContaining(
-        `templateId: ${mockMessageTemplateInvalidSGNotifyTemplate.sgNotifyMessageTemplateParams.templateId}`,
+        `templateId: ${mockMessageTemplateInvalidSGNotifyTemplate.sgNotifyMessageTemplateParams?.templateId}`,
       ),
     )
   })
@@ -442,7 +442,7 @@ describe('NotificationsService', () => {
           status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         })
       const modalityParamsUpdated = await sgNotifyService.sendNotification(
-        (createdNotification as Notification).modalityParams,
+        (createdNotification as Notification).modalityParams as SGNotifyParams,
       )
       const updatedNotification = await service.updateNotification(
         (createdNotification as Notification).id,
@@ -469,7 +469,7 @@ describe('NotificationsService', () => {
           status: SGNotifyNotificationStatus.SENT_BY_SERVER,
         })
       const modalityParamsUpdated = await sgNotifyService.sendNotification(
-        (createdNotification as Notification).modalityParams,
+        (createdNotification as Notification).modalityParams as SGNotifyParams,
       )
       const mockFindByIdReturnNull = jest
         .spyOn(service, 'findById')

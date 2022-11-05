@@ -156,6 +156,7 @@ describe('MessageTemplatesService', () => {
           menu: mockMessageTemplate.menu,
           sgNotifyMessageTemplateParams:
             mockMessageTemplate.sgNotifyMessageTemplateParams,
+          smsMessageTemplateParams: null,
         },
       ])
     })
