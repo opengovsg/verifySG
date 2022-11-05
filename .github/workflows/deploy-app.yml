@@ -5,7 +5,7 @@ on:
       - staging
       - master
 
-concurrency: deploy-non-serverless-${{ github.ref }}
+concurrency: deploy-app-${{ github.ref }}
 
 jobs:
   ci:
