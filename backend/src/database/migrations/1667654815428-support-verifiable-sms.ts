@@ -1,19 +1,21 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-const saveResultsMessageTemplate = async (
+const modifyMessageTemplatesParamsColumn = async (
   queryRunner: QueryRunner,
-  results: any[],
+  messageTemapltes: any[], // message templates
 ) => {
   return await queryRunner.query(
     `INSERT INTO "message_template" (id, key, menu, params, created_at, updated_at, agency_id, type)
-VALUES ${results
+VALUES ${messageTemapltes
       .map((result, idx): string => {
+        // dummy values for all non-params column to satisfy db constraints
+        // only params column is modified
         return `(${result.id}, '123', '123', $${
           idx + 1
         }, NOW(), NOW(), '123', 'SGNOTIFY')`
       })
       .join(',')} ON CONFLICT (id) DO UPDATE SET params = EXCLUDED.params`,
-    results.map((result) => result.params),
+    messageTemapltes.map((result) => result.params),
   )
 }
 
@@ -42,21 +44,38 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "message_template" ALTER COLUMN "type" DROP DEFAULT`,
     )
-    const results: any[] = await queryRunner.query(
+    // we are adding a new (duplicative) type key into params:
+    // 1. so that we have discriminating union when destructuring params
+    // 2. because TypeORM cannot look at two columns (MessageTemplate.type and MessageTemplate.params) at the same time
+    const prevMessageTemplates: any[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
-    results.forEach((result) => {
-      result.params = { ...result.params, type: 'SGNOTIFY' }
+    const insertedTypeInParams = prevMessageTemplates.map((result) => {
+      return {
+        ...result,
+        params: {
+          ...result.params,
+          type: 'SGNOTIFY', // using string instead of enum as we want to refer to this statically rather than dynamically
+        },
+      }
     })
-    await saveResultsMessageTemplate(queryRunner, results)
+    await modifyMessageTemplatesParamsColumn(queryRunner, insertedTypeInParams)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const results: any[] = await queryRunner.query(
+    // for down migration, remove type from params
+    const prevMessageTemplates: any[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
-    results.forEach((result) => delete result.params.type)
-    await saveResultsMessageTemplate(queryRunner, results)
+    const removedTypeFromParams = prevMessageTemplates.map((result) => {
+      const { type, ...params } = result.params
+      return {
+        ...result,
+        params,
+      }
+    })
+    await modifyMessageTemplatesParamsColumn(queryRunner, removedTypeFromParams)
+
     await queryRunner.query(`ALTER TABLE "message_template" DROP COLUMN "type"`)
     await queryRunner.query(`DROP TYPE "public"."message_template_type_enum"`)
     await queryRunner.query(
