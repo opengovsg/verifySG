@@ -49,13 +49,17 @@ export class SGNotifyParams {
 
   templateId: SGNotifyMessageTemplateId
 
-  sgNotifyLongMessageParams: Record<string, string>
+  params: Record<string, string>
 
   status: SGNotifyNotificationStatus
 
   @IsOptional()
   @IsString()
   requestId?: string
+}
+
+export class SMSParams {
+  // TODO
 }
 
 export interface AgencyParams {
@@ -90,7 +94,7 @@ const generateGenericSGNotifyParams = (
     agencyLogoUrl,
     agencyShortName,
     nric,
-    sgNotifyLongMessageParams: {
+    params: {
       agency: agencyName,
       officer_name: `<u>${officerName}</u>`,
       position: `<u>${officerPosition}</u>`,
@@ -124,7 +128,7 @@ export const generateNewSGNotifyParams = async (
         title,
         shortMessage,
         sgNotifyLongMessageParams: {
-          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
           callback_details: longMessageParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
@@ -137,7 +141,7 @@ export const generateNewSGNotifyParams = async (
         title,
         shortMessage,
         sgNotifyLongMessageParams: {
-          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+          ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
         },
       })
@@ -156,14 +160,8 @@ export const generateNewSGNotifyParams = async (
 export const convertParamsToNotificationRequestPayload = (
   sgNotifyParams: SGNotifyParams,
 ): SGNotifyNotificationRequestPayload => {
-  const {
-    agencyLogoUrl,
-    agencyShortName,
-    templateId,
-    sgNotifyLongMessageParams,
-    title,
-    nric,
-  } = sgNotifyParams
+  const { agencyLogoUrl, agencyShortName, templateId, params, title, nric } =
+    sgNotifyParams
   // this destructuring is untyped, be careful!
   const {
     agency,
@@ -172,7 +170,7 @@ export const convertParamsToNotificationRequestPayload = (
     position,
     call_details,
     callback_details,
-  } = sgNotifyLongMessageParams
+  } = params
   const notificationRequest = Object.assign(new SGNotifyNotificationRequest(), {
     category: 'MESSAGES',
     channel_mode: 'SPM',

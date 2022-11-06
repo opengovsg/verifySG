@@ -2,11 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import {
-  ModalityParams,
-  Notification,
-  NotificationType,
-} from 'database/entities'
+import { ModalityParams, Notification } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
 import { Logger } from '../core/providers'
@@ -15,6 +11,7 @@ import { MessageTemplatesService } from '../message-templates/message-templates.
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
+  SGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import {
@@ -27,6 +24,7 @@ import {
 import {
   SendNotificationReqDto,
   SendNotificationResDto,
+  SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
@@ -76,14 +74,13 @@ export class NotificationsService {
     const normalizedNric = normalizeNric(nric)
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
-    const { id: messageTemplateId, sgNotifyMessageTemplateParams } =
-      await this.messageTemplatesService.getSGNotifyMessageTemplateParams(
+    const { id: messageTemplateId, params } =
+      await this.messageTemplatesService.getMessageTemplateParams(
         msgTemplateKey,
       )
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
       messageTemplate: { id: messageTemplateId },
-      notificationType: NotificationType.SGNOTIFY,
       recipientId: normalizedNric,
       modalityParams: await generateNewSGNotifyParams(
         normalizedNric,
@@ -96,7 +93,7 @@ export class NotificationsService {
           officerName: officer.name,
           officerPosition: officer.position,
         },
-        sgNotifyMessageTemplateParams,
+        params as SGNotifyMessageTemplateParams,
       ).catch((e) => {
         this.logger.error(
           `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
@@ -126,8 +123,9 @@ export class NotificationsService {
     if (!notificationToUpdate)
       throw new BadRequestException(`Notification ${notificationId} not found`)
     // ideally, should check type of notification is indeed SGNotify
-    const notificationStatus =
-      sgNotifyParamsStatusToNotificationStatusMapper(modalityParams)
+    const notificationStatus = sgNotifyParamsStatusToNotificationStatusMapper(
+      modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
+    )
     return await this.notificationRepository.save({
       ...notificationToUpdate,
       status: notificationStatus,
@@ -155,7 +153,7 @@ export class NotificationsService {
     )
     if (!inserted) throw new BadRequestException('Notification not created')
     const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-      inserted.modalityParams,
+      inserted.modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
     )
     const updated = await this.updateNotification(
       inserted.id,

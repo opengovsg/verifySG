@@ -194,8 +194,8 @@ export class SGNotifyService {
     return {
       ...sgNotifyParams,
       requestId: notificationResPayload.request_id,
-      sgNotifyLongMessageParams: {
-        ...sgNotifyParams.sgNotifyLongMessageParams,
+      params: {
+        ...sgNotifyParams.params,
       },
       status: SGNotifyNotificationStatus.SENT_BY_SERVER,
     }

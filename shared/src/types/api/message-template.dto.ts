@@ -2,10 +2,26 @@ import { IsLowercase, IsString } from 'class-validator'
 
 import { SGNotifyMessageTemplateId } from '../../utils'
 
+export enum MessageTemplateType {
+  SGNOTIFY = 'SGNOTIFY',
+  SMS = 'SMS',
+}
+
 export interface SGNotifyMessageTemplateParams {
+  type: MessageTemplateType.SGNOTIFY
   templateId: SGNotifyMessageTemplateId
   longMessageParams: Record<string, string> // exclude params recorded elsewhere like agency and officer info
 }
+
+export interface SmsMessageTemplateParams {
+  // TODO
+  type: MessageTemplateType.SMS
+  todo: string
+}
+
+export type MessageTemplateParams =
+  | SGNotifyMessageTemplateParams
+  | SmsMessageTemplateParams
 
 export class MessageTemplateDto {
   @IsString()
@@ -15,14 +31,16 @@ export class MessageTemplateDto {
   @IsString()
   menu: string
 
-  sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
+  params: MessageTemplateParams
+
+  type: MessageTemplateType
 }
 
 export type MessageTemplateResDto = MessageTemplateDto
 
 export type MessageTemplateSendNotificationResDto = Omit<
   MessageTemplateDto,
-  'sgNotifyMessageTemplateParams'
+  'params'
 >
 
 export type MessageTemplatesResDto = MessageTemplateSendNotificationResDto[]

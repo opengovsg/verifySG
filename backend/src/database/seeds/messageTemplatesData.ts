@@ -1,6 +1,6 @@
 import { Agency } from '../entities'
 
-import { MessageTemplateDto } from '~shared/types/api'
+import { MessageTemplateDto, MessageTemplateType } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils/sgnotify'
 
 class MessageTemplatesData extends MessageTemplateDto {
@@ -12,7 +12,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'SPF',
     key: 'spf-feedback',
     menu: 'Feedback (before call)',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -25,7 +27,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'SPF',
     key: 'spf-generic-during-call',
     menu: 'Police report and feedback (during call)',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
       longMessageParams: {
@@ -38,7 +42,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'SPF',
     key: 'spf-police-report',
     menu: 'Police report (before call)',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -51,7 +57,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'OGP',
     key: 'ogp-feedback',
     menu: 'Feedback (before call)',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -64,7 +72,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'OGP',
     key: 'ogp-praise',
     menu: 'Praise',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -77,7 +87,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'IRAS',
     key: 'iras-individual-tax',
     menu: 'Individual Tax',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -90,7 +102,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'IRAS',
     key: 'iras-jgi',
     menu: 'Jobs Growth Incentive (JGI)',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -103,7 +117,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'MOH',
     key: 'moh-hrp',
     menu: 'Home Recovery Programme',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -116,7 +132,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'ECDA',
     key: 'ecda-generic',
     menu: 'Generic',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -129,7 +147,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'MSF',
     key: 'msf-generic',
     menu: 'Generic',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -142,7 +162,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'MOH',
     key: 'moh-hrp',
     menu: 'Home Recovery Programme',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -155,7 +177,9 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     agencyId: 'MOH',
     key: 'moh-covid-positive-missed-call',
     menu: 'COVID-19 Positive Missed Call',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
