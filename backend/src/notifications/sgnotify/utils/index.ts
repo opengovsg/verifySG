@@ -1,2 +1,2 @@
-export * from '../message-templates/message-template'
+export * from '../message-templates/sgnotify-utils'
 export * from './insert-private-key-header-footer'

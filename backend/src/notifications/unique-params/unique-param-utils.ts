@@ -1,5 +1,4 @@
 // considered setting these as env variables, but we shouldn't vary these that much?
-// similarly, if we support expiryPeriod, should that be an env variable or a constant?
 
 import { customAlphabet } from 'nanoid'
 

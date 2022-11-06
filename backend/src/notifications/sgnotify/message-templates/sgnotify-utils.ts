@@ -58,10 +58,6 @@ export class SGNotifyParams {
   requestId?: string
 }
 
-export class SMSParams {
-  // TODO
-}
-
 export interface AgencyParams {
   agencyShortName: string
   agencyName: string
