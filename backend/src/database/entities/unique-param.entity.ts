@@ -32,11 +32,11 @@ export class UniqueParam {
   displayData: DisplayData
 
   @Column('smallint', { nullable: false, default: 0 })
-  numOfQueries: number
+  numOfQueries: number // not strictly necessary, but helps to identify brute force attack
 
   // if null, then param is valid forever
   @Column('timestamptz', { nullable: true })
-  expiredAt: Date
+  expiredAt: Date | null
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date

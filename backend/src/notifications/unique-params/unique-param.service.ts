@@ -2,36 +2,66 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { Logger } from '../../core/providers'
+import { ConfigSchema } from '../../core/config.schema'
+import { ConfigService, Logger } from '../../core/providers'
 import { DisplayData, UniqueParam } from '../../database/entities'
 
 import { generateUniqueParamString } from './unique-param-utils'
 
 export enum UniqueParamVerificationResult {
-  VALID = 'valid', // exists in db
-  INVALID = 'invalid', // does not exist in db
-  // EXPIRED = 'expired', // future extension
+  VALID = 'valid', // exists in db and is valid
+  EXPIRED = 'expired', // future extension
+  NONEXISTENT = 'nonexistent', // does not exist in db
 }
 
 @Injectable()
 export class UniqueParamService {
+  private readonly config: ConfigSchema['uniqueParams']
   constructor(
     @InjectRepository(UniqueParam)
     private uniqueParamsRepository: Repository<UniqueParam>,
+    private configService: ConfigService,
     private logger: Logger,
-  ) {}
+  ) {
+    this.config = this.configService.get('uniqueParams')
+  }
 
-  async generateUniqueParam(displayData: DisplayData): Promise<string> {
-    const uniqueParamString = generateUniqueParamString()
-    // should we check if uniqueParamString already exists in database?
-    // YES: in case freak accidents happen
-    // NO: trust in the power of nanoid
+  async generateUniqueParam(
+    displayData: DisplayData,
+    expiryPeriodSeconds?: number | null,
+  ): Promise<string> {
+    let uniqueParamString
+    do {
+      uniqueParamString = generateUniqueParamString()
+    } while (await this.uniqueParamStringExists(uniqueParamString))
+    /* Intended behavior:
+     * Expiry period is in milliseconds
+     * 1. If no expiry period is provided (undefined), default expiry period as defined in env var will be applied
+     * 2. If expiry period is provided, it will override the default expiry period
+     * 3. API user can also pass in null to explicitly indicate the uniqueParamString should not expire
+     * */
+    const expiredAt =
+      expiryPeriodSeconds === null
+        ? null
+        : expiryPeriodSeconds === undefined
+        ? new Date(Date.now() + this.config.defaultExpiryPeriod)
+        : new Date(Date.now() + expiryPeriodSeconds)
     const uniqueParamToAdd = this.uniqueParamsRepository.create({
       uniqueParamString,
       displayData,
+      expiredAt,
     })
     await this.uniqueParamsRepository.save(uniqueParamToAdd)
     return uniqueParamString
+  }
+
+  async uniqueParamStringExists(uniqueParamString: string): Promise<boolean> {
+    const uniqueParamFromDb = await this.uniqueParamsRepository.findOne({
+      where: {
+        uniqueParamString,
+      },
+    })
+    return !!uniqueParamFromDb
   }
 
   async verifyUniqueParamString(uniqueParamString: string): Promise<{
@@ -51,11 +81,20 @@ export class UniqueParamService {
         `UniqueParam not found for uniqueParamString ${uniqueParamString}`,
       )
       return {
-        result: UniqueParamVerificationResult.INVALID,
+        result: UniqueParamVerificationResult.NONEXISTENT,
         displayData: null,
       }
     }
-    // future extension: deal with expired uniqueParamString here
+    const { expiredAt } = uniqueParamFromDb
+    if (expiredAt && expiredAt < new Date()) {
+      this.logger.warn(
+        `Queried uniqueParamString ${uniqueParamString} has expired`,
+      )
+      return {
+        result: UniqueParamVerificationResult.EXPIRED,
+        displayData: null,
+      }
+    }
     // update operation can run as void because we don't use the result
     void this.uniqueParamsRepository.save({
       ...uniqueParamFromDb,
