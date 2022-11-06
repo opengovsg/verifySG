@@ -26,7 +26,7 @@ import {
   OFFICER_NOT_FOUND,
 } from '../constants'
 import { NotificationsService } from '../notifications.service'
-import { SGNotifyParams } from '../sgnotify/message-templates/message-template'
+import { SGNotifyParams } from '../sgnotify/message-templates/sgnotify-utils'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
 
 import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'

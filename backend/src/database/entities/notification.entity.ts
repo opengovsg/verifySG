@@ -9,7 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { SGNotifyParams, SMSParams } from '../../notifications/sgnotify/utils'
+import { SGNotifyParams } from '../../notifications/sgnotify/utils'
+import { SMSParams } from '../../notifications/sms/sms-utils'
 
 import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'
