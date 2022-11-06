@@ -47,7 +47,7 @@ const invalidNotificationResPayload: Omit<
   exp: 1,
 }
 
-describe('SGNotifyService initialize', () => {
+describe('SGNotifyService', () => {
   let service: SGNotifyService
   let logger: Logger
 
@@ -142,37 +142,6 @@ describe('SGNotifyService initialize', () => {
     )
     expect(logger.error).toHaveBeenCalled()
   })
-})
-
-// splitting this out to isolate side effects from previous test suite
-describe('SGNotifyService sendNotification', () => {
-  let service: SGNotifyService
-  let logger: Logger
-
-  beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule],
-      providers: [SGNotifyService],
-    }).compile()
-
-    service = module.get<SGNotifyService>(SGNotifyService)
-    logger = module.get<Logger>(Logger)
-
-    server.listen()
-  })
-
-  it('should be defined', () => {
-    expect(service).toBeDefined()
-    expect(logger).toBeDefined()
-  })
-
-  beforeEach(async () => {
-    server.resetHandlers()
-    await service.initialize()
-  })
-
-  afterAll(() => server.close())
-
   test('send notification happy path', async () => {
     const mockDecryptAndVerify = jest
       .spyOn(service, 'decryptAndVerifyPayload')
