@@ -2,11 +2,11 @@ import { MigrationInterface, QueryRunner } from 'typeorm'
 
 const modifyMessageTemplatesParamsColumn = async (
   queryRunner: QueryRunner,
-  messageTemapltes: any[], // message templates
+  messageTemplates: any[],
 ) => {
   return await queryRunner.query(
     `INSERT INTO "message_template" (id, key, menu, params, created_at, updated_at, agency_id, type)
-VALUES ${messageTemapltes
+VALUES ${messageTemplates
       .map((result, idx): string => {
         // dummy values for all non-params column to satisfy db constraints
         // only params column is modified
@@ -15,7 +15,7 @@ VALUES ${messageTemapltes
         }, NOW(), NOW(), '123', 'SGNOTIFY')`
       })
       .join(',')} ON CONFLICT (id) DO UPDATE SET params = EXCLUDED.params`,
-    messageTemapltes.map((result) => result.params),
+    messageTemplates.map((result) => result.params),
   )
 }
 
