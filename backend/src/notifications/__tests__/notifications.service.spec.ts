@@ -173,7 +173,7 @@ describe('NotificationsService', () => {
             agencyShortName: mockAgency.id,
             nric: mockSendNotificationReqDto.nric,
             templateId: mockMessageTemplate.params.templateId,
-            sgNotifyLongMessageParams: {
+            params: {
               agency: mockAgency.name,
               call_details:
                 mockMessageTemplate.params.longMessageParams.call_details,
