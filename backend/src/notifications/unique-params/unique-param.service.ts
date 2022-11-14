@@ -10,7 +10,7 @@ import { generateUniqueParamString } from './unique-param-utils'
 
 export enum UniqueParamVerificationResult {
   VALID = 'valid', // exists in db and is valid
-  EXPIRED = 'expired', // future extension
+  EXPIRED = 'expired', // exists in db but has expired
   NONEXISTENT = 'nonexistent', // does not exist in db
 }
 
@@ -88,6 +88,7 @@ export class UniqueParamService {
       }
     }
     const { expiredAt } = uniqueParamFromDb
+    // if expiredAt is null, expiry check is skipped
     if (expiredAt && expiredAt < new Date()) {
       this.logger.warn(
         `Queried uniqueParamString ${uniqueParamString} has expired`,
