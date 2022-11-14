@@ -127,7 +127,7 @@ export const generateNewSGNotifyParams = async (
         templateId,
         title,
         shortMessage,
-        sgNotifyLongMessageParams: {
+        params: {
           ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
           callback_details: longMessageParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
@@ -140,7 +140,7 @@ export const generateNewSGNotifyParams = async (
         templateId,
         title,
         shortMessage,
-        sgNotifyLongMessageParams: {
+        params: {
           ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
         },

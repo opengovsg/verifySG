@@ -163,7 +163,9 @@ export class SGNotifyService {
           this.logger.log(`NRIC ${sgNotifyParams.nric} provided not found.`)
           throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
         }
-        // catch residual errors
+        // catch residual errors; likely candidates:
+        // 1. missing mandatory fields (no type-checking based on message template)
+        // 2. SGNotify is down
         this.logger.error(
           `Unexpected error when sending notification to SGNotify.
           Payload sent:${JSON.stringify(notificationRequestPayload)}
