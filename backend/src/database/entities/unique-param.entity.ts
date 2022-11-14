@@ -25,7 +25,6 @@ export class UniqueParam {
   @PrimaryGeneratedColumn()
   id: number
 
-  // pretty sure 255 is long enough; if not long enough, we can increase it?
   @Column('varchar', { unique: true, nullable: false, length: 255 })
   uniqueParamString: string
 
@@ -33,11 +32,11 @@ export class UniqueParam {
   displayData: DisplayData
 
   @Column('smallint', { nullable: false, default: 0 })
-  numOfQueries: number
+  numOfQueries: number // not strictly necessary, but helps to identify brute force attack
 
   // if null, then param is valid forever
   @Column('timestamptz', { nullable: true })
-  expiredAt: Date
+  expiredAt: Date | null
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date

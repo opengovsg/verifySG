@@ -24,6 +24,9 @@ export interface ConfigSchema {
     numAllowedAttempts: number
     numSaltRounds: number
   }
+  uniqueParams: {
+    defaultExpiryPeriod: number
+  }
   postman: {
     apiUrl: string
     apiKey: string
@@ -171,6 +174,14 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'Number of rounds to hash the OTP + email',
       env: 'OTP_NUM_SALT_ROUNDS',
       default: 10,
+      format: Number,
+    },
+  },
+  uniqueParams: {
+    defaultExpiryPeriod: {
+      doc: 'Validity of unique params, expressed in seconds',
+      env: 'UNIQUE_PARAMS_DEFAULT_EXPIRY_PERIOD',
+      default: 3 * 24 * 60 * 60, // 3 days (arbitrary)
       format: Number,
     },
   },

@@ -6,8 +6,8 @@ import { MailerService } from 'common/providers/mailer.service'
 import { OfficersModule } from 'officers/officers.module'
 
 import { OTP } from '../database/entities'
-import { OtpService } from '../otps/otp.service'
 
+import { OtpService } from './otps/otp.service'
 import { AuthOfficerController } from './auth-officer.controller'
 import { AuthOfficerService } from './auth-officer.service'
 

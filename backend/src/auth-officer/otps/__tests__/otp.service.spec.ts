@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { CoreModule } from '../../core/core.module'
-import { ConfigService, Logger } from '../../core/providers'
-import { OTP } from '../../database/entities'
-import { useTestDatabase } from '../../database/test-hooks'
+import { CoreModule } from '../../../core/core.module'
+import { ConfigService, Logger } from '../../../core/providers'
+import { OTP } from '../../../database/entities'
+import { useTestDatabase } from '../../../database/test-hooks'
 import { OtpService, OTPVerificationResult } from '../otp.service'
 import {
   generateIncorrectOtp,
