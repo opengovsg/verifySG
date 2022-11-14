@@ -43,9 +43,11 @@ export class UniqueParamService {
     const expiredAt =
       expiryPeriodSeconds === null
         ? null
-        : expiryPeriodSeconds === undefined
-        ? new Date(Date.now() + this.config.defaultExpiryPeriod)
-        : new Date(Date.now() + expiryPeriodSeconds)
+        : new Date(
+            Date.now() +
+              // if expiryPeriodSeconds is undefined, use default expiry period
+              (expiryPeriodSeconds ?? this.config.defaultExpiryPeriod),
+          )
     const uniqueParamToAdd = this.uniqueParamsRepository.create({
       uniqueParamString,
       displayData,
