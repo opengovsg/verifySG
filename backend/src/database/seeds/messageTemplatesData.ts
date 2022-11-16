@@ -188,4 +188,19 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'MAS',
+    key: 'mas-case-review',
+    menu: 'Assistance for Case Review',
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'The purpose of this call is to seek your assistance on a case that MAS is reviewing.<br><br>This call will be made in the next 10 minutes and you may verify the caller’s identity by using the <u>name</u> provided in this message.',
+      },
+    },
+  },
 ]
