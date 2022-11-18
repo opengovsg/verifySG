@@ -58,6 +58,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "7.4.0",
     "tsconfig-paths": "3.14.1",
+    "twilio": "^3.83.3",
     "typeorm": "0.3.7",
     "typeorm-naming-strategies": "2.0.0",
     "winston": "3.3.3"

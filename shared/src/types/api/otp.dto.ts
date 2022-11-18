@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, IsString, Length } from 'class-validator'
 
 export class GetOtpReqDto {
   // TODO (maybe): refactor into common email property
@@ -7,8 +7,7 @@ export class GetOtpReqDto {
 }
 
 export class VerifyOtpReqDto {
-  @MinLength(6)
-  @MaxLength(6)
+  @Length(6, 6)
   @IsString()
   otp: string
 
