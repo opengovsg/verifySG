@@ -6,7 +6,7 @@ import { OfficerInfoInterface } from '../../common/decorators'
 import { NotificationsController } from '../notifications.controller'
 import { NotificationsService } from '../notifications.service'
 
-import { SendNotificationReqDto } from '~shared/types/api'
+import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 
 const mockOfficerInfoDecorator: OfficerInfoInterface = {
   officerId: 1,
@@ -15,6 +15,7 @@ const mockOfficerInfoDecorator: OfficerInfoInterface = {
 }
 
 const mockSendNotificationReqDto: SendNotificationReqDto = {
+  type: MessageTemplateType.SGNOTIFY,
   nric: 'S1234567D',
   msgTemplateKey: 'template_key',
 }

@@ -7,6 +7,7 @@ import { OfficersModule } from 'officers/officers.module'
 import { MessageTemplatesService } from '../message-templates/message-templates.service'
 
 import { SGNotifyService } from './sgnotify/sgnotify.service'
+import { SMSService } from './sms/sms.service'
 import { NotificationsController } from './notifications.controller'
 import { NotificationsService } from './notifications.service'
 
@@ -16,7 +17,12 @@ import { NotificationsService } from './notifications.service'
     OfficersModule,
   ],
   controllers: [NotificationsController],
-  providers: [NotificationsService, MessageTemplatesService, SGNotifyService],
+  providers: [
+    NotificationsService,
+    MessageTemplatesService,
+    SGNotifyService,
+    SMSService,
+  ],
 })
 export class NotificationsModule {
   constructor(private sgNotifyService: SGNotifyService) {}

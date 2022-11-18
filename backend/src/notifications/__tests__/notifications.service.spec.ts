@@ -13,7 +13,6 @@ import {
   Notification,
   NotificationStatus,
   Officer,
-  SGNotifyNotificationStatus,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { mockMessageTemplateNotInDb } from '../../message-templates/__tests__/message-templates.service.spec'
@@ -26,8 +25,12 @@ import {
   OFFICER_NOT_FOUND,
 } from '../constants'
 import { NotificationsService } from '../notifications.service'
-import { SGNotifyParams } from '../sgnotify/message-templates/sgnotify-utils'
+import {
+  SGNotifyNotificationStatus,
+  SGNotifyParams,
+} from '../sgnotify/message-templates/sgnotify-utils'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
+import { SMSService } from '../sms/sms.service'
 
 import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils'
@@ -54,6 +57,7 @@ describe('NotificationsService', () => {
   let officersRepository: Repository<Officer>
   let agenciesRepository: Repository<Agency>
   let sgNotifyService: SGNotifyService
+  // let smsService: SMSService
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
@@ -90,6 +94,7 @@ describe('NotificationsService', () => {
   })
 
   const mockSendNotificationReqDto: SendNotificationReqDto = {
+    type: MessageTemplateType.SGNOTIFY,
     nric: 'S1234567D',
     msgTemplateKey: mockMessageTemplate.key,
   }
@@ -114,6 +119,7 @@ describe('NotificationsService', () => {
         MessageTemplatesService,
         OfficersService,
         SGNotifyService,
+        SMSService,
         AgenciesService,
       ],
     }).compile()
@@ -128,6 +134,7 @@ describe('NotificationsService', () => {
     officersRepository = module.get(getRepositoryToken(Officer))
     agenciesRepository = module.get(getRepositoryToken(Agency))
     sgNotifyService = module.get<SGNotifyService>(SGNotifyService)
+    // smsService = module.get<SMSService>(SMSService)
     logger = module.get<Logger>(Logger)
   })
 
@@ -152,6 +159,7 @@ describe('NotificationsService', () => {
     expect(officersService).toBeDefined()
     expect(officersRepository).toBeDefined()
     expect(sgNotifyService).toBeDefined()
+    // expect(smsService).toBeDefined()
     expect(logger).toBeDefined()
   })
 
@@ -162,8 +170,8 @@ describe('NotificationsService', () => {
         mockOfficer.agency.id,
         mockSendNotificationReqDto,
       )
-      // this passes even for partial match; thus not all fields are added
       if (mockMessageTemplate.params.type === MessageTemplateType.SGNOTIFY) {
+        // this passes even for partial match; thus not all fields are added
         expect(createdNotification).toMatchObject({
           id: expect.any(Number),
           status: SGNotifyNotificationStatus.NOT_SENT,
@@ -220,6 +228,7 @@ describe('NotificationsService', () => {
     })
     test('message template not in db', async () => {
       const mockSendNotificationReqDtoNotInDb: SendNotificationReqDto = {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateNotInDb.key,
       }
@@ -254,6 +263,7 @@ describe('NotificationsService', () => {
           },
         })
       const mockSendNotificationReqDtoAnotherAgency: SendNotificationReqDto = {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateAnotherAgency.key,
       }
@@ -325,6 +335,7 @@ describe('NotificationsService', () => {
     jest.spyOn(logger, 'error')
     await expect(
       service.createNotification(mockOfficer.id, mockOfficer.agency.id, {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateInvalidSGNotifyTemplate.key,
       }),
@@ -384,6 +395,7 @@ describe('NotificationsService', () => {
     jest.spyOn(logger, 'error')
     await expect(
       service.createNotification(mockMSFOfficer.id, mockMSFOfficer.agency.id, {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMSFMessageTemplate.key,
       }),

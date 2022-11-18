@@ -24,3 +24,4 @@ async function bootstrap() {
 }
 
 void bootstrap()
+export { SGNotifyNotificationStatus } from './notifications/sgnotify/message-templates/sgnotify-utils'

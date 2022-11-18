@@ -1,5 +1,10 @@
 import { addFormats, Schema } from 'convict'
 
+interface TwilioCredentials {
+  accountSid: string
+  authToken: string
+}
+
 export interface ConfigSchema {
   frontendUrls: {
     frontendGovtBase: string
@@ -27,6 +32,7 @@ export interface ConfigSchema {
   uniqueParams: {
     defaultExpiryPeriod: number
   }
+  // used for sending emails
   postman: {
     apiUrl: string
     apiKey: string
@@ -47,6 +53,12 @@ export interface ConfigSchema {
   sentry: {
     frontendDsn: string
     backendDsn: string
+  }
+  twilio: {
+    defaultCredentials: TwilioCredentials
+    ogpCredentials: TwilioCredentials
+    mohCredentials: TwilioCredentials
+    momCredentials: TwilioCredentials
   }
 }
 
@@ -269,6 +281,64 @@ export const schema: Schema<ConfigSchema> = {
       env: 'SENTRY_BACKEND_DSN',
       format: String,
       default: '',
+    },
+  },
+  twilio: {
+    defaultCredentials: {
+      accountSid: {
+        doc: 'Default Twilio account SID (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
+        default: '',
+      },
+      authToken: {
+        doc: 'Default Twilio auth token (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_AUTH_TOKEN',
+        format: 'required-string',
+        default: '',
+      },
+    },
+    ogpCredentials: {
+      accountSid: {
+        doc: 'OGP Twilio account SID',
+        env: 'OGP_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
+        default: '',
+      },
+      authToken: {
+        doc: 'OGP Twilio auth token',
+        env: 'OGP_TWILIO_AUTH_TOKEN',
+        format: 'required-string',
+        default: '',
+      },
+    },
+    // for now, we are loading agency's Twilio creds as env vars
+    // in the future, we should encrypt using KMS and store them in the DB
+    // they're not required because on staging, we use the default creds
+    // NOTE: we should make sure to load them in production
+    mohCredentials: {
+      accountSid: {
+        doc: 'MOH Twilio account SID',
+        env: 'MOH_TWILIO_ACCOUNT_SID',
+        default: '',
+      },
+      authToken: {
+        doc: 'MOH Twilio auth token',
+        env: 'MOH_TWILIO_AUTH_TOKEN',
+        default: '',
+      },
+    },
+    momCredentials: {
+      accountSid: {
+        doc: 'MOM Twilio account SID',
+        env: 'MOM_TWILIO_ACCOUNT_SID',
+        default: '',
+      },
+      authToken: {
+        doc: 'MOM Twilio auth token',
+        env: 'MOM_TWILIO_AUTH_TOKEN',
+        default: '',
+      },
     },
   },
 }

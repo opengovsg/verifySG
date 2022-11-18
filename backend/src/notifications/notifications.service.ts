@@ -2,7 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { ModalityParams, Notification } from 'database/entities'
+import {
+  MessageTemplate,
+  ModalityParams,
+  Notification,
+  Officer,
+} from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
 
 import { Logger } from '../core/providers'
@@ -14,6 +19,12 @@ import {
   SGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
+import { SMSService } from './sms/sms.service'
+import {
+  generateSMSParamsByTemplate,
+  SMSParams,
+  supportedAgencies,
+} from './sms/sms-utils'
 import {
   INVALID_MESSAGE_TEMPLATE,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
@@ -22,9 +33,11 @@ import {
 } from './constants'
 
 import {
+  MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationResDto,
   SGNotifyMessageTemplateParams,
+  SMSMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
@@ -36,6 +49,7 @@ export class NotificationsService {
     private messageTemplatesService: MessageTemplatesService,
     private officersService: OfficersService,
     private sgNotifyService: SGNotifyService,
+    private smsService: SMSService,
     private logger: Logger,
   ) {}
 
@@ -58,53 +72,89 @@ export class NotificationsService {
     officerAgency: string,
     notificationBody: SendNotificationReqDto,
   ): Promise<Notification | null> {
-    const { msgTemplateKey, nric } = notificationBody
-    const isMessageTemplateValid =
-      await this.messageTemplatesService.isMessageTemplateValidByAgencyId(
+    const { msgTemplateKey } = notificationBody
+    const { officer, messageTemplate } =
+      await this.validateCreateNotificationParams(
+        officerId,
+        officerAgency,
+        msgTemplateKey,
+      )
+    const { agency } = await this.officersService.mapToDto(officer)
+    const { id: agencyShortName, name: agencyName, logoUrl } = agency
+    const { id: messageTemplateId, params } = messageTemplate
+    let modalityParams: ModalityParams
+    let recipientId: string
+    switch (notificationBody.type) {
+      case MessageTemplateType.SMS:
+        recipientId = notificationBody.phoneNumber
+        modalityParams = generateSMSParamsByTemplate(
+          recipientId,
+          {
+            agencyShortName,
+            agencyName,
+          },
+          {
+            officerName: officer.name,
+            officerPosition: officer.position,
+          },
+          params as SMSMessageTemplateParams,
+        )
+        break
+      case MessageTemplateType.SGNOTIFY:
+        recipientId = normalizeNric(notificationBody.nric)
+        modalityParams = await generateNewSGNotifyParams(
+          recipientId,
+          {
+            agencyShortName,
+            agencyName,
+            agencyLogoUrl: logoUrl,
+          },
+          {
+            officerName: officer.name,
+            officerPosition: officer.position,
+          },
+          params as SGNotifyMessageTemplateParams,
+        ).catch((e) => {
+          this.logger.error(
+            `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+          )
+          throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
+        })
+        break
+      default:
+        throw new BadRequestException('Invalid request type')
+    }
+    const notificationToAdd = this.notificationRepository.create({
+      officer: { id: officerId },
+      messageTemplate: { id: messageTemplateId },
+      recipientId,
+      modalityParams,
+    })
+    const addedNotification = await this.notificationRepository.save(
+      notificationToAdd,
+    )
+    return this.findById(addedNotification.id)
+  }
+
+  // return officer and messageTemplate to save db call
+  async validateCreateNotificationParams(
+    officerId: number,
+    officerAgency: string,
+    msgTemplateKey: string,
+  ): Promise<{ officer: Officer; messageTemplate: MessageTemplate }> {
+    const messageTemplate =
+      await this.messageTemplatesService.getMessageTemplateByAgencyId(
         msgTemplateKey,
         officerAgency,
       )
-    if (!isMessageTemplateValid)
+    if (!messageTemplate)
       // either message template does not exist OR belongs to a different agency
       throw new BadRequestException(INVALID_MESSAGE_TEMPLATE)
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException(OFFICER_NOT_FOUND)
     if (!officer.name || !officer.position)
       throw new BadRequestException(OFFICER_MISSING_FIELDS)
-    const normalizedNric = normalizeNric(nric)
-    const { agency } = await this.officersService.mapToDto(officer)
-    const { id: agencyShortName, name: agencyName, logoUrl } = agency
-    const { id: messageTemplateId, params } =
-      await this.messageTemplatesService.getMessageTemplateParams(
-        msgTemplateKey,
-      )
-    const notificationToAdd = this.notificationRepository.create({
-      officer: { id: officerId },
-      messageTemplate: { id: messageTemplateId },
-      recipientId: normalizedNric,
-      modalityParams: await generateNewSGNotifyParams(
-        normalizedNric,
-        {
-          agencyShortName,
-          agencyName,
-          agencyLogoUrl: logoUrl,
-        },
-        {
-          officerName: officer.name,
-          officerPosition: officer.position,
-        },
-        params as SGNotifyMessageTemplateParams,
-      ).catch((e) => {
-        this.logger.error(
-          `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
-        )
-        throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
-      }),
-    })
-    const addedNotification = await this.notificationRepository.save(
-      notificationToAdd,
-    )
-    return this.findById(addedNotification.id)
+    return { officer, messageTemplate }
   }
 
   /**
@@ -152,9 +202,32 @@ export class NotificationsService {
       body,
     )
     if (!inserted) throw new BadRequestException('Notification not created')
-    const modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-      inserted.modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
-    )
+    let modalityParamsUpdated: ModalityParams
+    switch (body.type) {
+      case MessageTemplateType.SGNOTIFY:
+        modalityParamsUpdated = await this.sgNotifyService.sendNotification(
+          inserted.modalityParams as SGNotifyParams,
+        )
+        break
+      case MessageTemplateType.SMS:
+        // check to make sure agency is supported first before attempting to send
+        // i.e. we have Twilio credentials for this agency
+        // TODO: remove and manage agency credentials via db
+        if (!(officerAgency in supportedAgencies)) {
+          throw new BadRequestException(
+            `Currently we do not support sending SMSes for ${officerAgency}.`,
+          )
+        }
+        modalityParamsUpdated = await this.smsService.sendSMS(
+          officerAgency,
+          inserted.modalityParams as SMSParams,
+        )
+        break
+      default:
+        // unreachable because identical switch statement in createNotification
+        throw new BadRequestException('Invalid request type')
+    }
+
     const updated = await this.updateNotification(
       inserted.id,
       modalityParamsUpdated,

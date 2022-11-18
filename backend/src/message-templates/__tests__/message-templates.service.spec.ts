@@ -112,24 +112,32 @@ describe('MessageTemplatesService', () => {
     expect(agenciesRepository).toBeDefined()
   })
 
-  describe('isMessageTemplateValidByAgencyId', () => {
-    test('message template is valid', async () => {
-      expect(
-        await service.isMessageTemplateValidByAgencyId(
-          mockMessageTemplate.key,
-          mockAgency.id,
-        ),
-      ).toBe(true)
+  describe('getMessageTemplateByAgencyId', () => {
+    test('return valid message template', async () => {
+      const messageTemplate = await service.getMessageTemplateByAgencyId(
+        mockMessageTemplate.key,
+        mockAgency.id,
+      )
+      expect(messageTemplate).toMatchObject({
+        id: mockMessageTemplate.id,
+        key: mockMessageTemplate.key,
+        menu: mockMessageTemplate.menu,
+        type: mockMessageTemplate.type,
+        params: mockMessageTemplate.params,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        deletedAt: null,
+      })
     })
-    test('message template not in db is not valid', async () => {
+    test('message template not in db returns null', async () => {
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplateNotInDb.key,
           mockAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
     })
-    test('message template of another agency is not valid', async () => {
+    test('message template of another agency returns null', async () => {
       await agenciesRepository.save(
         Object.assign(new Agency(), mockAnotherAgency),
       )
@@ -137,17 +145,17 @@ describe('MessageTemplatesService', () => {
         Object.assign(new MessageTemplate(), mockMessageTemplateAnotherAgency),
       )
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplateAnotherAgency.key,
           mockAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplate.key,
           mockAnotherAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
     })
   })
 

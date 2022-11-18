@@ -188,4 +188,16 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       },
     },
   },
+  {
+    agencyId: 'OGP',
+    key: 'ogp-sms-test',
+    menu: 'SMS Test',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['officerName', 'officerPosition', 'agencyName'],
+      message:
+        'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nPlease ignore this message.',
+    },
+  },
 ]

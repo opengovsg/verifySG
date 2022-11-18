@@ -1,13 +1,33 @@
-import { IsDate, IsString } from 'class-validator'
+import { IsDate, IsString, Length } from 'class-validator'
 
 import { IsNric } from '../../decorators'
 
-import { MessageTemplateSendNotificationResDto } from './message-template.dto'
+import {
+  MessageTemplateSendNotificationResDto,
+  MessageTemplateType,
+} from './message-template.dto'
 import { OfficerDto } from './officer.dto'
 
-export class SendNotificationReqDto {
+export type SendNotificationReqDto =
+  | SendNotificationReqSGNotifyDto
+  | SendNotificationReqSmsDto
+
+export class SendNotificationReqSGNotifyDto {
+  type: MessageTemplateType.SGNOTIFY
+
   @IsNric()
   nric: string
+
+  @IsString()
+  msgTemplateKey: string
+}
+
+export class SendNotificationReqSmsDto {
+  type: MessageTemplateType.SMS
+
+  @IsString()
+  @Length(8, 8)
+  phoneNumber: string
 
   @IsString()
   msgTemplateKey: string
