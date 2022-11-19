@@ -87,6 +87,7 @@ export class NotificationsService {
         recipientId = notificationBody.recipientPhoneNumber
         const uniqueParamString =
           await this.uniqueParamService.generateUniqueParam({
+            messageType: MessageTemplateType.SMS,
             senderName: officer.name,
             senderPosition: officer.position,
             agencyName,
