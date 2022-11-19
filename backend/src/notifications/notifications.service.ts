@@ -6,6 +6,7 @@ import {
   MessageTemplate,
   ModalityParams,
   Notification,
+  NotificationStatus,
   Officer,
 } from 'database/entities'
 import { OfficersService } from 'officers/officers.service'
@@ -16,8 +17,8 @@ import { MessageTemplatesService } from '../message-templates/message-templates.
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
   generateNewSGNotifyParams,
+  SGNotifyNotificationStatus,
   SGNotifyParams,
-  sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import { SMSParams, SMSService, supportedAgencies } from './sms/sms.service'
 import { UniqueParamService } from './unique-params/unique-param.service'
@@ -180,13 +181,10 @@ export class NotificationsService {
     const notificationToUpdate = await this.findById(notificationId)
     if (!notificationToUpdate)
       throw new BadRequestException(`Notification ${notificationId} not found`)
-    // ideally, should check type of notification is indeed SGNotify
-    const notificationStatus = sgNotifyParamsStatusToNotificationStatusMapper(
-      modalityParams as SGNotifyParams, // TODO: temporary cast to SGNotifyParams
-    )
+    const status = paramsStatusToNotificationStatusMapper(modalityParams)
     return await this.notificationRepository.save({
       ...notificationToUpdate,
-      status: notificationStatus,
+      status,
       modalityParams,
     })
   }
@@ -252,4 +250,12 @@ export class NotificationsService {
       officer: this.officersService.mapToDto(officer),
     }
   }
+}
+
+const paramsStatusToNotificationStatusMapper = (
+  params: ModalityParams,
+): NotificationStatus => {
+  return params.status === SGNotifyNotificationStatus.NOT_SENT
+    ? NotificationStatus.NOT_SENT
+    : NotificationStatus.SENT
 }
