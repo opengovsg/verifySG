@@ -9,6 +9,7 @@ import {
 
 // just a first approximation; can edit based on business logic
 export interface DisplayData {
+  messageType: string
   senderName: string
   senderPosition: string
   agencyName: string
