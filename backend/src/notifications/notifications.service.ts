@@ -19,12 +19,7 @@ import {
   SGNotifyParams,
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
-import { SMSService } from './sms/sms.service'
-import {
-  generateSMSParamsByTemplate,
-  SMSParams,
-  supportedAgencies,
-} from './sms/sms-utils'
+import { SMSParams, SMSService, supportedAgencies } from './sms/sms.service'
 import {
   INVALID_MESSAGE_TEMPLATE,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
@@ -86,8 +81,8 @@ export class NotificationsService {
     let recipientId: string
     switch (notificationBody.type) {
       case MessageTemplateType.SMS:
-        recipientId = notificationBody.phoneNumber
-        modalityParams = generateSMSParamsByTemplate(
+        recipientId = notificationBody.recipientPhoneNumber
+        modalityParams = this.smsService.generateSMSParamsByTemplate(
           recipientId,
           {
             agencyShortName,
@@ -213,7 +208,7 @@ export class NotificationsService {
         // check to make sure agency is supported first before attempting to send
         // i.e. we have Twilio credentials for this agency
         // TODO: remove and manage agency credentials via db
-        if (!(officerAgency in supportedAgencies)) {
+        if (!supportedAgencies.includes(officerAgency)) {
           throw new BadRequestException(
             `Currently we do not support sending SMSes for ${officerAgency}.`,
           )
