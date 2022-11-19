@@ -9,8 +9,11 @@ import {
 
 // just a first approximation; can edit based on business logic
 export interface DisplayData {
-  sender: string
-  recipient: string
+  senderName: string
+  senderPosition: string
+  agencyName: string
+  agencyShortName: string
+  recipientId: string
   timestamp: Date
 }
 

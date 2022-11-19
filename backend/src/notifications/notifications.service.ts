@@ -20,6 +20,7 @@ import {
   sgNotifyParamsStatusToNotificationStatusMapper,
 } from './sgnotify/utils'
 import { SMSParams, SMSService, supportedAgencies } from './sms/sms.service'
+import { UniqueParamService } from './unique-params/unique-param.service'
 import {
   INVALID_MESSAGE_TEMPLATE,
   NOTIFICATION_REQUEST_ERROR_MESSAGE,
@@ -45,6 +46,7 @@ export class NotificationsService {
     private officersService: OfficersService,
     private sgNotifyService: SGNotifyService,
     private smsService: SMSService,
+    private uniqueParamService: UniqueParamService,
     private logger: Logger,
   ) {}
 
@@ -80,8 +82,17 @@ export class NotificationsService {
     let modalityParams: ModalityParams
     let recipientId: string
     switch (notificationBody.type) {
-      case MessageTemplateType.SMS:
+      case MessageTemplateType.SMS: {
         recipientId = notificationBody.recipientPhoneNumber
+        const uniqueParamString =
+          await this.uniqueParamService.generateUniqueParam({
+            senderName: officer.name,
+            senderPosition: officer.position,
+            agencyName,
+            agencyShortName,
+            recipientId,
+            timestamp: new Date(),
+          }) // use default expiry period for now
         modalityParams = this.smsService.generateSMSParamsByTemplate(
           recipientId,
           {
@@ -93,8 +104,10 @@ export class NotificationsService {
             officerPosition: officer.position,
           },
           params as SMSMessageTemplateParams,
+          uniqueParamString,
         )
         break
+      }
       case MessageTemplateType.SGNOTIFY:
         recipientId = normalizeNric(notificationBody.nric)
         modalityParams = await generateNewSGNotifyParams(

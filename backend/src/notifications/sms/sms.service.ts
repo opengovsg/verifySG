@@ -65,6 +65,7 @@ export class SMSService {
     agencyParams: Omit<AgencyParams, 'agencyLogoUrl'>, // no need in SMS
     officerParams: OfficerParams,
     params: SMSMessageTemplateParams,
+    uniqueParamString: string,
   ): SMSParams {
     const { agencyShortName, agencyName } = agencyParams
     const { officerName, officerPosition } = officerParams
@@ -73,17 +74,16 @@ export class SMSService {
     const { senderId, phoneNumber: senderPhoneNumber } =
       this.getAgencySenderIdAndPhoneNumber(agencyShortName)
 
-    // hardcode for now, in theory should support variable number of params
-    const formattedMessage = message
-      .replace('{{officerName}}', officerName)
-      .replace('{{officerPosition}}', officerPosition)
-      .replace('{{agencyName}}', agencyName)
-
     return {
       senderId,
       senderPhoneNumber,
       recipientPhoneNumber,
-      message: formattedMessage,
+      // hardcode for now, in theory should support variable number of params
+      message: message
+        .replace('{{officerName}}', officerName)
+        .replace('{{officerPosition}}', officerPosition)
+        .replace('{{agencyName}}', agencyName)
+        .replace('{{uniqueParamString}}', uniqueParamString),
       status: TwilioMessageStatus.NOT_SENT,
       sid: null,
     }

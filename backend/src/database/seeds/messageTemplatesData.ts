@@ -191,13 +191,18 @@ export const messageTemplatesData: MessageTemplatesData[] = [
   {
     agencyId: 'OGP',
     key: 'ogp-sms-test',
-    menu: 'SMS Test',
+    menu: 'SMS Test (CheckGoGovSG)',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
-      requiredParams: ['officerName', 'officerPosition', 'agencyName'],
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'agencyName',
+        'uniqueParamString',
+      ],
       message:
-        'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nPlease ignore this message.',
+        'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nYou can verify this message by visiting check.go.gov.sg/{{uniqueParamString}}.',
     },
   },
 ]
