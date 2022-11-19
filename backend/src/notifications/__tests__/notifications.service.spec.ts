@@ -31,6 +31,7 @@ import {
 } from '../sgnotify/message-templates/sgnotify-utils'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
 import { SMSService } from '../sms/sms.service'
+import { UniqueParamService } from '../unique-params/unique-param.service'
 
 import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils'
@@ -58,6 +59,7 @@ describe('NotificationsService', () => {
   let agenciesRepository: Repository<Agency>
   let sgNotifyService: SGNotifyService
   // let smsService: SMSService
+  // let uniqueParamService: UniqueParamService
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
@@ -115,12 +117,13 @@ describe('NotificationsService', () => {
         ]),
       ],
       providers: [
-        NotificationsService,
+        AgenciesService,
         MessageTemplatesService,
+        NotificationsService,
         OfficersService,
         SGNotifyService,
         SMSService,
-        AgenciesService,
+        UniqueParamService,
       ],
     }).compile()
 
@@ -135,6 +138,7 @@ describe('NotificationsService', () => {
     agenciesRepository = module.get(getRepositoryToken(Agency))
     sgNotifyService = module.get<SGNotifyService>(SGNotifyService)
     // smsService = module.get<SMSService>(SMSService)
+    // uniqueParamService = module.get<UniqueParamService>(UniqueParamService)
     logger = module.get<Logger>(Logger)
   })
 

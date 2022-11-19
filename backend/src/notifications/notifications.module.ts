@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { MessageTemplate, Notification } from 'database/entities'
+import { MessageTemplate, Notification, UniqueParam } from 'database/entities'
 import { OfficersModule } from 'officers/officers.module'
 
 import { MessageTemplatesService } from '../message-templates/message-templates.service'
 
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import { SMSService } from './sms/sms.service'
+import { UniqueParamService } from './unique-params/unique-param.service'
 import { NotificationsController } from './notifications.controller'
 import { NotificationsService } from './notifications.service'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MessageTemplate, Notification]),
+    TypeOrmModule.forFeature([MessageTemplate, Notification, UniqueParam]),
     OfficersModule,
   ],
   controllers: [NotificationsController],
@@ -22,6 +23,7 @@ import { NotificationsService } from './notifications.service'
     MessageTemplatesService,
     SGNotifyService,
     SMSService,
+    UniqueParamService,
   ],
 })
 export class NotificationsModule {
