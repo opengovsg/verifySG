@@ -13,6 +13,7 @@ import {
   Notification,
   NotificationStatus,
   Officer,
+  UniqueParam,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { mockMessageTemplateNotInDb } from '../../message-templates/__tests__/message-templates.service.spec'
@@ -60,6 +61,7 @@ describe('NotificationsService', () => {
   let sgNotifyService: SGNotifyService
   // let smsService: SMSService
   // let uniqueParamService: UniqueParamService
+  // let uniqueParamRepository: Repository<UniqueParam>
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
@@ -114,6 +116,7 @@ describe('NotificationsService', () => {
           MessageTemplate,
           Officer,
           Agency,
+          UniqueParam,
         ]),
       ],
       providers: [
@@ -139,6 +142,7 @@ describe('NotificationsService', () => {
     sgNotifyService = module.get<SGNotifyService>(SGNotifyService)
     // smsService = module.get<SMSService>(SMSService)
     // uniqueParamService = module.get<UniqueParamService>(UniqueParamService)
+    // uniqueParamRepository = module.get(getRepositoryToken(UniqueParam))
     logger = module.get<Logger>(Logger)
   })
 
