@@ -10,7 +10,7 @@ import {
 } from 'typeorm'
 
 import { SGNotifyParams } from '../../notifications/sgnotify/utils'
-import { SMSParams } from '../../notifications/sms/sms-utils'
+import { SMSParams } from '../../notifications/sms/sms.service'
 
 import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'

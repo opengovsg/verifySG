@@ -27,7 +27,7 @@ export class SendNotificationReqSmsDto {
 
   @IsString()
   @Length(8, 8)
-  phoneNumber: string
+  recipientPhoneNumber: string
 
   @IsString()
   msgTemplateKey: string
