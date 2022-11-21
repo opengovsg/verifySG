@@ -74,6 +74,12 @@ export class SMSService {
     const { senderId, phoneNumber: senderPhoneNumber } =
       this.getAgencySenderIdAndPhoneNumber(agencyShortName)
 
+    // processing this here so that
+    // 1. message previews are easier to generate (just leave the entire uniqueUrl blank)
+    // 2. we can switch around different variations of the uniqueUrl without changing the database, for e.g.
+    // `go.gov.sg/check-sms-${uniqueParamString}` or even randomising between them
+    const uniqueUrl = `check.go.gov.sg/${uniqueParamString}`
+
     return {
       senderId,
       senderPhoneNumber,
@@ -83,7 +89,7 @@ export class SMSService {
         .replace('{{officerName}}', officerName)
         .replace('{{officerPosition}}', officerPosition)
         .replace('{{agencyName}}', agencyName)
-        .replace('{{uniqueParamString}}', uniqueParamString),
+        .replace('{{uniqueUrl}}', uniqueUrl),
       status: TwilioMessageStatus.NOT_SENT,
       sid: null,
     }
