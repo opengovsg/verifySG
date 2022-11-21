@@ -199,10 +199,10 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'officerName',
         'officerPosition',
         'agencyName',
-        'uniqueParamString',
+        'uniqueUrl',
       ],
       message:
-        'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nYou can verify this message by visiting check.go.gov.sg/{{uniqueParamString}}.',
+        'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
     },
   },
 ]
