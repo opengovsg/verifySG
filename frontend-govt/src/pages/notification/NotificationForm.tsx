@@ -29,9 +29,13 @@ import MessagePreview from '@/components/MessagePreview'
 import { useAuth } from '@/contexts/auth/AuthContext'
 import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import { SGNotifyMessageTemplateParams } from '~shared/types/api'
+import {
+  MessageTemplateType,
+  SGNotifyMessageTemplateParams,
+} from '~shared/types/api'
 
 interface NotificationFormData {
+  type: MessageTemplateType.SGNOTIFY
   nric: string
   msgTemplateKey: string
 }
@@ -51,6 +55,7 @@ const useNotificationForm = () => {
     mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
   })
   const { watch, reset, setValue, handleSubmit } = formMethods
+  setValue('type', MessageTemplateType.SGNOTIFY)
 
   const { setTargetNRIC, setMsgTemplateKey } = useNotificationData()
 
@@ -131,6 +136,7 @@ const useNotificationForm = () => {
     sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
+        // TODO: delete since we are not using feedback form anymore?
         if (requiresFeedbackForm(officerAgency)) {
           setTargetNRIC(data.nric)
           setMsgTemplateKey(data.msgTemplateKey)
