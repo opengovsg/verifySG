@@ -17,7 +17,11 @@ import HeaderContainer from '@/components/HeaderContainer'
 import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
 import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import { SendNotificationReqDto } from '~shared/types/api'
+import {
+  MessageTemplateDto,
+  SendNotificationReqDto,
+  SGNotifyMessageTemplateParams,
+} from '~shared/types/api'
 
 export interface MessageTemplateOption {
   // shape for React Select options
@@ -66,6 +70,19 @@ export const getMessageTemplateOptionByValue = (
     (option) => option.value === targetValue,
   )
   return option ?? null
+}
+
+export const getParamsByMsgTemplateKey = <T,>(
+  msgTemplateKey: string,
+  messageTemplates: MessageTemplateDto[] | undefined,
+): T | undefined => {
+  if (!msgTemplateKey || !messageTemplates) return
+
+  const messageTemplate = messageTemplates.find(
+    (template) => template.key === msgTemplateKey,
+  )
+  if (!messageTemplate || !messageTemplate.params) return
+  return messageTemplate.params as unknown as T
 }
 
 export const NotificationForm: React.FC = () => {

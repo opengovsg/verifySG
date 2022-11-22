@@ -17,6 +17,7 @@ import nric from 'nric'
 
 import {
   getMessageTemplateOptionByValue,
+  getParamsByMsgTemplateKey,
   MessageTemplateOption,
   TemplateSelectionMenu,
   useMessageTemplates,
@@ -61,18 +62,6 @@ const useSGNotifyForm = () => {
         }
       }) ?? []
 
-  const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
-    msgTemplateKey: string,
-  ): SGNotifyMessageTemplateParams | undefined => {
-    if (!msgTemplateKey || !messageTemplates) return
-
-    const messageTemplate = messageTemplates.find(
-      (template) => template.key === msgTemplateKey,
-    )
-    if (!messageTemplate || !messageTemplate.params) return
-    return messageTemplate.params as SGNotifyMessageTemplateParams
-  }
-
   // query hook to mutate data
   const sendNotificationMutation = useMutation(
     NotificationService.sendNotification,
@@ -104,9 +93,11 @@ const useSGNotifyForm = () => {
 
   const onSubmit = handleSubmit(submissionHandler)
 
-  const templateParams = getSGNotifyMessageTemplateParamsByMsgTemplateKey(
-    watchedMessageTemplate,
-  )
+  const templateParams =
+    getParamsByMsgTemplateKey<SGNotifyMessageTemplateParams>(
+      watchedMessageTemplate,
+      messageTemplates,
+    )
 
   const clearInputs = () => reset()
 
