@@ -3,10 +3,19 @@ import { Control, Controller } from 'react-hook-form'
 import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useQuery } from 'react-query'
 import Select, { SingleValue } from 'react-select'
-import { Heading, VStack } from '@chakra-ui/react'
+import {
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack,
+} from '@chakra-ui/react'
 
 import HeaderContainer from '@/components/HeaderContainer'
 import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
+import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
 import { SendNotificationReqDto } from '~shared/types/api'
 
@@ -76,7 +85,21 @@ export const NotificationForm: React.FC = () => {
         spacing={[4, 4, 8, 8]}
         pb={20}
       >
-        <SGNotifyForm />
+        <Tabs>
+          <TabList>
+            <Tab>Singpass</Tab>
+            <Tab>SMS</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <SGNotifyForm />
+            </TabPanel>
+            <TabPanel>
+              <SMSForm />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </VStack>
     </HeaderContainer>
   )
