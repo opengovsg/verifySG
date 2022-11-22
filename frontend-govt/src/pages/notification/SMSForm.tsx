@@ -131,7 +131,7 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
   } = formMethods
 
   return (
-    <>
+    <VStack spacing="15px">
       <InlineMessage
         variant="info"
         w="100%"
@@ -225,6 +225,6 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
           </VStack>
         </form>
       </Box>
-    </>
+    </VStack>
   )
 }
