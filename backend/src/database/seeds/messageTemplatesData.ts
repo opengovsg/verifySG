@@ -191,7 +191,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
   {
     agencyId: 'OGP',
     key: 'ogp-sms-test',
-    menu: 'SMS Test (CheckGoGovSG)',
+    menu: 'SMS Test',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,

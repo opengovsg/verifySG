@@ -7,13 +7,15 @@ import sanitizeHtml from 'sanitize-html'
 import { messageContentFactory, SelectedTemplatePreviewParams } from './helpers'
 
 interface MessagePreviewProps {
-  nric: string
   selectedTemplate: SelectedTemplatePreviewParams | undefined
+  nric?: string
+  recipientPhoneNumber?: string
 }
 
 export const MessagePreview: React.FC<MessagePreviewProps> = ({
-  nric,
   selectedTemplate,
+  nric,
+  recipientPhoneNumber,
 }) => {
   // query hooks to retrieve and mutate data
   const { data: profile } = useQuery(['profile'], OfficerService.getOfficer)
@@ -24,7 +26,6 @@ export const MessagePreview: React.FC<MessagePreviewProps> = ({
   const agencyName = profile?.agency.name ?? '<NO AGENCY ENTERED>'
 
   const messageContent = messageContentFactory(
-    nric,
     {
       agencyShortName,
       agencyName,
@@ -34,6 +35,8 @@ export const MessagePreview: React.FC<MessagePreviewProps> = ({
       officerPosition,
     },
     selectedTemplate,
+    nric,
+    recipientPhoneNumber,
   )
 
   return (
