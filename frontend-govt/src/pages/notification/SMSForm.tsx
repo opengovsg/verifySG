@@ -19,6 +19,7 @@ import {
   getParamsByMsgTemplateKey,
   MessageTemplateOption,
   TemplateSelectionMenu,
+  useDefaultMessageTemplate,
   useMessageTemplates,
   useToastOptions,
 } from '@/pages/notification/NotificationForm'
@@ -26,7 +27,7 @@ import {
   MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationReqSmsDto,
-  SMSMessageTemplateParams,
+  SmsMessageTemplateParams,
 } from '~shared/types/api'
 
 interface SGNotifyFormProps {
@@ -42,11 +43,13 @@ const useSmsForm = () => {
 
   const toast = useToast(useToastOptions)
 
-  const { messageTemplates, isLoading } = useMessageTemplates(
-    // this is ok as SendNotificationReqSmsDto is a subset of SendNotificationReqDto
+  const { messageTemplates, isLoading } = useMessageTemplates()
+  useDefaultMessageTemplate(
     setValue as UseFormSetValue<SendNotificationReqDto>,
+    MessageTemplateType.SMS,
+    messageTemplates,
+    isLoading,
   )
-
   const watchedMessageTemplate = watch('msgTemplateKey')
 
   const smsMessageTemplateOptions: MessageTemplateOption[] =
@@ -92,7 +95,7 @@ const useSmsForm = () => {
 
   const onSubmit = handleSubmit(submissionHandler)
 
-  const templateParams = getParamsByMsgTemplateKey<SMSMessageTemplateParams>(
+  const templateParams = getParamsByMsgTemplateKey<SmsMessageTemplateParams>(
     watchedMessageTemplate,
     messageTemplates,
   )

@@ -36,22 +36,22 @@ import {
   SendNotificationReqSmsDto,
   SendNotificationResDto,
   SGNotifyMessageTemplateParams,
-  SMSMessageTemplateParams,
+  SmsMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
 type BodyType<
-  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
-> = TParams extends SMSMessageTemplateParams
+  TParams extends SmsMessageTemplateParams | SGNotifyMessageTemplateParams,
+> = TParams extends SmsMessageTemplateParams
   ? SendNotificationReqSmsDto
   : SendNotificationReqSGNotifyDto
 
 type ModalityParamsType<
-  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
-> = TParams extends SMSMessageTemplateParams ? SMSParams : SGNotifyParams
+  TParams extends SmsMessageTemplateParams | SGNotifyMessageTemplateParams,
+> = TParams extends SmsMessageTemplateParams ? SMSParams : SGNotifyParams
 
 export abstract class NotificationsService<
-  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
+  TParams extends SmsMessageTemplateParams | SGNotifyMessageTemplateParams,
 > {
   protected constructor(
     @InjectRepository(Notification)
@@ -226,7 +226,7 @@ export abstract class NotificationsService<
   }
 }
 
-export class SMSNotificationService extends NotificationsService<SMSMessageTemplateParams> {
+export class SMSNotificationService extends NotificationsService<SmsMessageTemplateParams> {
   constructor(
     @InjectRepository(Notification)
     protected notificationRepository: Repository<Notification>,
@@ -260,7 +260,7 @@ export class SMSNotificationService extends NotificationsService<SMSMessageTempl
     agencyName: string
     agencyShortName: string
     notificationBody: SendNotificationReqSmsDto
-    params: SMSMessageTemplateParams
+    params: SmsMessageTemplateParams
     logoUrl: string
   }): Promise<{ modalityParams: SMSParams; recipientId: string }> {
     const recipientId = notificationBody.recipientPhoneNumber
