@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { Control, Controller, useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
-import { useHistory } from 'react-router-dom'
 import Select, { SingleValue } from 'react-select'
 import {
   Box,
@@ -11,8 +10,6 @@ import {
   StackItem,
   VStack,
 } from '@chakra-ui/react'
-import { requiresFeedbackForm } from '@constants/feedback-form-metadata'
-import { FEEDBACKFORM_ROUTE } from '@constants/routes'
 import {
   Button,
   FormErrorMessage,
@@ -26,8 +23,6 @@ import nric from 'nric'
 
 import HeaderContainer from '@/components/HeaderContainer'
 import MessagePreview from '@/components/MessagePreview'
-import { useAuth } from '@/contexts/auth/AuthContext'
-import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
 import {
   MessageTemplateType,
@@ -57,18 +52,14 @@ const useNotificationForm = () => {
   const { watch, reset, setValue, handleSubmit } = formMethods
   setValue('type', MessageTemplateType.SGNOTIFY)
 
-  const { setTargetNRIC, setMsgTemplateKey } = useNotificationData()
-
   const toast = useToast({
     isClosable: true,
+    duration: null,
     containerStyle: {
       width: '680px',
       maxWidth: '100%',
     },
-    duration: 6000,
   })
-  const history = useHistory()
-  const { officerAgency } = useAuth()
 
   const { data: messageTemplates, isLoading } = useQuery(
     ['messageTemplates'], // query key must be in array in React 18
@@ -136,13 +127,6 @@ const useNotificationForm = () => {
     sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        // TODO: delete since we are not using feedback form anymore?
-        if (requiresFeedbackForm(officerAgency)) {
-          setTargetNRIC(data.nric)
-          setMsgTemplateKey(data.msgTemplateKey)
-          history.push(FEEDBACKFORM_ROUTE)
-          return
-        }
         // upon successful notification, reset NRIC but keep selected message template
         setValue('nric', '')
       },
