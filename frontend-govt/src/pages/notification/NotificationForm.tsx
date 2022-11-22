@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { Control, Controller, useForm } from 'react-hook-form'
+import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useMutation, useQuery } from 'react-query'
 import Select, { SingleValue } from 'react-select'
 import {
@@ -26,17 +27,18 @@ import MessagePreview from '@/components/MessagePreview'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
 import {
   MessageTemplateType,
+  SendNotificationReqDto,
   SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 
-interface NotificationFormData {
+interface SendNotificationReqSGNotifyDto {
   type: MessageTemplateType.SGNOTIFY
   nric: string
   msgTemplateKey: string
 }
 
 interface NotificationFormProps {
-  onSubmit?: (data: NotificationFormData) => void
+  onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
 }
 
 interface MessageTemplateOption {
@@ -45,22 +47,19 @@ interface MessageTemplateOption {
   label: string // menu
 }
 
-const useNotificationForm = () => {
-  const formMethods = useForm<NotificationFormData>({
-    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
-  })
-  const { watch, reset, setValue, handleSubmit } = formMethods
-  setValue('type', MessageTemplateType.SGNOTIFY)
+export const useToastOptions = {
+  // there is a bug with setting duration in useToast; always defaults to 5 seconds
+  // to fix in the future
+  isClosable: true,
+  containerStyle: {
+    width: '680px',
+    maxWidth: '100%',
+  },
+}
 
-  const toast = useToast({
-    isClosable: true,
-    duration: null,
-    containerStyle: {
-      width: '680px',
-      maxWidth: '100%',
-    },
-  })
-
+const useMessageTemplates = (
+  setValue: UseFormSetValue<SendNotificationReqDto>,
+) => {
   const { data: messageTemplates, isLoading } = useQuery(
     ['messageTemplates'], // query key must be in array in React 18
     MessageTemplateService.getMessageTemplates,
@@ -71,27 +70,53 @@ const useNotificationForm = () => {
     if (!isLoading && messageTemplates?.length === 1) {
       // load default value on query load
       setValue('msgTemplateKey', messageTemplates[0].key)
+      setValue('type', messageTemplates[0].type)
     }
   }, [isLoading, messageTemplates, setValue])
 
+  return {
+    messageTemplates,
+    isLoading,
+  }
+}
+
+const getMessageTemplateOptionByValue = (
+  targetValue: string,
+  messageTemplateOptions: MessageTemplateOption[],
+): MessageTemplateOption | null => {
+  const option = messageTemplateOptions.find(
+    (option) => option.value === targetValue,
+  )
+  return option ?? null
+}
+
+const useNotificationForm = () => {
+  const formMethods = useForm<SendNotificationReqSGNotifyDto>({
+    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
+  })
+  const { watch, reset, setValue, handleSubmit } = formMethods
+  setValue('type', MessageTemplateType.SGNOTIFY)
+
+  const toast = useToast(useToastOptions)
+
+  const { messageTemplates, isLoading } = useMessageTemplates(
+    // this is ok as SendNotificationReqSGNotifyDto is a subset of SendNotificationReqDto
+    setValue as UseFormSetValue<SendNotificationReqDto>,
+  )
+
   const watchedMessageTemplate = watch('msgTemplateKey')
 
-  const messageTemplateOptions: MessageTemplateOption[] =
-    messageTemplates?.map((messageTemplate) => {
-      return {
-        value: messageTemplate.key,
-        label: messageTemplate.menu,
-      }
-    }) ?? []
-
-  const getMessageTemplateOptionByValue = (
-    targetValue: string,
-  ): MessageTemplateOption | null => {
-    const option = messageTemplateOptions.find(
-      (option) => option.value === targetValue,
-    )
-    return option ?? null
-  }
+  const sgNotifyMessageTemplateOptions: MessageTemplateOption[] =
+    messageTemplates
+      ?.filter((template) => {
+        return template.type === MessageTemplateType.SGNOTIFY
+      })
+      .map((messageTemplate) => {
+        return {
+          value: messageTemplate.key,
+          label: messageTemplate.menu,
+        }
+      }) ?? []
 
   const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
     msgTemplateKey: string,
@@ -119,11 +144,12 @@ const useNotificationForm = () => {
         toast({
           status: 'warning',
           description: `${err}` || 'Something went wrong',
+          isClosable: false,
         })
       },
     },
   )
-  const submissionHandler = (data: NotificationFormData) => {
+  const submissionHandler = (data: SendNotificationReqSGNotifyDto) => {
     sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
@@ -146,7 +172,7 @@ const useNotificationForm = () => {
     clearInputs,
     templateParams,
     formMethods,
-    messageTemplateOptions,
+    messageTemplateOptions: sgNotifyMessageTemplateOptions,
     isLoading,
     getMessageTemplateOptionByValue,
     isMutating: sendNotificationMutation.isLoading,
@@ -188,28 +214,28 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         spacing={[4, 4, 8, 8]}
         pb={20}
       >
-        <InlineMessage
-          variant="info"
-          w="100%"
-          fontSize={['sm', 'sm', 'md', 'md']}
-          useMarkdown
-          // override internal theme style
-          //TODO: shift these into theme folder for cleanup refactor
-          sx={{
-            padding: '8px',
-            display: 'flex',
-            p: '1rem',
-            justifyContent: 'start',
-            color: 'secondary.700',
-            bg: 'primary.200',
-          }}
-        >
-          When you click the ‘Notify call recipient’ button, they will receive a
-          Singpass push notification that you will be calling them shortly. The
-          notification will also show your name, your position, and the purpose
-          of your call.
-        </InlineMessage>
         <Box width="100%">
+          <InlineMessage
+            variant="info"
+            w="100%"
+            fontSize={['sm', 'sm', 'md', 'md']}
+            useMarkdown
+            // override internal theme style
+            //TODO: shift these into theme folder for cleanup refactor
+            sx={{
+              padding: '8px',
+              display: 'flex',
+              p: '1rem',
+              justifyContent: 'start',
+              color: 'secondary.700',
+              bg: 'primary.200',
+            }}
+          >
+            When you click the ‘Notify call recipient’ button, they will receive
+            a Singpass push notification that you will be calling them shortly.
+            The notification will also show your name, your position, and the
+            purpose of your call.
+          </InlineMessage>
           <form onSubmit={onSubmit}>
             <VStack align="left" spacing={[8, 8, 8, 8]}>
               <FormControl isInvalid={!!errors.nric}>
@@ -237,8 +263,11 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
                   <TemplateSelectionMenu
                     control={control}
                     messageTemplateOptions={messageTemplateOptions}
-                    getMessageTemplateOptionByValue={
-                      getMessageTemplateOptionByValue
+                    getMessageTemplateOptionByValue={(value) =>
+                      getMessageTemplateOptionByValue(
+                        value,
+                        messageTemplateOptions,
+                      )
                     }
                   />
                 </Skeleton>
@@ -283,7 +312,7 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
 }
 
 interface TemplateSelectionMenuProps {
-  control: Control<NotificationFormData>
+  control: Control<SendNotificationReqSGNotifyDto>
   messageTemplateOptions: MessageTemplateOption[]
   getMessageTemplateOptionByValue: (
     target: string,
