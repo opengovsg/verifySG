@@ -41,6 +41,7 @@ jobs:
           TEST_EMAIL: 'internal-testing@open.gov.sg'
           # encrypted secret env variable, thus cannot echo based on $STAGING_BRANCH or $PRODUCTION_BRANCH
           TEST_NRIC: ${{ github.ref == 'refs/heads/master' && secrets.TESTING_NRIC_PROD || secrets.TESTING_NRIC_STAGING }}
+          TEST_PHONE_NUMBER: ${{ secrets.TESTING_PHONE_NUMBER }}
         run: npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()

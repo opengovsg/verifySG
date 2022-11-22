@@ -4,24 +4,30 @@ import { checkwhoUrl } from './global-setup'
 
 const testRecipientNric = process.env.TEST_NRIC
 
-let page: Page;
+let page: Page
 
 test.beforeAll(async ({ browser }) => {
-  page = await browser.newPage();
-});
+  page = await browser.newPage()
+})
 
 test.afterAll(async () => {
-  await page.close();
-});
+  await page.close()
+})
 
 test.describe.serial('Test sending Singpass notification', () => {
   test('Send valid notification successfully', async () => {
     await page.goto(`${checkwhoUrl}/notification`)
+    if (!testRecipientNric) {
+      throw new Error('TEST_NRIC environment variable not set')
+    }
     await page.locator('[name="nric"]').fill(testRecipientNric)
     // select message template
-    await page.locator('.css-1d8n9bt').click()
+    await page
+      .getByRole('tabpanel', { name: 'Singpass' })
+      .locator('input[type="text"]')
+      .click()
     // select first option
-    await page.locator('#react-select-4-option-0').click()
+    await page.locator('#react-select-6-option-0').click()
     // click send button and get response
     // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([
