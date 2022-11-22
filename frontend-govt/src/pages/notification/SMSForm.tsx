@@ -196,10 +196,10 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
                 Message Preview
               </FormLabel>
               <Skeleton isLoaded={!isLoading}>
-                {/*<MessagePreview*/}
-                {/*  recipientPhoneNumber={getValues('recipientPhoneNumber') ?? ''}*/}
-                {/*  selectedTemplate={templateParams}*/}
-                {/*/>*/}
+                <MessagePreview
+                  recipientPhoneNumber={getValues('recipientPhoneNumber') ?? ''}
+                  selectedTemplate={templateParams}
+                />
               </Skeleton>
             </StackItem>
             <StackItem>
