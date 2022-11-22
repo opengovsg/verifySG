@@ -34,7 +34,7 @@ import {
   SendNotificationReqDto,
   SendNotificationResDto,
   SGNotifyMessageTemplateParams,
-  SMSMessageTemplateParams,
+  SmsMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
@@ -105,7 +105,7 @@ export class NotificationsService {
             officerName: officer.name,
             officerPosition: officer.position,
           },
-          params as SMSMessageTemplateParams,
+          params as SmsMessageTemplateParams,
           uniqueParamString,
         )
         break

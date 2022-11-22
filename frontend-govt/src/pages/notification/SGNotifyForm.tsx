@@ -20,6 +20,7 @@ import {
   getParamsByMsgTemplateKey,
   MessageTemplateOption,
   TemplateSelectionMenu,
+  useDefaultMessageTemplate,
   useMessageTemplates,
   useToastOptions,
 } from '@/pages/notification/NotificationForm'
@@ -43,9 +44,12 @@ const useSGNotifyForm = () => {
 
   const toast = useToast(useToastOptions)
 
-  const { messageTemplates, isLoading } = useMessageTemplates(
-    // this is ok as SendNotificationReqSGNotifyDto is a subset of SendNotificationReqDto
+  const { messageTemplates, isLoading } = useMessageTemplates()
+  useDefaultMessageTemplate(
     setValue as UseFormSetValue<SendNotificationReqDto>,
+    MessageTemplateType.SGNOTIFY,
+    messageTemplates,
+    isLoading,
   )
 
   const watchedMessageTemplate = watch('msgTemplateKey')

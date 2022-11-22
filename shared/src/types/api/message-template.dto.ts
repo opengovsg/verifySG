@@ -13,7 +13,7 @@ export interface SGNotifyMessageTemplateParams {
   longMessageParams: Record<string, string> // exclude params recorded elsewhere like agency and officer info
 }
 
-export interface SMSMessageTemplateParams {
+export interface SmsMessageTemplateParams {
   type: MessageTemplateType.SMS
   requiredParams: string[]
   message: string
@@ -21,7 +21,7 @@ export interface SMSMessageTemplateParams {
 
 export type MessageTemplateParams =
   | SGNotifyMessageTemplateParams
-  | SMSMessageTemplateParams
+  | SmsMessageTemplateParams
 
 export class MessageTemplateDto {
   @IsString()

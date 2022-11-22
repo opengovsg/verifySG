@@ -35,22 +35,28 @@ export const useToastOptions = {
   },
 }
 
-export const useMessageTemplates = (
+export const useDefaultMessageTemplate = (
   setValue: UseFormSetValue<SendNotificationReqDto>,
+  messageTemplateType: MessageTemplateDto['type'],
+  messageTemplates: MessageTemplateDto[] | undefined,
+  isLoading: boolean,
 ) => {
+  // load default value if response only contains a single message template
+  const messageTemplateFiltered = messageTemplates?.filter(
+    (template) => template.type === messageTemplateType,
+  )
+  useEffect(() => {
+    if (!isLoading && messageTemplateFiltered?.length === 1) {
+      setValue('msgTemplateKey', messageTemplateFiltered[0].key)
+    }
+  }, [isLoading, messageTemplates])
+}
+
+export const useMessageTemplates = () => {
   const { data: messageTemplates, isLoading } = useQuery(
     ['messageTemplates'], // query key must be in array in React 18
     MessageTemplateService.getMessageTemplates,
   )
-
-  // load default value if response only contains a single purpose
-  useEffect(() => {
-    if (!isLoading && messageTemplates?.length === 1) {
-      // load default value on query load
-      setValue('msgTemplateKey', messageTemplates[0].key)
-      setValue('type', messageTemplates[0].type)
-    }
-  }, [isLoading, messageTemplates, setValue])
 
   return {
     messageTemplates,

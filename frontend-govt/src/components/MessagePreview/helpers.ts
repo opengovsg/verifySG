@@ -1,7 +1,7 @@
 import {
   MessageTemplateType,
   SGNotifyMessageTemplateParams,
-  SMSMessageTemplateParams,
+  SmsMessageTemplateParams,
 } from '~shared/types/api'
 import { maskNric } from '~shared/utils/nric'
 import {
@@ -23,7 +23,7 @@ export interface OfficerParams {
 
 export type SelectedTemplatePreviewParams =
   | SGNotifyMessageTemplateParams
-  | SMSMessageTemplateParams
+  | SmsMessageTemplateParams
 
 // thought about it and decided recipientPhoneNumber is not needed in the preview
 // doesn't serve any purpose; if forwarded, can be easily changed
@@ -103,7 +103,7 @@ const generateSGNotifyMessagePreview = (
 const generateSmsMessagePreview = (
   agencyParams: AgencyParams,
   officerParams: OfficerParams,
-  selectedTemplate: SMSMessageTemplateParams,
+  selectedTemplate: SmsMessageTemplateParams,
 ) => {
   const { agencyName } = agencyParams
   const { officerName, officerPosition } = officerParams
