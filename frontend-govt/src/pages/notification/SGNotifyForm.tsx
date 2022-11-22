@@ -150,10 +150,9 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = () => {
           bg: 'primary.200',
         }}
       >
-        When you click the ‘Notify call recipient’ button, they will receive a
-        Singpass push notification that you will be calling them shortly. The
-        notification will also show your name, your position, and the purpose of
-        your call.
+        When you click the ‘Notify call recipient’ button, a Singpass push
+        notification will be sent to the NRIC specified with the content
+        previewed below.
       </InlineMessage>
       <Box width="100%">
         <form onSubmit={onSubmit}>

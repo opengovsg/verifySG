@@ -17,11 +17,7 @@ import HeaderContainer from '@/components/HeaderContainer'
 import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
 import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import {
-  MessageTemplateDto,
-  SendNotificationReqDto,
-  SGNotifyMessageTemplateParams,
-} from '~shared/types/api'
+import { MessageTemplateDto, SendNotificationReqDto } from '~shared/types/api'
 
 export interface MessageTemplateOption {
   // shape for React Select options
@@ -102,7 +98,7 @@ export const NotificationForm: React.FC = () => {
         spacing={[4, 4, 8, 8]}
         pb={20}
       >
-        <Tabs>
+        <Tabs isFitted>
           <TabList>
             <Tab>Singpass</Tab>
             <Tab>SMS</Tab>

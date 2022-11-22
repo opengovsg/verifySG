@@ -13,10 +13,10 @@ import {
   useToast,
 } from '@opengovsg/design-system-react'
 import { NotificationService } from '@services/NotificationService'
-import nric from 'nric'
 
 import {
   getMessageTemplateOptionByValue,
+  getParamsByMsgTemplateKey,
   MessageTemplateOption,
   TemplateSelectionMenu,
   useMessageTemplates,
@@ -25,34 +25,34 @@ import {
 import {
   MessageTemplateType,
   SendNotificationReqDto,
-  SendNotificationReqSGNotifyDto,
-  SGNotifyMessageTemplateParams,
+  SendNotificationReqSmsDto,
+  SMSMessageTemplateParams,
 } from '~shared/types/api'
 
 interface SGNotifyFormProps {
-  onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
+  onSubmit?: (data: SendNotificationReqSmsDto) => void
 }
 
-const useSGNotifyForm = () => {
-  const formMethods = useForm<SendNotificationReqSGNotifyDto>({
-    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
+const useSmsForm = () => {
+  const formMethods = useForm<SendNotificationReqSmsDto>({
+    mode: 'onTouched', // to validate phone number before submission
   })
   const { watch, reset, setValue, handleSubmit } = formMethods
-  setValue('type', MessageTemplateType.SGNOTIFY)
+  setValue('type', MessageTemplateType.SMS)
 
   const toast = useToast(useToastOptions)
 
   const { messageTemplates, isLoading } = useMessageTemplates(
-    // this is ok as SendNotificationReqSGNotifyDto is a subset of SendNotificationReqDto
+    // this is ok as SendNotificationReqSmsDto is a subset of SendNotificationReqDto
     setValue as UseFormSetValue<SendNotificationReqDto>,
   )
 
   const watchedMessageTemplate = watch('msgTemplateKey')
 
-  const sgNotifyMessageTemplateOptions: MessageTemplateOption[] =
+  const smsMessageTemplateOptions: MessageTemplateOption[] =
     messageTemplates
       ?.filter((template) => {
-        return template.type === MessageTemplateType.SGNOTIFY
+        return template.type === MessageTemplateType.SMS
       })
       .map((messageTemplate) => {
         return {
@@ -61,18 +61,6 @@ const useSGNotifyForm = () => {
         }
       }) ?? []
 
-  const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
-    msgTemplateKey: string,
-  ): SGNotifyMessageTemplateParams | undefined => {
-    if (!msgTemplateKey || !messageTemplates) return
-
-    const messageTemplate = messageTemplates.find(
-      (template) => template.key === msgTemplateKey,
-    )
-    if (!messageTemplate || !messageTemplate.params) return
-    return messageTemplate.params as SGNotifyMessageTemplateParams
-  }
-
   // query hook to mutate data
   const sendNotificationMutation = useMutation(
     NotificationService.sendNotification,
@@ -80,7 +68,7 @@ const useSGNotifyForm = () => {
       onSuccess: () => {
         toast({
           status: 'success',
-          description: `Notification sent to ${watch('nric')}`,
+          description: `Notification sent to ${watch('recipientPhoneNumber')}`,
         })
       },
       onError: (err) => {
@@ -92,20 +80,21 @@ const useSGNotifyForm = () => {
       },
     },
   )
-  const submissionHandler = (data: SendNotificationReqSGNotifyDto) => {
+  const submissionHandler = (data: SendNotificationReqSmsDto) => {
     sendNotificationMutation.mutate(data, {
       // only update notif context and send user to feedback form when notification is sent successfully
       onSuccess: () => {
-        // upon successful notification, reset NRIC but keep selected message template
-        setValue('nric', '')
+        // upon successful notification, reset phone number but keep selected message template
+        setValue('recipientPhoneNumber', '')
       },
     })
   }
 
   const onSubmit = handleSubmit(submissionHandler)
 
-  const templateParams = getSGNotifyMessageTemplateParamsByMsgTemplateKey(
+  const templateParams = getParamsByMsgTemplateKey<SMSMessageTemplateParams>(
     watchedMessageTemplate,
+    messageTemplates,
   )
 
   const clearInputs = () => reset()
@@ -115,7 +104,7 @@ const useSGNotifyForm = () => {
     clearInputs,
     templateParams,
     formMethods,
-    messageTemplateOptions: sgNotifyMessageTemplateOptions,
+    messageTemplateOptions: smsMessageTemplateOptions,
     isLoading,
     getMessageTemplateOptionByValue,
     isMutating: sendNotificationMutation.isLoading,
@@ -132,7 +121,7 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
     isLoading,
     getMessageTemplateOptionByValue,
     isMutating,
-  } = useSGNotifyForm()
+  } = useSmsForm()
 
   const {
     register,
@@ -159,30 +148,31 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
           bg: 'primary.200',
         }}
       >
-        When you click the ‘Notify call recipient’ button, they will receive a
-        Singpass push notification that you will be calling them shortly. The
-        notification will also show your name, your position, and the purpose of
-        your call.
+        When you click the ‘Notify call recipient’ button, an SMS will be sent
+        to the phone number specified below with the content previewed below.
       </InlineMessage>
       <Box width="100%">
         <form onSubmit={onSubmit}>
           <VStack align="left" spacing={[8, 8, 8, 8]}>
-            <FormControl isInvalid={!!errors.nric}>
+            <FormControl isInvalid={!!errors.recipientPhoneNumber}>
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                NRIC / FIN
+                Mobile Number
               </FormLabel>
               <Input
-                {...register('nric', {
-                  required: 'Please enter a valid NRIC / FIN',
+                {...register('recipientPhoneNumber', {
+                  required: 'Please enter a valid mobile number',
                   validate: {
                     valid: (v) =>
-                      nric.validate(v) || 'Please enter a valid NRIC / FIN',
+                      (/^\d{8}$/.test(v) && /^[89]/.test(v)) ||
+                      'Please enter a valid mobile number',
                   },
                 })}
-                placeholder="e.g. S1234567D"
+                placeholder="e.g. 81234567"
                 autoFocus
               />
-              <FormErrorMessage>{errors.nric?.message}</FormErrorMessage>
+              <FormErrorMessage>
+                {errors.recipientPhoneNumber?.message}
+              </FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.msgTemplateKey}>
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
@@ -206,10 +196,10 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
                 Message Preview
               </FormLabel>
               <Skeleton isLoaded={!isLoading}>
-                <MessagePreview
-                  nric={getValues('nric') ?? ''}
-                  selectedTemplate={templateParams}
-                />
+                {/*<MessagePreview*/}
+                {/*  recipientPhoneNumber={getValues('recipientPhoneNumber') ?? ''}*/}
+                {/*  selectedTemplate={templateParams}*/}
+                {/*/>*/}
               </Skeleton>
             </StackItem>
             <StackItem>
