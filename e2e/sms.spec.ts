@@ -27,7 +27,7 @@ test.describe.serial('Test sending SMS notification', () => {
     // select message template
     await page
       .getByRole('tabpanel', { name: 'SMS' })
-      .locator('input[type="text"]')
+      .locator('form svg')
       .click()
     // select first option
     await page.locator('#react-select-7-option-0').click()

@@ -24,7 +24,7 @@ test.describe.serial('Test sending Singpass notification', () => {
     // select message template
     await page
       .getByRole('tabpanel', { name: 'Singpass' })
-      .locator('input[type="text"]')
+      .locator('form svg')
       .click()
     // select first option
     await page.locator('#react-select-6-option-0').click()
