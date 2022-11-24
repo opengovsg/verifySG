@@ -25,7 +25,7 @@ const apiModules = [
     ...apiModules,
     RouterModule.register([
       {
-        path: 'api',
+        path: 'api/v1',
         children: apiModules,
       },
     ]),
