@@ -16,7 +16,7 @@ import {
 export class CheckController {
   constructor(private uniqueParamService: UniqueParamService) {}
 
-  @Get(':uniqueParamString')
+  @Get('/sms/:uniqueParamString')
   async verifyUniqueParamString(
     @Param('uniqueParamString') uniqueParamString: string,
   ): Promise<DisplayData> {
