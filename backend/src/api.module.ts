@@ -8,6 +8,7 @@ import { HealthModule } from './health/health.module'
 import { MessageTemplatesModule } from './message-templates/message-templates.module'
 import { NotificationsModule } from './notifications/notifications.module'
 import { OfficersModule } from './officers/officers.module'
+import { CheckModule } from './verify/check.module'
 
 const apiModules = [
   HealthModule,
@@ -18,6 +19,7 @@ const apiModules = [
   AgenciesModule,
   NotificationsModule,
   MessageTemplatesModule,
+  CheckModule,
 ]
 
 @Module({
