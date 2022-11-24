@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
-const API_BASE_URL = '/api'
+const API_BASE_URL = '/api/v1'
 
 export const getApiErrorMessage = (error: unknown): string => {
   const defaultErrMsg = 'Something went wrong'
