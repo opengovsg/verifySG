@@ -13,7 +13,6 @@ import { ConfigService, Logger } from 'core/providers'
 
 import { OfficerInfo, OfficerInfoInterface } from '../common/decorators'
 import { getRequestIp } from '../common/utils'
-import { OfficersService } from '../officers/officers.service'
 
 import { AuthOfficerService } from './auth-officer.service'
 
@@ -29,7 +28,6 @@ export class AuthOfficerController {
     private readonly authOfficerService: AuthOfficerService,
     private logger: Logger,
     private config: ConfigService,
-    private officersService: OfficersService,
   ) {}
 
   @Post()
