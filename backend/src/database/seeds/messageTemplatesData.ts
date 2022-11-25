@@ -199,7 +199,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          'The purpose of this call is to seek your assistance on a case that MAS is reviewing.<br><br>This call will be made in the next 10 minutes and you may verify the caller’s identity by using the <u>name</u> provided in this message.',
+          "The purpose of this call is to seek your assistance on a matter that you may be acquainted with.<br><br>This call will be made in the next 10 minutes and you may verify the caller's identity using the name provided in this message.",
       },
     },
   },
