@@ -25,7 +25,7 @@ test.describe.serial('Test sending Singpass notification', () => {
     // click send button and get response
     // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([
-      page.waitForResponse(`${checkwhoUrl}/api/notifications`),
+      page.waitForResponse(`${checkwhoUrl}/api/v1/notifications`),
       page.getByRole('button', { name: 'Notify call recipient' }).click(),
     ])
     expect(response.ok()).toBeTruthy()
@@ -35,7 +35,7 @@ test.describe.serial('Test sending Singpass notification', () => {
     await page.locator('[name="nric"]').fill('S1234567D')
     // no need to select template as state is kept between clicks
     const [response, _] = await Promise.all([
-      page.waitForResponse(`${checkwhoUrl}/api/notifications`),
+      page.waitForResponse(`${checkwhoUrl}/api/v1/notifications`),
       page.getByRole('button', { name: 'Notify call recipient' }).click(),
     ])
     expect(response.ok()).toBeFalsy()
