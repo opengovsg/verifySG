@@ -1,6 +1,6 @@
 import { IsDate, IsString, Length } from 'class-validator'
 
-import { IsNric } from '../../decorators'
+import { IsMobileNumber, IsNric } from '../../decorators'
 
 import {
   MessageTemplateSendNotificationResDto,
@@ -27,6 +27,7 @@ export class SendNotificationReqSmsDto {
 
   @IsString()
   @Length(8, 8)
+  @IsMobileNumber()
   recipientPhoneNumber: string
 
   @IsString()
