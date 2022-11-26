@@ -5,7 +5,11 @@ import { MessageStatus } from 'twilio/lib/rest/api/v2010/account/message'
 
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
-import { TWILIO_ENDPOINT_ERROR_MESSAGE } from '../constants'
+import {
+  GOGOVSG_ENDPOINT_ERROR_MESSAGE,
+  TWILIO_ENDPOINT_ERROR_MESSAGE,
+} from '../constants'
+import { GoGovSGService } from '../gogovsg/gogovsg.service'
 import {
   AgencyParams,
   OfficerParams,
@@ -31,7 +35,11 @@ export const supportedAgencies = ['OGP', 'MOM', 'MOH']
 export class SMSService {
   private readonly config: ConfigSchema['twilio']
 
-  constructor(private configService: ConfigService, private logger: Logger) {
+  constructor(
+    private configService: ConfigService,
+    private logger: Logger,
+    private gogovsgService: GoGovSGService,
+  ) {
     this.config = this.configService.get('twilio')
   }
 
@@ -65,13 +73,13 @@ export class SMSService {
     }
   }
 
-  generateSMSParamsByTemplate(
+  async generateSMSParamsByTemplate(
     recipientPhoneNumber: string,
     agencyParams: Omit<AgencyParams, 'agencyLogoUrl'>, // no need in SMS
     officerParams: OfficerParams,
     params: SmsMessageTemplateParams,
     uniqueParamString: string,
-  ): SMSParams {
+  ): Promise<SMSParams> {
     const { agencyShortName, agencyName } = agencyParams
     const { officerName, officerPosition } = officerParams
     const { message } = params
@@ -83,7 +91,23 @@ export class SMSService {
     // 1. message previews are easier to generate (just leave the entire uniqueUrl blank)
     // 2. we can switch around different variations of the uniqueUrl without changing the database, for e.g.
     // `go.gov.sg/check-sms-${uniqueParamString}` or even randomising between them
-    const uniqueUrl = `check.go.gov.sg/sms/${uniqueParamString}`
+
+    // for now, no staging version of CheckGoGovSG; just use production to call both staging and prod version of CheckWho backend (and render accordingly)
+    // const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
+    // use Vercel url first until DNS is updated
+    const checkerUrl = `check-go-gov-sg.vercel.app/sms/${uniqueParamString}`
+    const shortUrl = `check-sms-${uniqueParamString}` // to pass to Go API
+    const shortUrlRes = await this.gogovsgService
+      .createShortLink(checkerUrl, shortUrl)
+      .catch((err) => {
+        this.logger.error(JSON.stringify(err))
+        // todo: probably can do more detailed error handling in the future
+        throw new BadGatewayException(GOGOVSG_ENDPOINT_ERROR_MESSAGE)
+      })
+    const embeddedUrl =
+      this.configService.get('environment') === 'production'
+        ? `go.gov.sg/${shortUrlRes}`
+        : `staging.go.gov.sg/${shortUrlRes}`
 
     return {
       senderId,
@@ -94,7 +118,7 @@ export class SMSService {
         .replace('{{officerName}}', officerName)
         .replace('{{officerPosition}}', officerPosition)
         .replace('{{agencyName}}', agencyName)
-        .replace('{{uniqueUrl}}', uniqueUrl),
+        .replace('{{uniqueUrl}}', embeddedUrl),
       status: null,
       sid: null,
       errorCode: null,

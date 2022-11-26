@@ -34,6 +34,9 @@ export const NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE =
 export const TWILIO_ENDPOINT_ERROR_MESSAGE =
   'Unable to send notification due to an error with Twilio. Please contact us if you encounter this error.'
 
+export const GOGOVSG_ENDPOINT_ERROR_MESSAGE =
+  'Unable to send notification due to an error with Go.gov.sg. Please contact us if you encounter this error.'
+
 // logger messages upon encountering errors
 export const PUBLIC_KEY_ENDPOINT_UNAVAILABLE =
   'Error when getting public key from SGNotify discovery endpoint.'

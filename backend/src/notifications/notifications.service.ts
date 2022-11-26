@@ -276,7 +276,7 @@ export class SMSNotificationService extends NotificationsService<SmsMessageTempl
       },
     ) // use default expiry period for now
     return {
-      modalityParams: this.smsService.generateSMSParamsByTemplate(
+      modalityParams: await this.smsService.generateSMSParamsByTemplate(
         recipientId,
         {
           agencyShortName,
