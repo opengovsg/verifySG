@@ -78,7 +78,7 @@ export class SMSService {
     // 1. message previews are easier to generate (just leave the entire uniqueUrl blank)
     // 2. we can switch around different variations of the uniqueUrl without changing the database, for e.g.
     // `go.gov.sg/check-sms-${uniqueParamString}` or even randomising between them
-    const uniqueUrl = `check.go.gov.sg/${uniqueParamString}`
+    const uniqueUrl = `check.go.gov.sg/sms/${uniqueParamString}`
 
     return {
       senderId,
