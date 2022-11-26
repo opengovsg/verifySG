@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { BadGatewayException, Injectable } from '@nestjs/common'
 import twilio from 'twilio'
 
+import { MessageStatus } from 'twilio/lib/rest/api/v2010/account/message'
+
 import { ConfigSchema } from '../../core/config.schema'
-import { ConfigService } from '../../core/providers'
+import { ConfigService, Logger } from '../../core/providers'
+import { TWILIO_ENDPOINT_ERROR_MESSAGE } from '../constants'
 import {
   AgencyParams,
   OfficerParams,
@@ -10,23 +13,16 @@ import {
 
 import { SMSMessageTemplateParams } from '~shared/types/api'
 
-export enum TwilioMessageStatus {
-  NOT_SENT = 'NOT_SENT',
-  QUEUED = 'QUEUED',
-  SENDING = 'SENDING',
-  SENT = 'SENT',
-  DELIVERED = 'DELIVERED',
-  UNDELIVERED = 'UNDELIVERED',
-  FAILED = 'FAILED',
-}
-
 export interface SMSParams {
   senderId: string
   senderPhoneNumber: string
   recipientPhoneNumber: string
   message: string
-  status: TwilioMessageStatus
+  status: MessageStatus | null
   sid: string | null // string identifier returned by Twilio
+  errorCode: number | null
+  errorMessage: string | null
+  numSegments: string | null
 }
 
 export const supportedAgencies = ['OGP', 'MOM', 'MOH']
@@ -35,7 +31,7 @@ export const supportedAgencies = ['OGP', 'MOM', 'MOH']
 export class SMSService {
   private readonly config: ConfigSchema['twilio']
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService, private logger: Logger) {
     this.config = this.configService.get('twilio')
   }
 
@@ -46,17 +42,26 @@ export class SMSService {
     const { accountSid, authToken } =
       this.getAgencyAccountSidAndAuthToken(officerAgency)
     const client = twilio(accountSid, authToken)
-    const result = await client.messages.create({
-      body: smsParams.message,
-      from: smsParams.senderId ?? smsParams.senderPhoneNumber,
-      to: `+65${smsParams.recipientPhoneNumber}`, // need to convert to E.164 format
-    })
-    // TODO deal with error cases
-    console.log(result)
-    return {
-      ...smsParams,
-      status: result.status as TwilioMessageStatus,
-      sid: result.sid,
+
+    try {
+      const messageInstance = await client.messages.create({
+        body: smsParams.message,
+        from: smsParams.senderId ?? smsParams.senderPhoneNumber,
+        to: `+65${smsParams.recipientPhoneNumber}`, // need to convert to E.164 format
+      })
+      const { status, sid, errorCode, errorMessage, numSegments } =
+        messageInstance
+      return {
+        ...smsParams,
+        status,
+        sid,
+        errorCode,
+        errorMessage,
+        numSegments,
+      }
+    } catch (err) {
+      this.logger.error(JSON.stringify(err))
+      throw new BadGatewayException(TWILIO_ENDPOINT_ERROR_MESSAGE)
     }
   }
 
@@ -90,8 +95,11 @@ export class SMSService {
         .replace('{{officerPosition}}', officerPosition)
         .replace('{{agencyName}}', agencyName)
         .replace('{{uniqueUrl}}', uniqueUrl),
-      status: TwilioMessageStatus.NOT_SENT,
+      status: null,
       sid: null,
+      errorCode: null,
+      errorMessage: null,
+      numSegments: null,
     }
   }
 

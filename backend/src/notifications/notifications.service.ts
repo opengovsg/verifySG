@@ -256,7 +256,8 @@ export class NotificationsService {
 const paramsStatusToNotificationStatusMapper = (
   params: ModalityParams,
 ): NotificationStatus => {
-  return params.status === SGNotifyNotificationStatus.NOT_SENT
+  return params.status === SGNotifyNotificationStatus.NOT_SENT ||
+    params.status === null
     ? NotificationStatus.NOT_SENT
     : NotificationStatus.SENT
 }

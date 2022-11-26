@@ -30,6 +30,10 @@ export const SGNOTIFY_UNAVAILABLE_MESSAGE =
 export const NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE =
   'Unable to send notification as NRIC specified does not have an associated Singpass Mobile app.'
 
+// SMS-related constants
+export const TWILIO_ENDPOINT_ERROR_MESSAGE =
+  'Unable to send notification due to an error with Twilio. Please contact us if you encounter this error.'
+
 // logger messages upon encountering errors
 export const PUBLIC_KEY_ENDPOINT_UNAVAILABLE =
   'Error when getting public key from SGNotify discovery endpoint.'
