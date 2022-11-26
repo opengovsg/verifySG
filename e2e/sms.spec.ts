@@ -34,7 +34,7 @@ test.describe.serial('Test sending SMS notification', () => {
     // click send button and get response
     // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([
-      page.waitForResponse(`${checkwhoUrl}/api/notifications`),
+      page.waitForResponse(`${checkwhoUrl}/api/v1/notifications`),
       page.getByRole('button', { name: 'Notify call recipient' }).click(),
     ])
     expect(response.ok()).toBeTruthy()
