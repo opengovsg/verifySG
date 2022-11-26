@@ -6,6 +6,7 @@ import { OfficersModule } from 'officers/officers.module'
 
 import { MessageTemplatesService } from '../message-templates/message-templates.service'
 
+import { GoGovSGService } from './gogovsg/gogovsg.service'
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import { SMSService } from './sms/sms.service'
 import { UniqueParamService } from './unique-params/unique-param.service'
@@ -19,6 +20,7 @@ import { NotificationsService } from './notifications.service'
   ],
   controllers: [NotificationsController],
   providers: [
+    GoGovSGService,
     NotificationsService,
     MessageTemplatesService,
     SGNotifyService,

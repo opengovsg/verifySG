@@ -55,6 +55,10 @@ export interface ConfigSchema {
     frontendDsn: string
     backendDsn: string
   }
+  gogovsg: {
+    apiUrl: string
+    apiKey: string
+  }
   twilio: {
     defaultCredentials: TwilioCredentials
     ogpCredentials: TwilioCredentials
@@ -286,6 +290,20 @@ export const schema: Schema<ConfigSchema> = {
     },
   },
   // used for sending SMS
+  gogovsg: {
+    apiUrl: {
+      doc: 'API endpoint for GoGovSG',
+      env: 'GO_API_URL',
+      default: 'https://staging.go.gov.sg/api/v1/urls',
+      format: String,
+    },
+    apiKey: {
+      doc: 'API key for Postman.gov.sg',
+      env: 'GO_API_KEY',
+      default: '',
+      format: 'required-string',
+    },
+  },
   twilio: {
     defaultCredentials: {
       accountSid: {
