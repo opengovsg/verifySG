@@ -25,6 +25,7 @@ import {
   OFFICER_MISSING_FIELDS,
   OFFICER_NOT_FOUND,
 } from '../constants'
+import { GoGovSGService } from '../gogovsg/gogovsg.service'
 import { NotificationsService } from '../notifications.service'
 import {
   SGNotifyNotificationStatus,
@@ -124,6 +125,7 @@ describe('NotificationsService', () => {
         MessageTemplatesService,
         NotificationsService,
         OfficersService,
+        GoGovSGService,
         SGNotifyService,
         SMSService,
         UniqueParamService,
