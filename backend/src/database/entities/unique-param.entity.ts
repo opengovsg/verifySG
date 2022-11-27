@@ -8,12 +8,11 @@ import {
 } from 'typeorm'
 
 // just a first approximation; can edit based on business logic
+// need to keep in sync with CheckGoGovSG
 export interface DisplayData {
   messageType: string
-  senderName: string
-  senderPosition: string
   agencyName: string
-  agencyShortName: string
+  agencySenderId: string
   recipientId: string
   timestamp: Date
 }
