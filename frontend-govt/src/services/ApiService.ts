@@ -1,23 +1,26 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
+import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
+
 const API_BASE_URL = '/api/v1'
 
 export const getApiErrorMessage = (error: unknown): string => {
-  const defaultErrMsg = 'Something went wrong'
   if (axios.isAxiosError(error)) {
-    if (!error.response) return defaultErrMsg
+    if (!error.response) return DEFAULT_ERROR_MESSAGE
 
     const response = error.response as AxiosResponse<
       { message: string } | undefined
     >
-    return response?.data?.message ?? response?.statusText ?? defaultErrMsg
+    return (
+      response?.data?.message ?? response?.statusText ?? DEFAULT_ERROR_MESSAGE
+    )
   }
 
   if (error instanceof Error) {
-    return error.message ?? defaultErrMsg
+    return error.message ?? DEFAULT_ERROR_MESSAGE
   }
 
-  return defaultErrMsg
+  return DEFAULT_ERROR_MESSAGE
 }
 
 export const ApiService = axios.create({
@@ -28,7 +31,6 @@ export const ApiService = axios.create({
 ApiService.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const transformedError = getApiErrorMessage(error)
-    throw transformedError
+    throw getApiErrorMessage(error)
   },
 )

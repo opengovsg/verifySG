@@ -8,6 +8,8 @@ import {
 
 import { Logger } from 'core/providers'
 
+import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private logger: Logger) {}
@@ -27,7 +29,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       })
     } else {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: "It's not you. It's us. Something went wrong.",
+        message: DEFAULT_ERROR_MESSAGE,
       })
     }
   }

@@ -14,6 +14,7 @@ import { OfficerService } from '@services/OfficerService'
 
 import HeaderContainer from '@/components/HeaderContainer'
 import { UpdateOfficerReqDto } from '~shared/types/api'
+import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface ProfileFormProps {
   onSubmit?: () => void
@@ -62,7 +63,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
     onError: (err) => {
       toast({
         status: 'warning',
-        description: `${err}` || 'Something went wrong',
+        description: `${err}` || DEFAULT_ERROR_MESSAGE,
       })
     },
   })
