@@ -51,25 +51,25 @@ export class SMSService {
       this.getAgencyAccountSidAndAuthToken(officerAgency)
     const client = twilio(accountSid, authToken)
 
-    try {
-      const messageInstance = await client.messages.create({
+    const messageInstance = await client.messages
+      .create({
         body: smsParams.message,
         from: smsParams.senderId ?? smsParams.senderPhoneNumber,
         to: `+65${smsParams.recipientPhoneNumber}`, // need to convert to E.164 format
       })
-      const { status, sid, errorCode, errorMessage, numSegments } =
-        messageInstance
-      return {
-        ...smsParams,
-        status,
-        sid,
-        errorCode,
-        errorMessage,
-        numSegments,
-      }
-    } catch (err) {
-      this.logger.error(JSON.stringify(err))
-      throw new BadGatewayException(TWILIO_ENDPOINT_ERROR_MESSAGE)
+      .catch((err) => {
+        this.logger.error(JSON.stringify(err))
+        throw new BadGatewayException(TWILIO_ENDPOINT_ERROR_MESSAGE)
+      })
+    const { status, sid, errorCode, errorMessage, numSegments } =
+      messageInstance
+    return {
+      ...smsParams,
+      status,
+      sid,
+      errorCode,
+      errorMessage,
+      numSegments,
     }
   }
 
