@@ -41,4 +41,10 @@ export const agenciesData: AgencyData[] = [
     logoUrl: 'https://file.go.gov.sg/checkwho-msf-logo.png',
     emailDomains: ['msf.gov.sg'],
   },
+  {
+    id: 'MAS',
+    name: 'Monetary Authority of Singapore',
+    logoUrl: 'https://file.go.gov.sg/checkwho-mas-logo.png',
+    emailDomains: ['mas.gov.sg'],
+  },
 ]
