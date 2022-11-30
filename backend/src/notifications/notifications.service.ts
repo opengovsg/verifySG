@@ -157,9 +157,10 @@ export class NotificationsService {
         msgTemplateKey,
         officerAgency,
       )
-    if (!messageTemplate)
+    if (!messageTemplate) {
       // either message template does not exist OR belongs to a different agency
       throw new BadRequestException(INVALID_MESSAGE_TEMPLATE)
+    }
     const officer = await this.officersService.findById(officerId)
     if (!officer) throw new BadRequestException(OFFICER_NOT_FOUND)
     if (!officer.name || !officer.position)
