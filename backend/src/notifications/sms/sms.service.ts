@@ -87,23 +87,18 @@ export class SMSService {
     const { senderId, phoneNumber: senderPhoneNumber } =
       this.getAgencySenderIdAndPhoneNumber(agencyShortName)
 
-    // processing this here so that
-    // 1. message previews are easier to generate (just leave the entire uniqueUrl blank)
-    // 2. we can switch around different variations of the uniqueUrl without changing the database, for e.g.
-    // `go.gov.sg/check-sms-${uniqueParamString}` or even randomising between them
-
-    // for now, no staging version of CheckGoGovSG; just use production to call both staging and prod version of CheckWho backend (and render accordingly)
     // const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
-    // use Vercel url first until DNS is updated
-    const checkerUrl = `check-go-gov-sg.vercel.app/sms/${uniqueParamString}`
+    const checkerUrl = `check-go-gov-sg.vercel.app/sms/${uniqueParamString}` // use Vercel url first until DNS is updated
     const shortUrl = `check-sms-${uniqueParamString}` // to pass to Go API
     const shortUrlRes = await this.gogovsgService
       .createShortLink(checkerUrl, shortUrl)
       .catch((err) => {
         this.logger.error(JSON.stringify(err))
-        // todo: probably can do more detailed error handling in the future
+        // 1. currently, for reasons I don't understand, this error message is not shown on the frontend but still logged on the backend
+        // 2. for future extension, we can consider just using check.go.gov.sg URL directly instead of shortening it to avoid additional API call
         throw new BadGatewayException(GOGOVSG_ENDPOINT_ERROR_MESSAGE)
       })
+    // included in SMS
     const embeddedUrl =
       this.configService.get('environment') === 'production'
         ? `go.gov.sg/${shortUrlRes}`
