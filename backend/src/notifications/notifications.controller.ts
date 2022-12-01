@@ -12,7 +12,10 @@ import { AuthOfficerGuard } from 'auth-officer/guards/auth-officer.guard'
 
 import { OfficerInfo, OfficerInfoInterface } from '../common/decorators'
 
-import { NotificationsService } from './notifications.service'
+import {
+  SGNotifyNotificationsService,
+  SMSNotificationService,
+} from './notifications.service'
 
 import {
   MessageTemplateType,
@@ -24,7 +27,10 @@ import {
 
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private notificationsService: NotificationsService) {}
+  constructor(
+    private smsNotificationService: SMSNotificationService,
+    private sgNotifyNotificationService: SGNotifyNotificationsService,
+  ) {}
 
   /**
    * Endpoint for frontend to call to send a new notification
@@ -66,10 +72,21 @@ export class NotificationsController {
     body: SendNotificationReqDto,
   ): Promise<SendNotificationResDto> {
     const { officerId, officerAgency } = officerInfo
-    return this.notificationsService.sendNotification(
-      officerId,
-      officerAgency,
-      body,
-    )
+    switch (body.type) {
+      case MessageTemplateType.SMS:
+        return this.smsNotificationService.sendNotification(
+          officerId,
+          officerAgency,
+          body,
+        )
+      case MessageTemplateType.SGNOTIFY:
+        return this.sgNotifyNotificationService.sendNotification(
+          officerId,
+          officerAgency,
+          body,
+        )
+      default:
+        throw new Error('Invalid send notification request body')
+    }
   }
 }

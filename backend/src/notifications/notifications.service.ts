@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject } from '@nestjs/common'
+import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
@@ -9,10 +10,10 @@ import {
   NotificationStatus,
   Officer,
 } from 'database/entities'
-import { OfficersService } from 'officers/officers.service'
 
 import { Logger } from '../core/providers'
 import { MessageTemplatesService } from '../message-templates/message-templates.service'
+import { OfficersService } from '../officers/officers.service'
 
 import { SGNotifyService } from './sgnotify/sgnotify.service'
 import {
@@ -31,24 +32,36 @@ import {
 
 import {
   MessageTemplateType,
-  SendNotificationReqDto,
+  SendNotificationReqSGNotifyDto,
+  SendNotificationReqSmsDto,
   SendNotificationResDto,
   SGNotifyMessageTemplateParams,
   SMSMessageTemplateParams,
 } from '~shared/types/api'
 import { normalizeNric } from '~shared/utils/nric'
 
-@Injectable()
-export class NotificationsService {
-  constructor(
+type BodyType<
+  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
+> = TParams extends SMSMessageTemplateParams
+  ? SendNotificationReqSmsDto
+  : SendNotificationReqSGNotifyDto
+
+type ModalityParamsType<
+  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
+> = TParams extends SMSMessageTemplateParams ? SMSParams : SGNotifyParams
+
+export abstract class NotificationsService<
+  TParams extends SMSMessageTemplateParams | SGNotifyMessageTemplateParams,
+> {
+  protected constructor(
     @InjectRepository(Notification)
-    private notificationRepository: Repository<Notification>,
-    private messageTemplatesService: MessageTemplatesService,
-    private officersService: OfficersService,
-    private sgNotifyService: SGNotifyService,
-    private smsService: SMSService,
-    private uniqueParamService: UniqueParamService,
-    private logger: Logger,
+    protected notificationRepository: Repository<Notification>,
+    @Inject(MessageTemplatesService)
+    protected messageTemplatesService: MessageTemplatesService,
+    @Inject(OfficersService)
+    protected officersService: OfficersService,
+    @Inject(Logger)
+    protected logger: Logger,
   ) {}
 
   async findById(id: number): Promise<Notification | null> {
@@ -68,8 +81,8 @@ export class NotificationsService {
   async createNotification(
     officerId: number,
     officerAgency: string,
-    notificationBody: SendNotificationReqDto,
-  ): Promise<Notification | null> {
+    notificationBody: BodyType<TParams>,
+  ): Promise<Notification> {
     const { msgTemplateKey } = notificationBody
     const { officer, messageTemplate } =
       await this.validateCreateNotificationParams(
@@ -80,60 +93,14 @@ export class NotificationsService {
     const { agency } = await this.officersService.mapToDto(officer)
     const { id: agencyShortName, name: agencyName, logoUrl } = agency
     const { id: messageTemplateId, params } = messageTemplate
-    let modalityParams: ModalityParams
-    let recipientId: string
-    switch (notificationBody.type) {
-      case MessageTemplateType.SMS: {
-        recipientId = notificationBody.recipientPhoneNumber
-        const uniqueParamString =
-          await this.uniqueParamService.generateUniqueParam({
-            messageType: MessageTemplateType.SMS,
-            senderName: officer.name,
-            senderPosition: officer.position,
-            agencyName,
-            agencyShortName,
-            recipientId,
-            timestamp: new Date(),
-          }) // use default expiry period for now
-        modalityParams = this.smsService.generateSMSParamsByTemplate(
-          recipientId,
-          {
-            agencyShortName,
-            agencyName,
-          },
-          {
-            officerName: officer.name,
-            officerPosition: officer.position,
-          },
-          params as SMSMessageTemplateParams,
-          uniqueParamString,
-        )
-        break
-      }
-      case MessageTemplateType.SGNOTIFY:
-        recipientId = normalizeNric(notificationBody.nric)
-        modalityParams = await generateNewSGNotifyParams(
-          recipientId,
-          {
-            agencyShortName,
-            agencyName,
-            agencyLogoUrl: logoUrl,
-          },
-          {
-            officerName: officer.name,
-            officerPosition: officer.position,
-          },
-          params as SGNotifyMessageTemplateParams,
-        ).catch((e) => {
-          this.logger.error(
-            `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
-          )
-          throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
-        })
-        break
-      default:
-        throw new BadRequestException('Invalid request type')
-    }
+    const { modalityParams, recipientId } = await this.generateModalityParams({
+      officer,
+      agencyName,
+      agencyShortName,
+      notificationBody,
+      params: params as TParams, // TODO remove this with type guard
+      logoUrl,
+    })
     const notificationToAdd = this.notificationRepository.create({
       officer: { id: officerId },
       messageTemplate: { id: messageTemplateId },
@@ -143,8 +110,31 @@ export class NotificationsService {
     const addedNotification = await this.notificationRepository.save(
       notificationToAdd,
     )
-    return this.findById(addedNotification.id)
+    const notification = await this.findById(addedNotification.id)
+    if (!notification) {
+      throw new InternalServerErrorException('Notification not created')
+    }
+    return notification
   }
+
+  protected abstract generateModalityParams({
+    officer,
+    agencyName,
+    agencyShortName,
+    notificationBody,
+    params,
+    logoUrl,
+  }: {
+    officer: Officer
+    agencyName: string
+    agencyShortName: string
+    notificationBody: BodyType<TParams>
+    params: TParams
+    logoUrl: string
+  }): Promise<{
+    modalityParams: ModalityParamsType<TParams>
+    recipientId: string
+  }>
 
   // return officer and messageTemplate to save db call
   async validateCreateNotificationParams(
@@ -202,46 +192,28 @@ export class NotificationsService {
   async sendNotification(
     officerId: number,
     officerAgency: string,
-    body: SendNotificationReqDto,
+    body: BodyType<TParams>,
   ): Promise<SendNotificationResDto> {
     const inserted = await this.createNotification(
       officerId,
       officerAgency,
       body,
     )
-    if (!inserted) throw new BadRequestException('Notification not created')
-    let modalityParamsUpdated: ModalityParams
-    switch (body.type) {
-      case MessageTemplateType.SGNOTIFY:
-        modalityParamsUpdated = await this.sgNotifyService.sendNotification(
-          inserted.modalityParams as SGNotifyParams,
-        )
-        break
-      case MessageTemplateType.SMS:
-        // check to make sure agency is supported first before attempting to send
-        // i.e. we have Twilio credentials for this agency
-        // TODO: remove and manage agency credentials via db
-        if (!supportedAgencies.includes(officerAgency)) {
-          throw new BadRequestException(
-            `Currently we do not support sending SMSes for ${officerAgency}.`,
-          )
-        }
-        modalityParamsUpdated = await this.smsService.sendSMS(
-          officerAgency,
-          inserted.modalityParams as SMSParams,
-        )
-        break
-      default:
-        // unreachable because identical switch statement in createNotification
-        throw new BadRequestException('Invalid request type')
-    }
-
+    const modalityParamsUpdated = await this.transportNotification(
+      officerAgency,
+      inserted.modalityParams as ModalityParamsType<TParams>, // TODO: use type guard to remove this cast
+    )
     const updated = await this.updateNotification(
       inserted.id,
       modalityParamsUpdated,
     )
     return this.mapToDto(updated)
   }
+
+  protected abstract transportNotification(
+    officerAgency: string,
+    modalityParams: ModalityParamsType<TParams>,
+  ): Promise<ModalityParamsType<TParams>>
 
   mapToDto(notification: Notification): SendNotificationResDto {
     const { officer, createdAt, messageTemplate } = notification
@@ -251,6 +223,155 @@ export class NotificationsService {
         this.messageTemplatesService.mapToResDto(messageTemplate),
       officer: this.officersService.mapToDto(officer),
     }
+  }
+}
+
+export class SMSNotificationService extends NotificationsService<SMSMessageTemplateParams> {
+  constructor(
+    @InjectRepository(Notification)
+    protected notificationRepository: Repository<Notification>,
+    @Inject(MessageTemplatesService)
+    protected messageTemplatesService: MessageTemplatesService,
+    @Inject(OfficersService)
+    protected officersService: OfficersService,
+    @Inject(Logger)
+    protected logger: Logger,
+    @Inject(SMSService)
+    private smsService: SMSService,
+    @Inject(UniqueParamService)
+    private uniqueParamService: UniqueParamService,
+  ) {
+    super(
+      notificationRepository,
+      messageTemplatesService,
+      officersService,
+      logger,
+    )
+  }
+
+  protected async generateModalityParams({
+    officer,
+    agencyName,
+    agencyShortName,
+    notificationBody,
+    params,
+  }: {
+    officer: Officer
+    agencyName: string
+    agencyShortName: string
+    notificationBody: SendNotificationReqSmsDto
+    params: SMSMessageTemplateParams
+    logoUrl: string
+  }): Promise<{ modalityParams: SMSParams; recipientId: string }> {
+    const recipientId = notificationBody.recipientPhoneNumber
+    const uniqueParamString = await this.uniqueParamService.generateUniqueParam(
+      {
+        messageType: MessageTemplateType.SMS,
+        senderName: officer.name,
+        senderPosition: officer.position,
+        agencyName,
+        agencyShortName,
+        recipientId,
+        timestamp: new Date(),
+      },
+    ) // use default expiry period for now
+    return {
+      modalityParams: this.smsService.generateSMSParamsByTemplate(
+        recipientId,
+        {
+          agencyShortName,
+          agencyName,
+        },
+        {
+          officerName: officer.name,
+          officerPosition: officer.position,
+        },
+        params,
+        uniqueParamString,
+      ),
+      recipientId,
+    }
+  }
+
+  protected async transportNotification(
+    officerAgency: string,
+    modalityParams: SMSParams,
+  ): Promise<SMSParams> {
+    // check to make sure agency is supported first before attempting to send
+    // i.e. we have Twilio credentials for this agency
+    // TODO: remove and manage agency credentials via db
+    if (!supportedAgencies.includes(officerAgency)) {
+      throw new BadRequestException(
+        `Currently we do not support sending SMSes for ${officerAgency}.`,
+      )
+    }
+    return await this.smsService.sendSMS(officerAgency, modalityParams)
+  }
+}
+
+export class SGNotifyNotificationsService extends NotificationsService<SGNotifyMessageTemplateParams> {
+  constructor(
+    @InjectRepository(Notification)
+    protected notificationRepository: Repository<Notification>,
+    @Inject(MessageTemplatesService)
+    protected messageTemplatesService: MessageTemplatesService,
+    @Inject(OfficersService)
+    protected officersService: OfficersService,
+    @Inject(Logger)
+    protected logger: Logger,
+    @Inject(SGNotifyService)
+    private sgNotifyService: SGNotifyService,
+  ) {
+    super(
+      notificationRepository,
+      messageTemplatesService,
+      officersService,
+      logger,
+    )
+  }
+
+  public async generateModalityParams({
+    officer,
+    agencyName,
+    agencyShortName,
+    notificationBody,
+    params,
+    logoUrl,
+  }: {
+    officer: Officer
+    agencyName: string
+    agencyShortName: string
+    notificationBody: SendNotificationReqSGNotifyDto
+    params: SGNotifyMessageTemplateParams
+    logoUrl: string
+  }): Promise<{ modalityParams: SGNotifyParams; recipientId: string }> {
+    const recipientId = normalizeNric(notificationBody.nric)
+    const modalityParams = await generateNewSGNotifyParams(
+      recipientId,
+      {
+        agencyShortName,
+        agencyName,
+        agencyLogoUrl: logoUrl,
+      },
+      {
+        officerName: officer.name,
+        officerPosition: officer.position,
+      },
+      params,
+    ).catch((e) => {
+      this.logger.error(
+        `Internal server error when converting notification params to SGNotify request payload.\nError: ${e}`,
+      )
+      throw new BadRequestException(NOTIFICATION_REQUEST_ERROR_MESSAGE)
+    })
+    return { recipientId, modalityParams }
+  }
+
+  protected async transportNotification(
+    _officerAgency: string,
+    modalityParams: SGNotifyParams,
+  ): Promise<SGNotifyParams> {
+    return await this.sgNotifyService.sendNotification(modalityParams)
   }
 }
 

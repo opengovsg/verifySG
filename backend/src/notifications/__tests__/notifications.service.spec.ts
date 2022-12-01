@@ -25,7 +25,7 @@ import {
   OFFICER_MISSING_FIELDS,
   OFFICER_NOT_FOUND,
 } from '../constants'
-import { NotificationsService } from '../notifications.service'
+import { SGNotifyNotificationsService } from '../notifications.service'
 import {
   SGNotifyNotificationStatus,
   SGNotifyParams,
@@ -51,7 +51,7 @@ export const mockValidSGNotifyParams: SGNotifyParams = {
 }
 
 describe('NotificationsService', () => {
-  let service: NotificationsService
+  let service: SGNotifyNotificationsService
   let repository: Repository<Notification>
   let messageTemplatesService: MessageTemplatesService
   let messageTemplatesRepository: Repository<MessageTemplate>
@@ -122,7 +122,7 @@ describe('NotificationsService', () => {
       providers: [
         AgenciesService,
         MessageTemplatesService,
-        NotificationsService,
+        SGNotifyNotificationsService,
         OfficersService,
         SGNotifyService,
         SMSService,
@@ -130,7 +130,9 @@ describe('NotificationsService', () => {
       ],
     }).compile()
 
-    service = module.get<NotificationsService>(NotificationsService)
+    service = module.get<SGNotifyNotificationsService>(
+      SGNotifyNotificationsService,
+    )
     repository = module.get(getRepositoryToken(Notification))
     messageTemplatesService = module.get<MessageTemplatesService>(
       MessageTemplatesService,
@@ -435,20 +437,6 @@ describe('NotificationsService', () => {
       )
       expect(mockSGNotifySendSuccess).toHaveBeenCalled()
       mockSGNotifySendSuccess.mockRestore()
-    })
-    // honestly, cannot conceive how this would happen; would throw error instead
-    test('throw error if insertion fails somehow', async () => {
-      const mockCreateNotificationReturnNull = jest
-        .spyOn(service, 'createNotification')
-        .mockResolvedValue(null)
-      await expect(
-        service.sendNotification(
-          mockOfficer.id,
-          mockAgency.id,
-          mockSendNotificationReqDto,
-        ),
-      ).rejects.toEqual(new BadRequestException('Notification not created'))
-      mockCreateNotificationReturnNull.mockRestore()
     })
   })
 

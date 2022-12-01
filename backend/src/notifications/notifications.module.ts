@@ -10,7 +10,10 @@ import { SGNotifyService } from './sgnotify/sgnotify.service'
 import { SMSService } from './sms/sms.service'
 import { UniqueParamService } from './unique-params/unique-param.service'
 import { NotificationsController } from './notifications.controller'
-import { NotificationsService } from './notifications.service'
+import {
+  SGNotifyNotificationsService,
+  SMSNotificationService,
+} from './notifications.service'
 
 @Module({
   imports: [
@@ -19,7 +22,8 @@ import { NotificationsService } from './notifications.service'
   ],
   controllers: [NotificationsController],
   providers: [
-    NotificationsService,
+    SMSNotificationService,
+    SGNotifyNotificationsService,
     MessageTemplatesService,
     SGNotifyService,
     SMSService,
