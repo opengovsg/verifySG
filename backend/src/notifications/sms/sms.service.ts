@@ -87,8 +87,7 @@ export class SMSService {
     const { senderId, phoneNumber: senderPhoneNumber } =
       this.getAgencySenderIdAndPhoneNumber(agencyShortName)
 
-    // const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
-    const checkerUrl = `check-go-gov-sg.vercel.app/sms/${uniqueParamString}` // use Vercel url first until DNS is updated
+    const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
     const shortUrl = `check-sms-${uniqueParamString}` // to pass to Go API
     const shortUrlRes = await this.gogovsgService
       .createShortLink(checkerUrl, shortUrl)
