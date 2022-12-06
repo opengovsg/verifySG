@@ -7,11 +7,7 @@ import {
   validateOrReject,
 } from 'class-validator'
 
-import {
-  Agency,
-  NotificationStatus,
-  SGNotifyNotificationStatus,
-} from '../../../database/entities'
+import { Agency } from '../../../database/entities'
 import {
   SGNotifyNotificationRequest,
   SGNotifyNotificationRequestPayload,
@@ -25,6 +21,14 @@ import {
   sgNotifyShortMessage,
   sgNotifyTitle,
 } from '~shared/utils/sgnotify'
+
+export enum SGNotifyNotificationStatus {
+  NOT_SENT = 'NOT_SENT',
+  SENT_BY_SERVER = 'SENT_BY_SERVER',
+  // last two enums unused for now; can be obtained by consuming notification status endpoints
+  RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
+  READ_BY_USER = 'READ_BY_USER',
+}
 
 // see SGNotifyNotificationRequest, which is similar
 export class SGNotifyParams {
@@ -58,10 +62,6 @@ export class SGNotifyParams {
   requestId?: string
 }
 
-export class SMSParams {
-  // TODO
-}
-
 export interface AgencyParams {
   agencyShortName: string
   agencyName: string
@@ -71,14 +71,6 @@ export interface AgencyParams {
 export interface OfficerParams {
   officerName: string
   officerPosition: string
-}
-
-export const sgNotifyParamsStatusToNotificationStatusMapper = (
-  params: SGNotifyParams,
-): NotificationStatus => {
-  return params.status === SGNotifyNotificationStatus.NOT_SENT
-    ? NotificationStatus.NOT_SENT
-    : NotificationStatus.SENT
 }
 
 // these are the params that are independent of templateId

@@ -17,14 +17,13 @@ export class MessageTemplatesService {
     private messageTemplateRepository: Repository<MessageTemplate>,
   ) {}
 
-  async isMessageTemplateValidByAgencyId(
+  async getMessageTemplateByAgencyId(
     key: string,
     agencyId: string,
-  ): Promise<boolean> {
-    const messageTemplate = await this.messageTemplateRepository.findOne({
+  ): Promise<MessageTemplate | null> {
+    return await this.messageTemplateRepository.findOne({
       where: { key, agency: { id: agencyId } },
     })
-    return !!messageTemplate
   }
 
   async getMessageTemplatesByAgencyId(

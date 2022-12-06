@@ -1,5 +1,5 @@
 import { mockValidSGNotifyParams } from '../../../__tests__/notifications.service.spec'
-import { convertParamsToNotificationRequestPayload } from '../message-template'
+import { convertParamsToNotificationRequestPayload } from '../sgnotify-utils'
 
 describe('message-template.ts helper functions', () => {
   test('convertParamsToNotificationRequestPayload correctness', async () => {

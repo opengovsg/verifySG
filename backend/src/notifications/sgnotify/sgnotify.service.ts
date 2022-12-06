@@ -16,7 +16,6 @@ import {
 
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
-import { SGNotifyNotificationStatus } from '../../database/entities'
 import {
   AUTHZ_ENDPOINT,
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
@@ -40,6 +39,7 @@ import {
 import {
   convertParamsToNotificationRequestPayload,
   insertECPrivateKeyHeaderAndFooter,
+  SGNotifyNotificationStatus,
   SGNotifyParams,
 } from './utils'
 

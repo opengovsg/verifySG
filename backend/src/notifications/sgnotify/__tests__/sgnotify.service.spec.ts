@@ -8,7 +8,6 @@ import { rest } from 'msw'
 
 import { CoreModule } from '../../../core/core.module'
 import { Logger } from '../../../core/providers'
-import { SGNotifyNotificationStatus } from '../../../database/entities'
 import { mockValidSGNotifyParams } from '../../__tests__/notifications.service.spec'
 import {
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
@@ -21,6 +20,7 @@ import {
   SGNOTIFY_UNAVAILABLE_MESSAGE,
 } from '../../constants'
 import { AuthResPayload, NotificationResPayload } from '../dto'
+import { SGNotifyNotificationStatus } from '../message-templates/sgnotify-utils'
 import { sgNotifyMockApi } from '../mock-server/handlers'
 import { server } from '../mock-server/server'
 import { SGNotifyService } from '../sgnotify.service'

@@ -9,7 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { SGNotifyParams, SMSParams } from '../../notifications/sgnotify/utils'
+import { SGNotifyParams } from '../../notifications/sgnotify/utils'
+import { SMSParams } from '../../notifications/sms/sms.service'
 
 import { MessageTemplate } from './message-template.entity'
 import { Officer } from './officer.entity'
@@ -17,14 +18,6 @@ import { Officer } from './officer.entity'
 export enum NotificationStatus {
   NOT_SENT = 'NOT_SENT',
   SENT = 'SENT',
-}
-
-export enum SGNotifyNotificationStatus {
-  NOT_SENT = 'NOT_SENT',
-  SENT_BY_SERVER = 'SENT_BY_SERVER',
-  // last two enums unused for now; can be obtained by consuming notification status endpoints
-  RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
-  READ_BY_USER = 'READ_BY_USER',
 }
 
 export type ModalityParams = SGNotifyParams | SMSParams

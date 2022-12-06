@@ -13,7 +13,7 @@ import {
   Notification,
   NotificationStatus,
   Officer,
-  SGNotifyNotificationStatus,
+  UniqueParam,
 } from '../../database/entities'
 import { useTestDatabase } from '../../database/test-hooks'
 import { mockMessageTemplateNotInDb } from '../../message-templates/__tests__/message-templates.service.spec'
@@ -25,9 +25,14 @@ import {
   OFFICER_MISSING_FIELDS,
   OFFICER_NOT_FOUND,
 } from '../constants'
-import { NotificationsService } from '../notifications.service'
-import { SGNotifyParams } from '../sgnotify/message-templates/message-template'
+import { SGNotifyNotificationsService } from '../notifications.service'
+import {
+  SGNotifyNotificationStatus,
+  SGNotifyParams,
+} from '../sgnotify/message-templates/sgnotify-utils'
 import { SGNotifyService } from '../sgnotify/sgnotify.service'
+import { SMSService } from '../sms/sms.service'
+import { UniqueParamService } from '../unique-params/unique-param.service'
 
 import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 import { SGNotifyMessageTemplateId } from '~shared/utils'
@@ -46,7 +51,7 @@ export const mockValidSGNotifyParams: SGNotifyParams = {
 }
 
 describe('NotificationsService', () => {
-  let service: NotificationsService
+  let service: SGNotifyNotificationsService
   let repository: Repository<Notification>
   let messageTemplatesService: MessageTemplatesService
   let messageTemplatesRepository: Repository<MessageTemplate>
@@ -54,6 +59,9 @@ describe('NotificationsService', () => {
   let officersRepository: Repository<Officer>
   let agenciesRepository: Repository<Agency>
   let sgNotifyService: SGNotifyService
+  // let smsService: SMSService
+  // let uniqueParamService: UniqueParamService
+  // let uniqueParamRepository: Repository<UniqueParam>
   let logger: Logger
   let resetDatabase: () => Promise<void>
   let closeDatabase: () => Promise<void>
@@ -90,6 +98,7 @@ describe('NotificationsService', () => {
   })
 
   const mockSendNotificationReqDto: SendNotificationReqDto = {
+    type: MessageTemplateType.SGNOTIFY,
     nric: 'S1234567D',
     msgTemplateKey: mockMessageTemplate.key,
   }
@@ -107,18 +116,23 @@ describe('NotificationsService', () => {
           MessageTemplate,
           Officer,
           Agency,
+          UniqueParam,
         ]),
       ],
       providers: [
-        NotificationsService,
+        AgenciesService,
         MessageTemplatesService,
+        SGNotifyNotificationsService,
         OfficersService,
         SGNotifyService,
-        AgenciesService,
+        SMSService,
+        UniqueParamService,
       ],
     }).compile()
 
-    service = module.get<NotificationsService>(NotificationsService)
+    service = module.get<SGNotifyNotificationsService>(
+      SGNotifyNotificationsService,
+    )
     repository = module.get(getRepositoryToken(Notification))
     messageTemplatesService = module.get<MessageTemplatesService>(
       MessageTemplatesService,
@@ -128,6 +142,9 @@ describe('NotificationsService', () => {
     officersRepository = module.get(getRepositoryToken(Officer))
     agenciesRepository = module.get(getRepositoryToken(Agency))
     sgNotifyService = module.get<SGNotifyService>(SGNotifyService)
+    // smsService = module.get<SMSService>(SMSService)
+    // uniqueParamService = module.get<UniqueParamService>(UniqueParamService)
+    // uniqueParamRepository = module.get(getRepositoryToken(UniqueParam))
     logger = module.get<Logger>(Logger)
   })
 
@@ -152,6 +169,7 @@ describe('NotificationsService', () => {
     expect(officersService).toBeDefined()
     expect(officersRepository).toBeDefined()
     expect(sgNotifyService).toBeDefined()
+    // expect(smsService).toBeDefined()
     expect(logger).toBeDefined()
   })
 
@@ -162,8 +180,8 @@ describe('NotificationsService', () => {
         mockOfficer.agency.id,
         mockSendNotificationReqDto,
       )
-      // this passes even for partial match; thus not all fields are added
       if (mockMessageTemplate.params.type === MessageTemplateType.SGNOTIFY) {
+        // this passes even for partial match; thus not all fields are added
         expect(createdNotification).toMatchObject({
           id: expect.any(Number),
           status: SGNotifyNotificationStatus.NOT_SENT,
@@ -220,6 +238,7 @@ describe('NotificationsService', () => {
     })
     test('message template not in db', async () => {
       const mockSendNotificationReqDtoNotInDb: SendNotificationReqDto = {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateNotInDb.key,
       }
@@ -254,6 +273,7 @@ describe('NotificationsService', () => {
           },
         })
       const mockSendNotificationReqDtoAnotherAgency: SendNotificationReqDto = {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateAnotherAgency.key,
       }
@@ -325,6 +345,7 @@ describe('NotificationsService', () => {
     jest.spyOn(logger, 'error')
     await expect(
       service.createNotification(mockOfficer.id, mockOfficer.agency.id, {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMessageTemplateInvalidSGNotifyTemplate.key,
       }),
@@ -384,6 +405,7 @@ describe('NotificationsService', () => {
     jest.spyOn(logger, 'error')
     await expect(
       service.createNotification(mockMSFOfficer.id, mockMSFOfficer.agency.id, {
+        type: MessageTemplateType.SGNOTIFY,
         nric: 'S1234567D',
         msgTemplateKey: mockMSFMessageTemplate.key,
       }),
@@ -415,20 +437,6 @@ describe('NotificationsService', () => {
       )
       expect(mockSGNotifySendSuccess).toHaveBeenCalled()
       mockSGNotifySendSuccess.mockRestore()
-    })
-    // honestly, cannot conceive how this would happen; would throw error instead
-    test('throw error if insertion fails somehow', async () => {
-      const mockCreateNotificationReturnNull = jest
-        .spyOn(service, 'createNotification')
-        .mockResolvedValue(null)
-      await expect(
-        service.sendNotification(
-          mockOfficer.id,
-          mockAgency.id,
-          mockSendNotificationReqDto,
-        ),
-      ).rejects.toEqual(new BadRequestException('Notification not created'))
-      mockCreateNotificationReturnNull.mockRestore()
     })
   })
 
