@@ -11,7 +11,7 @@ import {
   OfficerParams,
 } from '../sgnotify/message-templates/sgnotify-utils'
 
-import { SMSMessageTemplateParams } from '~shared/types/api'
+import { SmsMessageTemplateParams } from '~shared/types/api'
 
 export interface SMSParams {
   senderId: string
@@ -69,7 +69,7 @@ export class SMSService {
     recipientPhoneNumber: string,
     agencyParams: Omit<AgencyParams, 'agencyLogoUrl'>, // no need in SMS
     officerParams: OfficerParams,
-    params: SMSMessageTemplateParams,
+    params: SmsMessageTemplateParams,
     uniqueParamString: string,
   ): SMSParams {
     const { agencyShortName, agencyName } = agencyParams

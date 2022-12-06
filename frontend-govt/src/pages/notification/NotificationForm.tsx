@@ -1,193 +1,93 @@
 import React, { useEffect } from 'react'
-import { Control, Controller, useForm } from 'react-hook-form'
-import { useMutation, useQuery } from 'react-query'
-import { useHistory } from 'react-router-dom'
+import { Control, Controller } from 'react-hook-form'
+import { UseFormSetValue } from 'react-hook-form/dist/types/form'
+import { useQuery } from 'react-query'
 import Select, { SingleValue } from 'react-select'
 import {
-  Box,
-  FormControl,
   Heading,
-  Skeleton,
-  StackItem,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   VStack,
 } from '@chakra-ui/react'
-import { requiresFeedbackForm } from '@constants/feedback-form-metadata'
-import { FEEDBACKFORM_ROUTE } from '@constants/routes'
-import {
-  Button,
-  FormErrorMessage,
-  FormLabel,
-  InlineMessage,
-  Input,
-  useToast,
-} from '@opengovsg/design-system-react'
-import { NotificationService } from '@services/NotificationService'
-import nric from 'nric'
 
 import HeaderContainer from '@/components/HeaderContainer'
-import MessagePreview from '@/components/MessagePreview'
-import { useAuth } from '@/contexts/auth/AuthContext'
-import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
+import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
+import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import {
-  MessageTemplateType,
-  SGNotifyMessageTemplateParams,
-} from '~shared/types/api'
+import { MessageTemplateDto, SendNotificationReqDto } from '~shared/types/api'
 
-interface NotificationFormData {
-  type: MessageTemplateType.SGNOTIFY
-  nric: string
-  msgTemplateKey: string
-}
-
-interface NotificationFormProps {
-  onSubmit?: (data: NotificationFormData) => void
-}
-
-interface MessageTemplateOption {
+export interface MessageTemplateOption {
   // shape for React Select options
   value: string // msgTemplateKey
   label: string // menu
 }
 
-const useNotificationForm = () => {
-  const formMethods = useForm<NotificationFormData>({
-    mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
-  })
-  const { watch, reset, setValue, handleSubmit } = formMethods
-  setValue('type', MessageTemplateType.SGNOTIFY)
+export const useToastOptions = {
+  // there is a bug with setting duration in useToast; always defaults to 5 seconds
+  // to fix in the future
+  isClosable: true,
+  containerStyle: {
+    width: '680px',
+    maxWidth: '100%',
+  },
+}
 
-  const { setTargetNRIC, setMsgTemplateKey } = useNotificationData()
+export const useDefaultMessageTemplate = (
+  setValue: UseFormSetValue<SendNotificationReqDto>,
+  messageTemplateType: MessageTemplateDto['type'],
+  messageTemplates: MessageTemplateDto[] | undefined,
+  isLoading: boolean,
+) => {
+  // load default value if response only contains a single message template
+  const messageTemplateFiltered = messageTemplates?.filter(
+    (template) => template.type === messageTemplateType,
+  )
+  useEffect(() => {
+    if (!isLoading && messageTemplateFiltered?.length === 1) {
+      setValue('msgTemplateKey', messageTemplateFiltered[0].key)
+    }
+  }, [isLoading, messageTemplates])
+}
 
-  const toast = useToast({
-    isClosable: true,
-    containerStyle: {
-      width: '680px',
-      maxWidth: '100%',
-    },
-    duration: 6000,
-  })
-  const history = useHistory()
-  const { officerAgency } = useAuth()
-
+export const useMessageTemplates = () => {
   const { data: messageTemplates, isLoading } = useQuery(
     ['messageTemplates'], // query key must be in array in React 18
     MessageTemplateService.getMessageTemplates,
   )
 
-  // load default value if response only contains a single purpose
-  useEffect(() => {
-    if (!isLoading && messageTemplates?.length === 1) {
-      // load default value on query load
-      setValue('msgTemplateKey', messageTemplates[0].key)
-    }
-  }, [isLoading, messageTemplates, setValue])
-
-  const watchedMessageTemplate = watch('msgTemplateKey')
-
-  const messageTemplateOptions: MessageTemplateOption[] =
-    messageTemplates?.map((messageTemplate) => {
-      return {
-        value: messageTemplate.key,
-        label: messageTemplate.menu,
-      }
-    }) ?? []
-
-  const getMessageTemplateOptionByValue = (
-    targetValue: string,
-  ): MessageTemplateOption | null => {
-    const option = messageTemplateOptions.find(
-      (option) => option.value === targetValue,
-    )
-    return option ?? null
-  }
-
-  const getSGNotifyMessageTemplateParamsByMsgTemplateKey = (
-    msgTemplateKey: string,
-  ): SGNotifyMessageTemplateParams | undefined => {
-    if (!msgTemplateKey || !messageTemplates) return
-
-    const messageTemplate = messageTemplates.find(
-      (template) => template.key === msgTemplateKey,
-    )
-    if (!messageTemplate || !messageTemplate.params) return
-    return messageTemplate.params as SGNotifyMessageTemplateParams
-  }
-
-  // query hook to mutate data
-  const sendNotificationMutation = useMutation(
-    NotificationService.sendNotification,
-    {
-      onSuccess: () => {
-        toast({
-          status: 'success',
-          description: `Notification sent to ${watch('nric')}`,
-        })
-      },
-      onError: (err) => {
-        toast({
-          status: 'warning',
-          description: `${err}` || 'Something went wrong',
-        })
-      },
-    },
-  )
-  const submissionHandler = (data: NotificationFormData) => {
-    sendNotificationMutation.mutate(data, {
-      // only update notif context and send user to feedback form when notification is sent successfully
-      onSuccess: () => {
-        // TODO: delete since we are not using feedback form anymore?
-        if (requiresFeedbackForm(officerAgency)) {
-          setTargetNRIC(data.nric)
-          setMsgTemplateKey(data.msgTemplateKey)
-          history.push(FEEDBACKFORM_ROUTE)
-          return
-        }
-        // upon successful notification, reset NRIC but keep selected message template
-        setValue('nric', '')
-      },
-    })
-  }
-
-  const onSubmit = handleSubmit(submissionHandler)
-
-  const templateParams = getSGNotifyMessageTemplateParamsByMsgTemplateKey(
-    watchedMessageTemplate,
-  )
-
-  const clearInputs = () => reset()
-
   return {
-    onSubmit,
-    clearInputs,
-    templateParams,
-    formMethods,
-    messageTemplateOptions,
+    messageTemplates,
     isLoading,
-    getMessageTemplateOptionByValue,
-    isMutating: sendNotificationMutation.isLoading,
   }
 }
 
-export const NotificationForm: React.FC<NotificationFormProps> = () => {
-  const {
-    onSubmit,
-    clearInputs,
-    templateParams,
-    formMethods,
-    messageTemplateOptions,
-    isLoading,
-    getMessageTemplateOptionByValue,
-    isMutating,
-  } = useNotificationForm()
+export const getMessageTemplateOptionByValue = (
+  targetValue: string,
+  messageTemplateOptions: MessageTemplateOption[],
+): MessageTemplateOption | null => {
+  const option = messageTemplateOptions.find(
+    (option) => option.value === targetValue,
+  )
+  return option ?? null
+}
 
-  const {
-    register,
-    formState: { errors },
-    control,
-    getValues,
-  } = formMethods
+export const getParamsByMsgTemplateKey = <T,>(
+  msgTemplateKey: string,
+  messageTemplates: MessageTemplateDto[] | undefined,
+): T | undefined => {
+  if (!msgTemplateKey || !messageTemplates) return
 
+  const messageTemplate = messageTemplates.find(
+    (template) => template.key === msgTemplateKey,
+  )
+  if (!messageTemplate || !messageTemplate.params) return
+  return messageTemplate.params as unknown as T
+}
+
+export const NotificationForm: React.FC = () => {
   return (
     <HeaderContainer>
       <Heading
@@ -204,109 +104,35 @@ export const NotificationForm: React.FC<NotificationFormProps> = () => {
         spacing={[4, 4, 8, 8]}
         pb={20}
       >
-        <InlineMessage
-          variant="info"
-          w="100%"
-          fontSize={['sm', 'sm', 'md', 'md']}
-          useMarkdown
-          // override internal theme style
-          //TODO: shift these into theme folder for cleanup refactor
-          sx={{
-            padding: '8px',
-            display: 'flex',
-            p: '1rem',
-            justifyContent: 'start',
-            color: 'secondary.700',
-            bg: 'primary.200',
-          }}
-        >
-          When you click the ‘Notify call recipient’ button, they will receive a
-          Singpass push notification that you will be calling them shortly. The
-          notification will also show your name, your position, and the purpose
-          of your call.
-        </InlineMessage>
-        <Box width="100%">
-          <form onSubmit={onSubmit}>
-            <VStack align="left" spacing={[8, 8, 8, 8]}>
-              <FormControl isInvalid={!!errors.nric}>
-                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                  NRIC / FIN
-                </FormLabel>
-                <Input
-                  {...register('nric', {
-                    required: 'Please enter a valid NRIC / FIN',
-                    validate: {
-                      valid: (v) =>
-                        nric.validate(v) || 'Please enter a valid NRIC / FIN',
-                    },
-                  })}
-                  placeholder="e.g. S1234567D"
-                  autoFocus
-                />
-                <FormErrorMessage>{errors.nric?.message}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.msgTemplateKey}>
-                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                  Message Template
-                </FormLabel>
-                <Skeleton isLoaded={!isLoading}>
-                  <TemplateSelectionMenu
-                    control={control}
-                    messageTemplateOptions={messageTemplateOptions}
-                    getMessageTemplateOptionByValue={
-                      getMessageTemplateOptionByValue
-                    }
-                  />
-                </Skeleton>
-              </FormControl>
-              <StackItem>
-                <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                  Message Preview
-                </FormLabel>
-                <Skeleton isLoaded={!isLoading}>
-                  <MessagePreview
-                    nric={getValues('nric') ?? ''}
-                    selectedTemplate={templateParams}
-                  />
-                </Skeleton>
-              </StackItem>
-              <StackItem>
-                <VStack spacing={[4, 4, 4, 4]}>
-                  <Button
-                    type="submit"
-                    isLoading={isMutating}
-                    loadingText="Notifying..."
-                    width="100%"
-                  >
-                    Notify call recipient
-                  </Button>
-                  <Button
-                    width="100%"
-                    variant="link"
-                    onClick={clearInputs}
-                    type="reset"
-                  >
-                    Clear details
-                  </Button>
-                </VStack>
-              </StackItem>
-            </VStack>
-          </form>
-        </Box>
+        <Tabs isFitted>
+          <TabList>
+            <Tab>Singpass</Tab>
+            <Tab>SMS</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <SGNotifyForm />
+            </TabPanel>
+            <TabPanel>
+              <SMSForm />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </VStack>
     </HeaderContainer>
   )
 }
 
 interface TemplateSelectionMenuProps {
-  control: Control<NotificationFormData>
+  control: Control<SendNotificationReqDto>
   messageTemplateOptions: MessageTemplateOption[]
   getMessageTemplateOptionByValue: (
     target: string,
   ) => MessageTemplateOption | null
 }
 
-const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
+export const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
   control,
   messageTemplateOptions,
   getMessageTemplateOptionByValue,
