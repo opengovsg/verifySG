@@ -38,28 +38,21 @@ export const messageContentFactory = (
   if (!selectedTemplate)
     return '<b>Select a template to see message preview</b>'
 
-  if (
-    nric === undefined &&
-    selectedTemplate?.type === MessageTemplateType.SGNOTIFY
-  ) {
-    throw new Error('NRIC is required for SGNotify message')
-  }
-  if (
-    recipientPhoneNumber === undefined &&
-    selectedTemplate?.type === MessageTemplateType.SMS
-  ) {
-    throw new Error('Phone number is required for SMS message')
-  }
-
   switch (selectedTemplate.type) {
     case MessageTemplateType.SGNOTIFY:
+      if (nric === undefined) {
+        throw new Error('NRIC is required for SGNotify message')
+      }
       return generateSGNotifyMessagePreview(
-        nric as string,
+        nric,
         agencyParams,
         officerParams,
         selectedTemplate,
       )
     case MessageTemplateType.SMS:
+      if (recipientPhoneNumber === undefined) {
+        throw new Error('Phone number is required for SMS message')
+      }
       return generateSmsMessagePreview(
         agencyParams,
         officerParams,
@@ -113,5 +106,5 @@ const generateSmsMessagePreview = (
     .replace('{{officerName}}', officerName)
     .replace('{{officerPosition}}', officerPosition)
     .replace('{{agencyName}}', agencyName)
-    .replace('{{uniqueUrl}}', '<b><u>{unique-GoGovSG-link}</u></b>')
+    .replace('{{uniqueUrl}}', '<b><u>unique-GoGovSG-link</u></b>')
 }
