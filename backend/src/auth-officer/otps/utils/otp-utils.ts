@@ -1,12 +1,14 @@
 import bcrypt from 'bcrypt'
-import crypto from 'crypto'
+import { customAlphabet } from 'nanoid'
 
-const generateRandomSixDigitNumber = (): string => {
-  return Array(6)
-    .fill(0)
-    .map(() => crypto.randomInt(0, 10))
-    .join('')
+export const otpConfig = {
+  customAlphabet: '0123456789',
+  length: 6,
 }
+
+const otpGenerator = customAlphabet(otpConfig.customAlphabet, otpConfig.length)
+
+const generateRandomSixDigitNumber = (): string => otpGenerator()
 
 const generateOtpAndHashAsync = async (
   saltRounds: number,

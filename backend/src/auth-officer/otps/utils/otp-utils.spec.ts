@@ -1,4 +1,4 @@
-import { OTP } from '../../database/entities'
+import { OTP } from '../../../database/entities'
 
 import { otpUtils } from './otp-utils'
 

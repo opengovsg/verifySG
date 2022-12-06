@@ -31,6 +31,7 @@ import { ApiModule } from './api.module'
     ApiModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend-govt', 'build'),
+      exclude: ['/api*'],
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => connectionConfig,

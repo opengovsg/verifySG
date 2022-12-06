@@ -4,9 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { AuthOfficerGuard } from '../../auth-officer/guards/auth-officer.guard'
 import { OfficerInfoInterface } from '../../common/decorators'
 import { NotificationsController } from '../notifications.controller'
-import { NotificationsService } from '../notifications.service'
+import {
+  SGNotifyNotificationsService,
+  SMSNotificationService,
+} from '../notifications.service'
 
-import { SendNotificationReqDto } from '~shared/types/api'
+import { MessageTemplateType, SendNotificationReqDto } from '~shared/types/api'
 
 const mockOfficerInfoDecorator: OfficerInfoInterface = {
   officerId: 1,
@@ -15,6 +18,7 @@ const mockOfficerInfoDecorator: OfficerInfoInterface = {
 }
 
 const mockSendNotificationReqDto: SendNotificationReqDto = {
+  type: MessageTemplateType.SGNOTIFY,
   nric: 'S1234567D',
   msgTemplateKey: 'template_key',
 }
@@ -30,7 +34,14 @@ describe('NotificationsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotificationsController],
       providers: [
-        { provide: NotificationsService, useValue: mockNotificationsService },
+        {
+          provide: SGNotifyNotificationsService,
+          useValue: mockNotificationsService,
+        },
+        {
+          provide: SMSNotificationService,
+          useValue: mockNotificationsService,
+        },
       ],
     })
       .overrideGuard(AuthOfficerGuard)

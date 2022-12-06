@@ -11,6 +11,8 @@ import { MessageTemplatesService } from 'message-templates/message-templates.ser
 
 import { SGNotifyMessageTemplateId } from '../../../../shared/src/utils'
 
+import { MessageTemplateType } from '~shared/types/api'
+
 export const mockAgency: Agency = createMock<Agency>({
   id: 'SPF',
   name: 'Singapore Police Force',
@@ -24,7 +26,9 @@ export const mockMessageTemplate: MessageTemplate = createMock<MessageTemplate>(
     key: 'template_key',
     agency: mockAgency,
     menu: 'Option description in menu',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
@@ -50,7 +54,9 @@ export const mockMessageTemplateAnotherAgency: MessageTemplate =
     key: 'template_key_another_agency',
     agency: mockAnotherAgency,
     menu: 'some menu',
-    sgNotifyMessageTemplateParams: {
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
       templateId:
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL,
       longMessageParams: {
@@ -106,24 +112,32 @@ describe('MessageTemplatesService', () => {
     expect(agenciesRepository).toBeDefined()
   })
 
-  describe('isMessageTemplateValidByAgencyId', () => {
-    test('message template is valid', async () => {
-      expect(
-        await service.isMessageTemplateValidByAgencyId(
-          mockMessageTemplate.key,
-          mockAgency.id,
-        ),
-      ).toBe(true)
+  describe('getMessageTemplateByAgencyId', () => {
+    test('return valid message template', async () => {
+      const messageTemplate = await service.getMessageTemplateByAgencyId(
+        mockMessageTemplate.key,
+        mockAgency.id,
+      )
+      expect(messageTemplate).toMatchObject({
+        id: mockMessageTemplate.id,
+        key: mockMessageTemplate.key,
+        menu: mockMessageTemplate.menu,
+        type: mockMessageTemplate.type,
+        params: mockMessageTemplate.params,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        deletedAt: null,
+      })
     })
-    test('message template not in db is not valid', async () => {
+    test('message template not in db returns null', async () => {
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplateNotInDb.key,
           mockAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
     })
-    test('message template of another agency is not valid', async () => {
+    test('message template of another agency returns null', async () => {
       await agenciesRepository.save(
         Object.assign(new Agency(), mockAnotherAgency),
       )
@@ -131,17 +145,17 @@ describe('MessageTemplatesService', () => {
         Object.assign(new MessageTemplate(), mockMessageTemplateAnotherAgency),
       )
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplateAnotherAgency.key,
           mockAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
       expect(
-        await service.isMessageTemplateValidByAgencyId(
+        await service.getMessageTemplateByAgencyId(
           mockMessageTemplate.key,
           mockAnotherAgency.id,
         ),
-      ).toBe(false)
+      ).toBe(null)
     })
   })
 
@@ -154,8 +168,8 @@ describe('MessageTemplatesService', () => {
         {
           key: mockMessageTemplate.key,
           menu: mockMessageTemplate.menu,
-          sgNotifyMessageTemplateParams:
-            mockMessageTemplate.sgNotifyMessageTemplateParams,
+          params: mockMessageTemplate.params,
+          type: mockMessageTemplate.type,
         },
       ])
     })
@@ -171,18 +185,15 @@ describe('MessageTemplatesService', () => {
   describe('getSGNotifyMessageTemplateParams', () => {
     test('happy path', async () => {
       expect(
-        await service.getSGNotifyMessageTemplateParams(mockMessageTemplate.key),
+        await service.getMessageTemplateParams(mockMessageTemplate.key),
       ).toEqual({
         id: mockMessageTemplate.id,
-        sgNotifyMessageTemplateParams:
-          mockMessageTemplate.sgNotifyMessageTemplateParams,
+        params: mockMessageTemplate.params,
       })
     })
     test('message template not in db', async () => {
       await expect(
-        service.getSGNotifyMessageTemplateParams(
-          mockMessageTemplateNotInDb.key,
-        ),
+        service.getMessageTemplateParams(mockMessageTemplateNotInDb.key),
       ).rejects.toEqual(
         new BadRequestException(
           `MessageTemplate with key ${mockMessageTemplateNotInDb.key} does not exist`,

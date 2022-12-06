@@ -5,8 +5,8 @@ import { Repository } from 'typeorm'
 import { ConfigSchema } from 'core/config.schema'
 import { ConfigService, Logger } from 'core/providers'
 
-import { convertMillisecondsToMinutes } from '../common/utils'
-import { OTP } from '../database/entities'
+import { convertMillisecondsToMinutes } from '../../common/utils'
+import { OTP } from '../../database/entities'
 
 import { otpUtils } from './utils'
 
@@ -92,7 +92,8 @@ export class OtpService {
     }
     if (numOfAttempts >= this.config.numAllowedAttempts) {
       if (numOfAttempts < POSTGRES_MAX_SMALLINT)
-        await this.incrementAttemptCount(id) // not strictly necessary, but helps to identify brute force attack
+        // can run as void because we don't use the result
+        void this.incrementAttemptCount(id)
       return OTPVerificationResult.MAX_ATTEMPTS_REACHED
     }
     await this.incrementAttemptCount(id)

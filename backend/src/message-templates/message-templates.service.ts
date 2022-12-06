@@ -6,8 +6,8 @@ import { MessageTemplate } from '../database/entities'
 
 import {
   MessageTemplateDto,
+  MessageTemplateParams,
   MessageTemplateSendNotificationResDto,
-  SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 
 @Injectable()
@@ -17,14 +17,13 @@ export class MessageTemplatesService {
     private messageTemplateRepository: Repository<MessageTemplate>,
   ) {}
 
-  async isMessageTemplateValidByAgencyId(
+  async getMessageTemplateByAgencyId(
     key: string,
     agencyId: string,
-  ): Promise<boolean> {
-    const messageTemplate = await this.messageTemplateRepository.findOne({
+  ): Promise<MessageTemplate | null> {
+    return await this.messageTemplateRepository.findOne({
       where: { key, agency: { id: agencyId } },
     })
-    return !!messageTemplate
   }
 
   async getMessageTemplatesByAgencyId(
@@ -37,9 +36,9 @@ export class MessageTemplatesService {
     return messageTemplates.map(this.mapToDto)
   }
 
-  async getSGNotifyMessageTemplateParams(key: string): Promise<{
+  async getMessageTemplateParams(key: string): Promise<{
     id: number
-    sgNotifyMessageTemplateParams: SGNotifyMessageTemplateParams
+    params: MessageTemplateParams
   }> {
     const messageTemplate = await this.messageTemplateRepository.findOne({
       where: { key },
@@ -49,29 +48,36 @@ export class MessageTemplatesService {
         `MessageTemplate with key ${key} does not exist`,
       )
     }
-    const { id, sgNotifyMessageTemplateParams } = messageTemplate
+    const { id, params } = messageTemplate
+    if (!params) {
+      throw new BadRequestException(
+        `MessageTemplate with key ${key} does not have params`,
+      )
+    }
     return {
       id,
-      sgNotifyMessageTemplateParams,
+      params,
     }
   }
 
   mapToDto(messageTemplate: MessageTemplate): MessageTemplateDto {
-    const { key, menu, sgNotifyMessageTemplateParams } = messageTemplate
+    const { key, menu, params, type } = messageTemplate
     return {
       key,
       menu,
-      sgNotifyMessageTemplateParams,
+      params,
+      type,
     }
   }
 
   mapToResDto(
     messageTemplate: MessageTemplate,
   ): MessageTemplateSendNotificationResDto {
-    const { key, menu } = messageTemplate
+    const { key, menu, type } = messageTemplate
     return {
       key,
       menu,
+      type,
     }
   }
 }

@@ -16,7 +16,6 @@ import {
 
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
-import { SGNotifyNotificationStatus } from '../../database/entities'
 import {
   AUTHZ_ENDPOINT,
   NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE,
@@ -40,6 +39,7 @@ import {
 import {
   convertParamsToNotificationRequestPayload,
   insertECPrivateKeyHeaderAndFooter,
+  SGNotifyNotificationStatus,
   SGNotifyParams,
 } from './utils'
 
@@ -163,7 +163,9 @@ export class SGNotifyService {
           this.logger.log(`NRIC ${sgNotifyParams.nric} provided not found.`)
           throw new BadRequestException(NO_SINGPASS_MOBILE_APP_FOUND_MESSAGE)
         }
-        // catch residual errors
+        // catch residual errors; likely candidates:
+        // 1. missing mandatory fields (no type-checking based on message template)
+        // 2. SGNotify is down
         this.logger.error(
           `Unexpected error when sending notification to SGNotify.
           Payload sent:${JSON.stringify(notificationRequestPayload)}
@@ -194,8 +196,8 @@ export class SGNotifyService {
     return {
       ...sgNotifyParams,
       requestId: notificationResPayload.request_id,
-      sgNotifyLongMessageParams: {
-        ...sgNotifyParams.sgNotifyLongMessageParams,
+      params: {
+        ...sgNotifyParams.params,
       },
       status: SGNotifyNotificationStatus.SENT_BY_SERVER,
     }

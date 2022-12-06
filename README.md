@@ -29,6 +29,14 @@
     npm run dev:full # start Docker container and dev env together
     npm run dev # start dev env (user should start Docker container separately)
     ```
+  
+### Set up End-to-End Tests Locally (Optional)
+
+End-to-end tests have already been set up automatically on staging and prod. Only set up end-to-end tests if you want to run them locally. To do so:
+
+1. Make a copy of `/e2e/.env.example` and name it `/e2e/.env`.
+2. Obtain a copy of `credentials.json` and `gmail_token.json` from the 1Password vault and place them in the `/e2e` folder. Alternatively, you can generate your own credentials and token by following the instructions [here](https://github.com/levz0r/gmail-tester#usage).
+3. Check out the different run configurations available for Playwright [here](https://playwright.dev/docs/test-cli). In `package.json` we have `e2e-test` and `e2e-test:debug` but there are far more variants available.
 
 ## Migrations
 

@@ -1,5 +1,5 @@
 import { mockValidSGNotifyParams } from '../../../__tests__/notifications.service.spec'
-import { convertParamsToNotificationRequestPayload } from '../message-template'
+import { convertParamsToNotificationRequestPayload } from '../sgnotify-utils'
 
 describe('message-template.ts helper functions', () => {
   test('convertParamsToNotificationRequestPayload correctness', async () => {
@@ -17,18 +17,12 @@ describe('message-template.ts helper functions', () => {
           {
             template_id: mockValidSGNotifyParams.templateId,
             template_input: {
-              agency: mockValidSGNotifyParams.sgNotifyLongMessageParams.agency,
-              masked_nric:
-                mockValidSGNotifyParams.sgNotifyLongMessageParams.masked_nric,
-              officer_name:
-                mockValidSGNotifyParams.sgNotifyLongMessageParams.officer_name,
-              position:
-                mockValidSGNotifyParams.sgNotifyLongMessageParams.position,
-              call_details:
-                mockValidSGNotifyParams.sgNotifyLongMessageParams.call_details,
-              callback_details:
-                mockValidSGNotifyParams.sgNotifyLongMessageParams
-                  .callback_details,
+              agency: mockValidSGNotifyParams.params.agency,
+              masked_nric: mockValidSGNotifyParams.params.masked_nric,
+              officer_name: mockValidSGNotifyParams.params.officer_name,
+              position: mockValidSGNotifyParams.params.position,
+              call_details: mockValidSGNotifyParams.params.call_details,
+              callback_details: mockValidSGNotifyParams.params.callback_details,
             },
           },
         ],

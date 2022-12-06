@@ -1,5 +1,12 @@
 import { addFormats, Schema } from 'convict'
 
+interface TwilioCredentials {
+  accountSid: string
+  authToken: string
+  phoneNumber: string
+  senderId: string
+}
+
 export interface ConfigSchema {
   frontendUrls: {
     frontendGovtBase: string
@@ -24,6 +31,9 @@ export interface ConfigSchema {
     numAllowedAttempts: number
     numSaltRounds: number
   }
+  uniqueParams: {
+    defaultExpiryPeriod: number
+  }
   postman: {
     apiUrl: string
     apiKey: string
@@ -44,6 +54,16 @@ export interface ConfigSchema {
   sentry: {
     frontendDsn: string
     backendDsn: string
+  }
+  gogovsg: {
+    apiUrl: string
+    apiKey: string
+  }
+  twilio: {
+    defaultCredentials: TwilioCredentials
+    ogpCredentials: TwilioCredentials
+    mohCredentials: TwilioCredentials
+    momCredentials: TwilioCredentials
   }
 }
 
@@ -174,6 +194,15 @@ export const schema: Schema<ConfigSchema> = {
       format: Number,
     },
   },
+  uniqueParams: {
+    defaultExpiryPeriod: {
+      doc: 'Validity of unique params, expressed in seconds',
+      env: 'UNIQUE_PARAMS_DEFAULT_EXPIRY_PERIOD',
+      default: 3 * 24 * 60 * 60, // 3 days (arbitrary)
+      format: Number,
+    },
+  },
+  // used for sending OTP via email
   postman: {
     apiUrl: {
       doc: 'API endpoint for Postman.gov.sg',
@@ -258,6 +287,123 @@ export const schema: Schema<ConfigSchema> = {
       env: 'SENTRY_BACKEND_DSN',
       format: String,
       default: '',
+    },
+  },
+  // used for sending SMS
+  gogovsg: {
+    apiUrl: {
+      doc: 'API endpoint for GoGovSG',
+      env: 'GO_API_URL',
+      default: 'https://staging.go.gov.sg/api/v1/urls',
+      format: String,
+    },
+    apiKey: {
+      doc: 'API key for Postman.gov.sg',
+      env: 'GO_API_KEY',
+      default: '',
+      format: 'required-string',
+    },
+  },
+  twilio: {
+    defaultCredentials: {
+      accountSid: {
+        doc: 'Default Twilio account SID (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
+        default: '',
+      },
+      authToken: {
+        doc: 'Default Twilio auth token (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_AUTH_TOKEN',
+        format: 'required-string',
+        default: '',
+      },
+      phoneNumber: {
+        doc: 'Default Twilio phone number (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_PHONE_NUMBER',
+        format: 'required-string',
+        default: '',
+      },
+      senderId: {
+        doc: 'Default Twilio sender ID (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_SENDER_ID',
+        format: 'required-string',
+        default: '',
+      },
+    },
+    ogpCredentials: {
+      accountSid: {
+        doc: 'OGP Twilio account SID',
+        env: 'OGP_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
+        default: '',
+      },
+      authToken: {
+        doc: 'OGP Twilio auth token',
+        env: 'OGP_TWILIO_AUTH_TOKEN',
+        format: 'required-string',
+        default: '',
+      },
+      phoneNumber: {
+        doc: 'OGP Twilio phone number',
+        env: 'OGP_TWILIO_PHONE_NUMBER',
+        format: 'required-string',
+        default: '',
+      },
+      senderId: {
+        doc: 'OGP Twilio sender ID',
+        env: 'OGP_TWILIO_SENDER_ID',
+        format: 'required-string',
+        default: '',
+      },
+    },
+    // for now, we are loading agency's Twilio creds as env vars
+    // in the future, we should encrypt using KMS and store them in the DB
+    // they're not required because on staging, we use the default creds
+    // NOTE: we should make sure to load them in production
+    mohCredentials: {
+      accountSid: {
+        doc: 'MOH Twilio account SID',
+        env: 'MOH_TWILIO_ACCOUNT_SID',
+        default: '',
+      },
+      authToken: {
+        doc: 'MOH Twilio auth token',
+        env: 'MOH_TWILIO_AUTH_TOKEN',
+        default: '',
+      },
+      phoneNumber: {
+        doc: 'MOH Twilio phone number',
+        env: 'MOH_TWILIO_PHONE_NUMBER',
+        default: '',
+      },
+      senderId: {
+        doc: 'MOH Twilio sender ID',
+        env: 'MOH_TWILIO_SENDER_ID',
+        default: '',
+      },
+    },
+    momCredentials: {
+      accountSid: {
+        doc: 'MOM Twilio account SID',
+        env: 'MOM_TWILIO_ACCOUNT_SID',
+        default: '',
+      },
+      authToken: {
+        doc: 'MOM Twilio auth token',
+        env: 'MOM_TWILIO_AUTH_TOKEN',
+        default: '',
+      },
+      phoneNumber: {
+        doc: 'MOM Twilio phone number',
+        env: 'MOM_TWILIO_PHONE_NUMBER',
+        default: '',
+      },
+      senderId: {
+        doc: 'MOM Twilio sender ID',
+        env: 'MOM_TWILIO_SENDER_ID',
+        default: '',
+      },
     },
   },
 }

@@ -1,18 +1,15 @@
-name: Lint, build, test and deploy
+name: Lint and test
+
 on:
   push:
+    branches:
+      - develop
   pull_request:
-    branches: [staging, master]
-env:
-  PRODUCTION_BRANCH: refs/heads/master
-  STAGING_BRANCH: refs/heads/staging
-  EB_STAGING_APPLICATION: checkwho-staging-application
-  EB_STAGING_ENVIRONMENT: checkwho-staging-environment
-  EB_PRODUCTION_APPLICATION: checkwho-production-application
-  EB_PRODUCTION_ENVIRONMENT: checkwho-production-environment
+    branches: [develop]
+  workflow_call:
+
 jobs:
-  lint:
-    name: Lint, build, and test
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -48,106 +45,5 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Build
-        run: npm run build
-
       - name: Run tests
-        run: |
-          npm run test
-
-      - name: Upload deployment files
-        uses: actions/upload-artifact@v2
-        with:
-          name: deployment-files
-          path: |
-            package*.json
-            frontend-govt/package*.json
-            frontend-govt/build
-            backend/package*.json
-            backend/build
-            shared/package*.json
-            shared/build
-            .nvmrc
-            .npmrc
-            Buildfile
-
-  gatekeep:
-    name: Determine if deploy is needed
-    outputs:
-      proceed: ${{ steps.determine_proceed.outputs.proceed }}
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    steps:
-      - id: determine_proceed
-        run: |
-          if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-            echo '::set-output name=proceed::false';
-            echo '::set-output name=proceed::false';
-          elif [[ $GITHUB_REF == $STAGING_BRANCH && -n "$EB_STAGING_ENVIRONMENT" && -n "$EB_STAGING_APPLICATION" ]]; then
-            echo '::set-output name=proceed::true';
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH && -n "$EB_PRODUCTION_ENVIRONMENT" && -n "$EB_PRODUCTION_APPLICATION" ]]; then
-            echo '::set-output name=proceed::true';
-          else
-            echo '::set-output name=proceed::false';
-          fi
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  deploy:
-    name: Deploy to Elastic Beanstalk
-    runs-on: ubuntu-latest
-    needs: [lint, gatekeep]
-    if: needs.gatekeep.outputs.proceed == 'true'
-    steps:
-      - name: Download frontend build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: deployment-files
-          path: deploy
-
-      - name: Generate .env file for backend so systems manager script knows the file path to pull from
-        run: |
-          cd deploy
-          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "ENV=staging" >> backend/.env
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "ENV=production" >> backend/.env
-          fi
-
-      - name: Generate deployment package
-        run: |
-          cd deploy
-          zip -r ../deploy.zip .
-
-      - name: Set branch specific env vars
-        run: |
-          timestamp=$(TZ=Asia/Singapore date '+%Y%m%d%H%M%S')
-          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
-            echo "EB_ENVIRONMENT=$EB_STAGING_ENVIRONMENT" >> $GITHUB_ENV
-            echo "EB_APPLICATION=$EB_STAGING_APPLICATION" >> $GITHUB_ENV
-            echo "VERSION_LABEL=stg-$timestamp" >> $GITHUB_ENV
-          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
-            echo "EB_ENVIRONMENT=$EB_PRODUCTION_ENVIRONMENT" >> $GITHUB_ENV
-            echo "EB_APPLICATION=$EB_PRODUCTION_APPLICATION" >> $GITHUB_ENV
-            echo "VERSION_LABEL=prod-$timestamp" >> $GITHUB_ENV
-          fi
-
-      - name: Print branch specific env vars
-        run: |
-          echo EB_ENVIRONMENT=$EB_ENVIRONMENT
-          echo EB_APPLICATION=$EB_APPLICATION
-          echo VERSION_LABEL=$VERSION_LABEL
-
-      - name: Deploy to EB
-        uses: opengovsg/beanstalk-deploy@v18
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: ${{ env.EB_APPLICATION }}
-          environment_name: ${{ env.EB_ENVIRONMENT }}
-          version_label: ${{ env.VERSION_LABEL }}
-          region: ap-southeast-1
-          version_description: ${{ github.SHA }}
-          deployment_package: deploy.zip
-          wait_for_deployment: false
+        run: npm run test

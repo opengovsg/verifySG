@@ -7,11 +7,7 @@ import {
   validateOrReject,
 } from 'class-validator'
 
-import {
-  Agency,
-  NotificationStatus,
-  SGNotifyNotificationStatus,
-} from '../../../database/entities'
+import { Agency } from '../../../database/entities'
 import {
   SGNotifyNotificationRequest,
   SGNotifyNotificationRequestPayload,
@@ -25,6 +21,14 @@ import {
   sgNotifyShortMessage,
   sgNotifyTitle,
 } from '~shared/utils/sgnotify'
+
+export enum SGNotifyNotificationStatus {
+  NOT_SENT = 'NOT_SENT',
+  SENT_BY_SERVER = 'SENT_BY_SERVER',
+  // last two enums unused for now; can be obtained by consuming notification status endpoints
+  RECEIVED_BY_DEVICE = 'RECEIVED_BY_DEVICE',
+  READ_BY_USER = 'READ_BY_USER',
+}
 
 // see SGNotifyNotificationRequest, which is similar
 export class SGNotifyParams {
@@ -49,7 +53,7 @@ export class SGNotifyParams {
 
   templateId: SGNotifyMessageTemplateId
 
-  sgNotifyLongMessageParams: Record<string, string>
+  params: Record<string, string>
 
   status: SGNotifyNotificationStatus
 
@@ -69,14 +73,6 @@ export interface OfficerParams {
   officerPosition: string
 }
 
-export const sgNotifyParamsStatusToNotificationStatusMapper = (
-  params: SGNotifyParams,
-): NotificationStatus => {
-  return params.status === SGNotifyNotificationStatus.NOT_SENT
-    ? NotificationStatus.NOT_SENT
-    : NotificationStatus.SENT
-}
-
 // these are the params that are independent of templateId
 // extracted out for clarity and to minimize repetition in generateNewSGNotifyParams
 const generateGenericSGNotifyParams = (
@@ -90,7 +86,7 @@ const generateGenericSGNotifyParams = (
     agencyLogoUrl,
     agencyShortName,
     nric,
-    sgNotifyLongMessageParams: {
+    params: {
       agency: agencyName,
       officer_name: `<u>${officerName}</u>`,
       position: `<u>${officerPosition}</u>`,
@@ -123,8 +119,8 @@ export const generateNewSGNotifyParams = async (
         templateId,
         title,
         shortMessage,
-        sgNotifyLongMessageParams: {
-          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+        params: {
+          ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
           callback_details: longMessageParams.callback_details || ' ', // unused for now, but useful for future extension; cannot be blank or SGNotify will reject the request
         },
@@ -136,8 +132,8 @@ export const generateNewSGNotifyParams = async (
         templateId,
         title,
         shortMessage,
-        sgNotifyLongMessageParams: {
-          ...genericSGNotifyParams.sgNotifyLongMessageParams,
+        params: {
+          ...genericSGNotifyParams.params,
           call_details: longMessageParams.call_details,
         },
       })
@@ -156,14 +152,8 @@ export const generateNewSGNotifyParams = async (
 export const convertParamsToNotificationRequestPayload = (
   sgNotifyParams: SGNotifyParams,
 ): SGNotifyNotificationRequestPayload => {
-  const {
-    agencyLogoUrl,
-    agencyShortName,
-    templateId,
-    sgNotifyLongMessageParams,
-    title,
-    nric,
-  } = sgNotifyParams
+  const { agencyLogoUrl, agencyShortName, templateId, params, title, nric } =
+    sgNotifyParams
   // this destructuring is untyped, be careful!
   const {
     agency,
@@ -172,7 +162,7 @@ export const convertParamsToNotificationRequestPayload = (
     position,
     call_details,
     callback_details,
-  } = sgNotifyLongMessageParams
+  } = params
   const notificationRequest = Object.assign(new SGNotifyNotificationRequest(), {
     category: 'MESSAGES',
     channel_mode: 'SPM',
