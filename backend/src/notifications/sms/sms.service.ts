@@ -5,7 +5,11 @@ import { MessageStatus } from 'twilio/lib/rest/api/v2010/account/message'
 
 import { ConfigSchema } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
-import { TWILIO_ENDPOINT_ERROR_MESSAGE } from '../constants'
+import {
+  GOGOVSG_ENDPOINT_ERROR_MESSAGE,
+  TWILIO_ENDPOINT_ERROR_MESSAGE,
+} from '../constants'
+import { GoGovSGService } from '../gogovsg/gogovsg.service'
 import {
   AgencyParams,
   OfficerParams,
@@ -31,7 +35,11 @@ export const supportedAgencies = ['OGP', 'MOM', 'MOH']
 export class SMSService {
   private readonly config: ConfigSchema['twilio']
 
-  constructor(private configService: ConfigService, private logger: Logger) {
+  constructor(
+    private configService: ConfigService,
+    private logger: Logger,
+    private gogovsgService: GoGovSGService,
+  ) {
     this.config = this.configService.get('twilio')
   }
 
@@ -43,35 +51,35 @@ export class SMSService {
       this.getAgencyAccountSidAndAuthToken(officerAgency)
     const client = twilio(accountSid, authToken)
 
-    try {
-      const messageInstance = await client.messages.create({
+    const messageInstance = await client.messages
+      .create({
         body: smsParams.message,
         from: smsParams.senderId ?? smsParams.senderPhoneNumber,
         to: `+65${smsParams.recipientPhoneNumber}`, // need to convert to E.164 format
       })
-      const { status, sid, errorCode, errorMessage, numSegments } =
-        messageInstance
-      return {
-        ...smsParams,
-        status,
-        sid,
-        errorCode,
-        errorMessage,
-        numSegments,
-      }
-    } catch (err) {
-      this.logger.error(JSON.stringify(err))
-      throw new BadGatewayException(TWILIO_ENDPOINT_ERROR_MESSAGE)
+      .catch((err) => {
+        this.logger.error(JSON.stringify(err))
+        throw new BadGatewayException(TWILIO_ENDPOINT_ERROR_MESSAGE)
+      })
+    const { status, sid, errorCode, errorMessage, numSegments } =
+      messageInstance
+    return {
+      ...smsParams,
+      status,
+      sid,
+      errorCode,
+      errorMessage,
+      numSegments,
     }
   }
 
-  generateSMSParamsByTemplate(
+  async generateSMSParamsByTemplate(
     recipientPhoneNumber: string,
     agencyParams: Omit<AgencyParams, 'agencyLogoUrl'>, // no need in SMS
     officerParams: OfficerParams,
     params: SmsMessageTemplateParams,
     uniqueParamString: string,
-  ): SMSParams {
+  ): Promise<SMSParams> {
     const { agencyShortName, agencyName } = agencyParams
     const { officerName, officerPosition } = officerParams
     const { message } = params
@@ -79,11 +87,21 @@ export class SMSService {
     const { senderId, phoneNumber: senderPhoneNumber } =
       this.getAgencySenderIdAndPhoneNumber(agencyShortName)
 
-    // processing this here so that
-    // 1. message previews are easier to generate (just leave the entire uniqueUrl blank)
-    // 2. we can switch around different variations of the uniqueUrl without changing the database, for e.g.
-    // `go.gov.sg/check-sms-${uniqueParamString}` or even randomising between them
-    const uniqueUrl = `check.go.gov.sg/sms/${uniqueParamString}`
+    const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
+    const shortUrl = `check-sms-${uniqueParamString}` // to pass to Go API
+    const shortUrlRes = await this.gogovsgService
+      .createShortLink(checkerUrl, shortUrl)
+      .catch((err) => {
+        this.logger.error(JSON.stringify(err))
+        // 1. currently, for reasons I don't understand, this error message is not shown on the frontend but still logged on the backend
+        // 2. for future extension, we can consider just using check.go.gov.sg URL directly instead of shortening it to avoid additional API call
+        throw new BadGatewayException(GOGOVSG_ENDPOINT_ERROR_MESSAGE)
+      })
+    // included in SMS
+    const embeddedUrl =
+      this.configService.get('environment') === 'production'
+        ? `go.gov.sg/${shortUrlRes}`
+        : `staging.go.gov.sg/${shortUrlRes}`
 
     return {
       senderId,
@@ -94,7 +112,7 @@ export class SMSService {
         .replace('{{officerName}}', officerName)
         .replace('{{officerPosition}}', officerPosition)
         .replace('{{agencyName}}', agencyName)
-        .replace('{{uniqueUrl}}', uniqueUrl),
+        .replace('{{uniqueUrl}}', embeddedUrl),
       status: null,
       sid: null,
       errorCode: null,

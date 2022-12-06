@@ -267,16 +267,16 @@ export class SMSNotificationService extends NotificationsService<SmsMessageTempl
     const uniqueParamString = await this.uniqueParamService.generateUniqueParam(
       {
         messageType: MessageTemplateType.SMS,
-        senderName: officer.name,
-        senderPosition: officer.position,
         agencyName,
-        agencyShortName,
+        agencySenderId:
+          this.smsService.getAgencySenderIdAndPhoneNumber(agencyShortName)
+            .senderId,
         recipientId,
         timestamp: new Date(),
       },
     ) // use default expiry period for now
     return {
-      modalityParams: this.smsService.generateSMSParamsByTemplate(
+      modalityParams: await this.smsService.generateSMSParamsByTemplate(
         recipientId,
         {
           agencyShortName,

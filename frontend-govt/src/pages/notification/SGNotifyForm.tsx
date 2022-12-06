@@ -30,6 +30,7 @@ import {
   SendNotificationReqSGNotifyDto,
   SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
+import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface SGNotifyFormProps {
   onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
@@ -79,7 +80,7 @@ const useSGNotifyForm = () => {
       onError: (err) => {
         toast({
           status: 'warning',
-          description: `${err}` || 'Something went wrong',
+          description: `${err}` || DEFAULT_ERROR_MESSAGE,
           isClosable: false,
         })
       },

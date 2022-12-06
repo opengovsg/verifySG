@@ -4,8 +4,8 @@ import { customAlphabet } from 'nanoid'
 
 const uniqueParamStringConfig = {
   // use this to calculate collision probability https://zelark.github.io/nano-id-cc/
-  customAlphabet: '346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz', // remove lookalikes
-  length: 20,
+  customAlphabet: '0123456789abcdefghijklmnopqrstuvwxyz',
+  length: 12,
 }
 
 const uniqueParamStringGenerator = customAlphabet(
