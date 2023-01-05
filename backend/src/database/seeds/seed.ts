@@ -4,8 +4,8 @@ import { DataSource } from 'typeorm'
 import { connectionConfig } from '../datasource'
 import { Agency, MessageTemplate } from '../entities'
 
-import { agenciesData } from './agenciesData'
-import { messageTemplatesData } from './messageTemplatesData'
+import { agenciesData } from './agencies-data'
+import { messageTemplatesData } from './message-templates-data'
 
 const createAgencies = async (dataSource: DataSource) => {
   console.log('Attempting to create agencies...')
