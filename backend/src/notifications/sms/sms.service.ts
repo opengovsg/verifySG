@@ -3,7 +3,7 @@ import twilio from 'twilio'
 
 import { MessageStatus } from 'twilio/lib/rest/api/v2010/account/message'
 
-import { ConfigSchema } from '../../core/config.schema'
+import { ConfigSchema, TwilioCredentials } from '../../core/config.schema'
 import { ConfigService, Logger } from '../../core/providers'
 import {
   GOGOVSG_ENDPOINT_ERROR_MESSAGE,
@@ -46,9 +46,9 @@ export class SMSService {
     officerAgency: string,
     smsParams: SMSParams,
   ): Promise<SMSParams> {
-    const { accountSid, authToken } =
-      this.getAgencyAccountSidAndAuthToken(officerAgency)
-    const client = twilio(accountSid, authToken)
+    const { accountSid, apiKeySid, apiKeySecret } =
+      this.getAgencyTwilioCreds(officerAgency)
+    const client = twilio(apiKeySid, apiKeySecret, { accountSid })
 
     const messageInstance = await client.messages
       .create({
@@ -131,29 +131,33 @@ export class SMSService {
     }
   }
 
-  getAgencyAccountSidAndAuthToken = (
+  getAgencyTwilioCreds = (
     officerAgency: string,
-  ): { accountSid: string; authToken: string } => {
+  ): Omit<TwilioCredentials, 'senderId'> => {
     switch (officerAgency) {
       case 'OGP':
         return {
           accountSid: this.config.ogpCredentials.accountSid,
-          authToken: this.config.ogpCredentials.authToken,
+          apiKeySid: this.config.ogpCredentials.apiKeySid,
+          apiKeySecret: this.config.ogpCredentials.apiKeySecret,
         }
       case 'MOH':
         return {
           accountSid: this.config.mohCredentials.accountSid,
-          authToken: this.config.mohCredentials.authToken,
+          apiKeySid: this.config.mohCredentials.apiKeySid,
+          apiKeySecret: this.config.mohCredentials.apiKeySecret,
         }
       case 'MOM':
         return {
           accountSid: this.config.momCredentials.accountSid,
-          authToken: this.config.momCredentials.authToken,
+          apiKeySid: this.config.momCredentials.apiKeySid,
+          apiKeySecret: this.config.momCredentials.apiKeySecret,
         }
       default:
         return {
           accountSid: this.config.defaultCredentials.accountSid,
-          authToken: this.config.defaultCredentials.authToken,
+          apiKeySid: this.config.defaultCredentials.apiKeySid,
+          apiKeySecret: this.config.defaultCredentials.apiKeySecret,
         }
     }
   }

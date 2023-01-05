@@ -1,9 +1,9 @@
 import { addFormats, Schema } from 'convict'
 
-interface TwilioCredentials {
+export interface TwilioCredentials {
   accountSid: string
-  authToken: string
-  phoneNumber: string
+  apiKeySid: string
+  apiKeySecret: string
   senderId: string
 }
 
@@ -312,15 +312,15 @@ export const schema: Schema<ConfigSchema> = {
         format: 'required-string',
         default: '',
       },
-      authToken: {
-        doc: 'Default Twilio auth token (using Postman creds for now)',
-        env: 'DEFAULT_TWILIO_AUTH_TOKEN',
+      apiKeySid: {
+        doc: 'Default Twilio API key SID (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_API_KEY_SID',
         format: 'required-string',
         default: '',
       },
-      phoneNumber: {
-        doc: 'Default Twilio phone number (using Postman creds for now)',
-        env: 'DEFAULT_TWILIO_PHONE_NUMBER',
+      apiKeySecret: {
+        doc: 'Default Twilio API key secret (using Postman creds for now)',
+        env: 'DEFAULT_TWILIO_API_KEY_SECRET',
         format: 'required-string',
         default: '',
       },
@@ -338,15 +338,15 @@ export const schema: Schema<ConfigSchema> = {
         format: 'required-string',
         default: '',
       },
-      authToken: {
-        doc: 'OGP Twilio auth token',
-        env: 'OGP_TWILIO_AUTH_TOKEN',
+      apiKeySid: {
+        doc: 'OGP Twilio API key SID',
+        env: 'OGP_TWILIO_API_KEY_SID',
         format: 'required-string',
         default: '',
       },
-      phoneNumber: {
-        doc: 'OGP Twilio phone number',
-        env: 'OGP_TWILIO_PHONE_NUMBER',
+      apiKeySecret: {
+        doc: 'OGP Twilio API key secret',
+        env: 'OGP_TWILIO_API_KEY_SECRET',
         format: 'required-string',
         default: '',
       },
@@ -367,14 +367,14 @@ export const schema: Schema<ConfigSchema> = {
         env: 'MOH_TWILIO_ACCOUNT_SID',
         default: '',
       },
-      authToken: {
-        doc: 'MOH Twilio auth token',
-        env: 'MOH_TWILIO_AUTH_TOKEN',
+      apiKeySid: {
+        doc: 'MOH Twilio API key SID',
+        env: 'MOH_TWILIO_API_KEY_SID',
         default: '',
       },
-      phoneNumber: {
-        doc: 'MOH Twilio phone number',
-        env: 'MOH_TWILIO_PHONE_NUMBER',
+      apiKeySecret: {
+        doc: 'MOH Twilio API key secret',
+        env: 'MOH_TWILIO_API_KEY_SECRET',
         default: '',
       },
       senderId: {
@@ -389,14 +389,14 @@ export const schema: Schema<ConfigSchema> = {
         env: 'MOM_TWILIO_ACCOUNT_SID',
         default: '',
       },
-      authToken: {
-        doc: 'MOM Twilio auth token',
-        env: 'MOM_TWILIO_AUTH_TOKEN',
+      apiKeySid: {
+        doc: 'MOM Twilio API key SID',
+        env: 'MOM_TWILIO_API_KEY_SID',
         default: '',
       },
-      phoneNumber: {
-        doc: 'MOM Twilio phone number',
-        env: 'MOM_TWILIO_PHONE_NUMBER',
+      apiKeySecret: {
+        doc: 'MOM Twilio API key secret',
+        env: 'MOM_TWILIO_API_KEY_SECRET',
         default: '',
       },
       senderId: {
