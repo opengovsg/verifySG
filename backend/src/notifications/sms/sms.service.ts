@@ -19,7 +19,6 @@ import { SmsMessageTemplateParams } from '~shared/types/api'
 
 export interface SMSParams {
   senderId: string
-  senderPhoneNumber: string
   recipientPhoneNumber: string
   message: string
   status: MessageStatus | null
@@ -54,7 +53,7 @@ export class SMSService {
     const messageInstance = await client.messages
       .create({
         body: smsParams.message,
-        from: smsParams.senderId ?? smsParams.senderPhoneNumber,
+        from: smsParams.senderId,
         to: `+65${smsParams.recipientPhoneNumber}`, // need to convert to E.164 format
       })
       .catch((err) => {
@@ -84,8 +83,7 @@ export class SMSService {
     const { officerName, officerPosition } = officerParams
     const { message } = params
 
-    const { senderId, phoneNumber: senderPhoneNumber } =
-      this.getAgencySenderIdAndPhoneNumber(agencyShortName)
+    const senderId = this.getAgencySenderId(agencyShortName)
 
     const checkerUrl = `check.go.gov.sg/sms/${uniqueParamString}`
     const shortUrl = `check-sms-${uniqueParamString}` // to pass to Go API
@@ -105,7 +103,6 @@ export class SMSService {
 
     return {
       senderId,
-      senderPhoneNumber,
       recipientPhoneNumber,
       // hardcode for now, in theory should support variable number of params
       message: message
@@ -121,30 +118,16 @@ export class SMSService {
     }
   }
 
-  getAgencySenderIdAndPhoneNumber = (
-    officerAgency: string,
-  ): { senderId: string; phoneNumber: string } => {
+  getAgencySenderId = (officerAgency: string): string => {
     switch (officerAgency) {
       case 'OGP':
-        return {
-          senderId: this.config.ogpCredentials.senderId,
-          phoneNumber: this.config.ogpCredentials.phoneNumber,
-        }
+        return this.config.ogpCredentials.senderId
       case 'MOH':
-        return {
-          senderId: this.config.mohCredentials.senderId,
-          phoneNumber: this.config.mohCredentials.phoneNumber,
-        }
+        return this.config.mohCredentials.senderId
       case 'MOM':
-        return {
-          senderId: this.config.momCredentials.senderId,
-          phoneNumber: this.config.momCredentials.phoneNumber,
-        }
+        return this.config.momCredentials.senderId
       default:
-        return {
-          senderId: this.config.defaultCredentials.senderId,
-          phoneNumber: this.config.defaultCredentials.phoneNumber,
-        }
+        return this.config.defaultCredentials.senderId
     }
   }
 
