@@ -220,4 +220,28 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-hvt',
+    menu: 'MOH HVT',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['agencyName', 'uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Home Vaccination Team. This is to inform you that a {{agencyName}} call agent will be contacting you in the next 30 minutes regarding Home Vaccination matters.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-vaccination-team',
+    menu: 'MOH Vaccination Team',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['agencyName', 'uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a {{agencyName}} call agent will be contacting you in the next 30 minutes regarding vaccination matters from your call query.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
+    },
+  },
 ]
