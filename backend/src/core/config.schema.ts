@@ -365,21 +365,25 @@ export const schema: Schema<ConfigSchema> = {
       accountSid: {
         doc: 'MOH Twilio account SID',
         env: 'MOH_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
         default: '',
       },
       apiKeySid: {
         doc: 'MOH Twilio API key SID',
         env: 'MOH_TWILIO_API_KEY_SID',
+        format: 'required-string',
         default: '',
       },
       apiKeySecret: {
         doc: 'MOH Twilio API key secret',
         env: 'MOH_TWILIO_API_KEY_SECRET',
+        format: 'required-string',
         default: '',
       },
       senderId: {
         doc: 'MOH Twilio sender ID',
         env: 'MOH_TWILIO_SENDER_ID',
+        format: 'required-string',
         default: '',
       },
     },
