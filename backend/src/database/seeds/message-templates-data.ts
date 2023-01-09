@@ -244,4 +244,33 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a {{agencyName}} call agent will be contacting you in the next 30 minutes regarding vaccination matters from your call query.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-before',
+    menu: 'CMCC Pre-Call Alert',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'agencyName',
+        'uniqueUrl',
+      ],
+      message:
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} will be contacting you later today to follow up on your or your family member’s application to a government scheme or request to update your household details.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a Government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-after',
+    menu: 'CMCC Post-Call Reminder',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['agencyName', 'uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} had tried to reach you earlier.\n\nWe want to follow up on your or your family member’s application to a government scheme or request to update your household details. Please return our call between 8:30am to 6pm, Mon to Fri excluding PH.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a Government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+    },
+  },
 ]

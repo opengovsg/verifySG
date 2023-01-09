@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
 
 interface NotificationDataContext {
-  targetNRIC: string | undefined
-  setTargetNRIC: (nric: string) => void
+  targetPhoneNumber: string | undefined
+  setTargetPhoneNumber: (number: string) => void
   msgTemplateKey: string
   setMsgTemplateKey: (key: string) => void
 }

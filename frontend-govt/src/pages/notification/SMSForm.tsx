@@ -2,8 +2,10 @@ import React from 'react'
 import { Control, useForm } from 'react-hook-form'
 import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useMutation } from 'react-query'
+import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Skeleton, StackItem, VStack } from '@chakra-ui/react'
 import MessagePreview from '@components/MessagePreview'
+import { requiresFeedbackForm } from '@constants/feedback-form-metadata'
 import {
   Button,
   FormErrorMessage,
@@ -14,6 +16,9 @@ import {
 } from '@opengovsg/design-system-react'
 import { NotificationService } from '@services/NotificationService'
 
+import { FEEDBACKFORM_ROUTE } from '@/constants/routes'
+import { useAuth } from '@/contexts/auth/AuthContext'
+import { useNotificationData } from '@/contexts/notification/NotificationDataContext'
 import {
   getMessageTemplateOptionByValue,
   getParamsByMsgTemplateKey,
@@ -43,6 +48,9 @@ const useSmsForm = () => {
   setValue('type', MessageTemplateType.SMS)
 
   const toast = useToast(useToastOptions)
+  const history = useHistory()
+  const { officerAgency } = useAuth()
+  const { setTargetPhoneNumber, setMsgTemplateKey } = useNotificationData()
 
   const { messageTemplates, isLoading } = useMessageTemplates()
   useDefaultMessageTemplate(
@@ -90,6 +98,11 @@ const useSmsForm = () => {
       onSuccess: () => {
         // upon successful notification, reset phone number but keep selected message template
         setValue('recipientPhoneNumber', '')
+        if (requiresFeedbackForm(officerAgency, data.msgTemplateKey)) {
+          setTargetPhoneNumber(data.recipientPhoneNumber)
+          setMsgTemplateKey(data.msgTemplateKey)
+          history.push(FEEDBACKFORM_ROUTE)
+        }
       },
     })
   }
