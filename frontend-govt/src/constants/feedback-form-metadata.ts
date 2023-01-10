@@ -8,17 +8,7 @@ interface FeedbackFormMetadata {
   messageSentTimeFieldId: string
 }
 
-export const feedbackFormMetadataArray: FeedbackFormMetadata[] = [
-  {
-    agencyId: 'MOH',
-    msgTemplateKey: 'moh-cmcc-before',
-    formUrl: 'https://form.gov.sg/63bbb0287a9cef00128752cb',
-    nameFieldId: '623d285ee46e5c0012d70649',
-    positionFieldId: '623d286e012667001232b83f',
-    contactNumberFieldId: '63bbb340c5464700120d7b74',
-    messageSentTimeFieldId: '63bbb37dc5b41d0012dd0b98',
-  },
-]
+export const feedbackFormMetadataArray: FeedbackFormMetadata[] = []
 
 export const getFormMetadata = (
   agencyShortName: string,
