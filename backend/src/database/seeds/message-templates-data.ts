@@ -246,8 +246,8 @@ export const messageTemplatesData: MessageTemplatesData[] = [
   },
   {
     agencyId: 'MOH',
-    key: 'moh-cmcc-before',
-    menu: 'CMCC Pre-Call Alert',
+    key: 'moh-homes-before',
+    menu: 'HOMES Pre-Call Alert',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
@@ -258,13 +258,13 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'uniqueUrl',
       ],
       message:
-        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} will be contacting you later today to follow up on your or your family member’s application to a government scheme or request to update your household details.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a Government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} will be contacting you in the next 30 minutes to follow up on your or your family member’s application to a government scheme or request to update your household details.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
     },
   },
   {
     agencyId: 'MOH',
-    key: 'moh-cmcc-after',
-    menu: 'CMCC Post-Call Reminder',
+    key: 'moh-homes-after',
+    menu: 'HOMES Post-Call Reminder',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
