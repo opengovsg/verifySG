@@ -220,4 +220,33 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is a test message from {{officerName}}, {{officerPosition}} at {{agencyName}}.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-homes-before',
+    menu: 'HOMES Pre-Call Alert',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'agencyName',
+        'uniqueUrl',
+      ],
+      message:
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} will be contacting you in the next 30 minutes to follow up on your or your family member’s application to a government scheme or request to update your household details.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-homes-after',
+    menu: 'HOMES Post-Call Reminder',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['agencyName', 'uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} had tried to reach you earlier.\n\nWe want to follow up on your or your family member’s application to a government scheme or request to update your household details. Please return our call between 8:30am and 6pm, Mon to Fri excluding PH.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a Government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+    },
+  },
 ]

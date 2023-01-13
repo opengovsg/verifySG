@@ -106,16 +106,16 @@ export const NotificationForm: React.FC = () => {
       >
         <Tabs isFitted>
           <TabList>
-            <Tab>Singpass</Tab>
             <Tab>SMS</Tab>
+            <Tab>Singpass</Tab>
           </TabList>
 
           <TabPanels>
             <TabPanel>
-              <SGNotifyForm />
+              <SMSForm />
             </TabPanel>
             <TabPanel>
-              <SMSForm />
+              <SGNotifyForm />
             </TabPanel>
           </TabPanels>
         </Tabs>

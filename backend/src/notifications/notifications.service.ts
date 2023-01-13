@@ -268,9 +268,7 @@ export class SMSNotificationService extends NotificationsService<SmsMessageTempl
       {
         messageType: MessageTemplateType.SMS,
         agencyName,
-        agencySenderId:
-          this.smsService.getAgencySenderIdAndPhoneNumber(agencyShortName)
-            .senderId,
+        agencySenderId: this.smsService.getAgencySenderId(agencyShortName),
         recipientId,
         timestamp: new Date(),
       },

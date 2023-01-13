@@ -20,17 +20,22 @@ export const FeedbackForm: React.FC = () => {
   // TEMPORARY for trials: redirect to agency specific form link
   const { officerAgency } = useAuth()
   const {
+    targetPhoneNumber,
+    setTargetPhoneNumber,
+    msgTemplateKey,
+    setMsgTemplateKey,
+  } = useNotificationData()
+
+  const [embedLink, setEmbedLink] = useState<string | undefined>()
+  const history = useHistory()
+
+  const {
     formUrl,
     nameFieldId,
     positionFieldId,
-    messageTemplateKeyFieldId,
-    nricFieldId,
-  } = getFormMetadata(officerAgency)
-
-  const [embedLink, setEmbedLink] = useState<string | undefined>()
-  const { targetNRIC, setTargetNRIC, msgTemplateKey, setMsgTemplateKey } =
-    useNotificationData()
-  const history = useHistory()
+    contactNumberFieldId,
+    messageSentTimeFieldId,
+  } = getFormMetadata(officerAgency, msgTemplateKey)
 
   const getPrefillLink = (ogLink: string, prefills: FormFieldPrefill[]) =>
     ogLink +
@@ -59,24 +64,22 @@ export const FeedbackForm: React.FC = () => {
           value: position,
         },
         {
-          fieldId: nricFieldId,
-          value: targetNRIC,
+          fieldId: contactNumberFieldId,
+          value: targetPhoneNumber,
+        },
+        {
+          fieldId: messageSentTimeFieldId,
+          value: new Date().toLocaleString(),
         },
       ]
-      if (messageTemplateKeyFieldId)
-        prefills.push({
-          fieldId: messageTemplateKeyFieldId,
-          value: msgTemplateKey,
-        })
       setEmbedLink(getPrefillLink(formUrl, prefills))
     },
   })
 
   const returnToNotificationForm = () => {
-    // clear nric in notificationDataContext
-    setTargetNRIC('')
+    // clear previously set data in NotificationDataContext
+    setTargetPhoneNumber('')
     setMsgTemplateKey('')
-
     // redirect to notification form
     history.push(NOTIFICATIONFORM_ROUTE)
   }
