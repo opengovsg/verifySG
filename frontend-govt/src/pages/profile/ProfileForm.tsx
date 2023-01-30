@@ -6,7 +6,6 @@ import {
   Button,
   FormErrorMessage,
   FormLabel,
-  InlineMessage,
   Input,
   useToast,
 } from '@opengovsg/design-system-react'
@@ -89,25 +88,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
         maxWidth="500px"
         pb={20}
       >
-        <InlineMessage
-          variant="info"
-          useMarkdown
-          fontSize={['sm', 'sm', 'md', 'md']}
-          // override internal theme style
-          //TODO: shift these into theme folder for cleanup refactor
-          sx={{
-            padding: '8px',
-            display: 'flex',
-            p: '1rem',
-            justifyContent: 'start',
-            color: 'secondary.700',
-            bg: 'primary.200',
-          }}
-        >
-          Your **name**, **position**, and **agency** will be visible to the
-          member of the public when they receive a notification that you will be
-          calling them.
-        </InlineMessage>
         <Box width="100%">
           <form onSubmit={handleSubmit(submissionHandler)}>
             <VStack align="left" spacing={[8, 8, 8, 8]}>

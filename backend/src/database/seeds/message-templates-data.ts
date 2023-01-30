@@ -275,7 +275,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       type: MessageTemplateType.SMS,
       requiredParams: ['uniqueUrl'],
       message:
-        'Dear Sir/Madam,\n\nThis is the MOH Home Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
+        'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
     },
   },
 ]
