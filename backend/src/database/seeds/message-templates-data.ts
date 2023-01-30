@@ -244,9 +244,38 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
-      requiredParams: ['agencyName', 'uniqueUrl'],
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'agencyName',
+        'uniqueUrl',
+      ],
       message:
         'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} had tried to reach you earlier.\n\nWe want to follow up on your or your family member’s application to a government scheme or request to update your household details. Please return our call between 8:30am and 6pm, Mon to Fri excluding PH.\n\nYou can verify this message by visiting {{uniqueUrl}}.\n\n(HOMES is a Government system which supports public schemes in their means-tests. URL: https://www.homes.gov.sg)',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-home-vax',
+    menu: 'CMCC Home Vax',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Home Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding Home Vaccination matters. Please expect a call from the following hotline number: 6995 9198.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-vax',
+    menu: 'CMCC Vax',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
     },
   },
 ]
