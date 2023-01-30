@@ -20,6 +20,8 @@ test.describe.serial('Test sending Singpass notification', () => {
     if (!testRecipientNric) {
       throw new Error('TEST_NRIC environment variable not set')
     }
+    // click to go to Singpass tab
+    await page.getByRole('tab', { name: 'Singpass' }).click()
     await page.locator('[name="nric"]').fill(testRecipientNric)
     // select message template
     await page
@@ -27,7 +29,7 @@ test.describe.serial('Test sending Singpass notification', () => {
       .locator('form svg')
       .click()
     // select first option
-    await page.locator('#react-select-6-option-0').click()
+    await page.locator('#react-select-7-option-0').click()
     // click send button and get response
     // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([

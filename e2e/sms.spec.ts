@@ -30,7 +30,7 @@ test.describe.serial('Test sending SMS notification', () => {
       .locator('form svg')
       .click()
     // select first option
-    await page.locator('#react-select-7-option-0').click()
+    await page.locator('#react-select-6-option-0').click()
     // click send button and get response
     // wrap in Promise.all to avoid race condition
     const [response, _] = await Promise.all([
