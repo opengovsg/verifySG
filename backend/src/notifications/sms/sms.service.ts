@@ -21,6 +21,7 @@ export interface SMSParams {
   senderId: string
   recipientPhoneNumber: string
   message: string
+  uniqueParamString: string
   status: MessageStatus | null
   sid: string | null // string identifier returned by Twilio
   errorCode: number | null
@@ -110,6 +111,7 @@ export class SMSService {
         .replace('{{officerPosition}}', officerPosition)
         .replace('{{agencyName}}', agencyName)
         .replace('{{uniqueUrl}}', embeddedUrl),
+      uniqueParamString,
       status: null,
       sid: null,
       errorCode: null,

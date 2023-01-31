@@ -12,8 +12,6 @@ WHERE
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DROP INDEX idx_notification_unique_param ON notification;`,
-    )
+    await queryRunner.query(`DROP INDEX idx_notification_unique_param;`)
   }
 }
