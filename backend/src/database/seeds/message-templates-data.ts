@@ -263,4 +263,16 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-utd',
+    menu: 'CMCC UTD',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Vaccination Contact Centre. This is to inform you that a Ministry of Health call agent will be contacting you within the next 4 hours. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.\n\n(MOH Vaccination Contact Centre is part of the Crisis Strategy and Operations Group. URL: https://www.moh.gov.sg/covid-19/vaccination)',
+    },
+  },
 ]
