@@ -9,7 +9,7 @@ export class migrateUniqueParam1675125259861 implements MigrationInterface {
       `UPDATE notification SET modality_params = jsonb_set(modality_params, '{uniqueParamString}', to_jsonb(SUBSTRING(modality_params ->> 'message', POSITION('check-sms-' IN modality_params ->> 'message') + 10, 12))) WHERE POSITION('check-sms-' IN modality_params ->> 'message') > 0;`,
     )
     await queryRunner.query(
-      `CREATE INDEX idx_notification_unique_param ON notification (modality_params ->> 'uniqueParamString')
+      `CREATE INDEX idx_notification_unique_param ON notification ((modality_params ->> 'uniqueParamString'))
 WHERE
   modality_params ->> 'uniqueParamString' IS NOT NULL;`,
     )
