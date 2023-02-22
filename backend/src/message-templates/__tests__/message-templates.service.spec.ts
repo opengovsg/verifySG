@@ -161,7 +161,7 @@ describe('MessageTemplatesService', () => {
 
   describe('getMessageTemplatesByAgencyId', () => {
     test('dto is correct', async () => {
-      const receivedDto = await service.getMessageTemplatesByAgencyId(
+      const receivedDto = await service.getActiveMessageTemplatesByAgencyId(
         mockAgency.id,
       )
       expect(receivedDto).toEqual([
@@ -175,7 +175,7 @@ describe('MessageTemplatesService', () => {
     })
     test('dto is correct even if agency has no message templates', async () => {
       await repository.delete(mockMessageTemplate.id)
-      const receivedDto = await service.getMessageTemplatesByAgencyId(
+      const receivedDto = await service.getActiveMessageTemplatesByAgencyId(
         mockAgency.id,
       )
       expect(receivedDto).toEqual([])
