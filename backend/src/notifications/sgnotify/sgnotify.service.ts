@@ -45,10 +45,15 @@ import {
 
 export type Key = Uint8Array | jose.KeyLike
 
+/*
+ * Per SGNotify team, during key rotation, there will be 2 sig keys and 1 new enc key
+ * There will be a 1-month period where the old and the new enc keys will both be supported (hence the 2 sig keys)
+ * As such, our code should store both sig keys and choose the correct one to verify the signature based on the kid in the JWT header
+ * */
 @Injectable()
 export class SGNotifyService {
   private client: AxiosInstance
-  private SGNotifyPublicKeySig: Key
+  private SGNotifyPublicKeysSigMap: Map<string, Key> // key: kid, value: key
   private SGNotifyPublicKeyEnc: Key
   private ecPrivateKey: Key
   private readonly config: ConfigSchema['sgNotify']
@@ -63,52 +68,73 @@ export class SGNotifyService {
       baseURL: baseUrl,
       timeout,
     })
-    const [SGNotifyPublicKeySig, SGNotifyPublicKeyEnc] =
-      await this.getPublicKeysSigEnc()
-    this.SGNotifyPublicKeySig = SGNotifyPublicKeySig
-    this.SGNotifyPublicKeyEnc = SGNotifyPublicKeyEnc
-    this.ecPrivateKey = await this.getPrivateKey()
-  }
-
-  /**
-   * Function that gets public key from SGNotify discovery endpoint and returns it as a JWK
-   *This is called only once during initialization
-   */
-  async getPublicKeysSigEnc(): Promise<[Key, Key]> {
-    // TODO: error handling if URL is down for some reason; fall back to hardcoded public key?
+    // maybe: if URL is down for some reason; fall back to hardcoded public key?
     const { data } = await this.client
       .get<GetSGNotifyJwksDto>(PUBLIC_KEY_ENDPOINT)
       .catch((error) => {
         this.logger.error(
-          `Error when getting public key from SGNotify discovery endpoint.
+          `Error when getting public keys from SGNotify discovery endpoint.
           Error: ${error}`,
         )
         throw new BadGatewayException(PUBLIC_KEY_ENDPOINT_UNAVAILABLE)
       })
-    const sigKeyJwk = data.keys.find((key) => key.use === 'sig')
+    const [SGNotifyPublicKeysSigMap, publicKeyEnc, ecPrivateKey] =
+      await Promise.all([
+        this.getPublicKeysSigMap(data),
+        this.getPublicKeyEnc(data),
+        this.getPrivateKey(),
+      ])
+    this.SGNotifyPublicKeysSigMap = SGNotifyPublicKeysSigMap
+    this.SGNotifyPublicKeyEnc = publicKeyEnc
+    this.ecPrivateKey = ecPrivateKey
+  }
+
+  async getPublicKeyEnc(data: GetSGNotifyJwksDto): Promise<Key> {
+    // there will only be 1 enc key at any point in time
     const encKeyJwk = data.keys.find((key) => key.use === 'enc')
-    if (!sigKeyJwk || !encKeyJwk) {
+    if (!encKeyJwk) {
       this.logger.error(
-        `Either signature or encryption key not found in SGNotify discovery endpoint.
-        Received data: ${JSON.stringify(data)}`,
+        `Encryption key not found in SGNotify discovery endpoint.
+          Received data: ${JSON.stringify(data)}`,
       )
       throw new BadGatewayException(PUBLIC_KEY_NOT_FOUND)
     }
-    const [publicKeySig, publicKeyEnc] = await Promise.all([
-      jose.importJWK(sigKeyJwk, 'ES256'),
-      jose.importJWK(encKeyJwk, 'ES256'),
-    ]).catch((error) => {
+    return await jose.importJWK(encKeyJwk).catch((error) => {
       this.logger.error(
         `Error when importing public key from SGNotify discovery endpoint.
-        Signature key: ${JSON.stringify(sigKeyJwk)}
-        Encryption key: ${JSON.stringify(encKeyJwk)}
-        Error: ${error}`,
+          Encryption key: ${JSON.stringify(encKeyJwk)}
+          Error: ${error}`,
       )
       throw new BadGatewayException(PUBLIC_KEY_IMPORT_ERROR)
     })
-    return [publicKeySig, publicKeyEnc]
   }
-
+  async getPublicKeysSigMap(
+    data: GetSGNotifyJwksDto,
+  ): Promise<Map<string, Key>> {
+    const sigKeysJwk = data.keys.filter((key) => key.use === 'sig')
+    if (sigKeysJwk.length === 0) {
+      this.logger.error(
+        `Signature key not found in SGNotify discovery endpoint.
+          Received data: ${JSON.stringify(data)}`,
+      )
+      throw new BadGatewayException(PUBLIC_KEY_NOT_FOUND)
+    }
+    const sigKeysMap = new Map<string, Key>()
+    await Promise.all(
+      sigKeysJwk.map(async (sigKeyJwk) => {
+        const key = await jose.importJWK(sigKeyJwk, 'ES256').catch((error) => {
+          this.logger.error(
+            `Error when importing public key from SGNotify discovery endpoint.
+              Signature key: ${JSON.stringify(sigKeyJwk)}
+              Error: ${error}`,
+          )
+          throw new BadGatewayException(PUBLIC_KEY_IMPORT_ERROR)
+        })
+        sigKeysMap.set(sigKeyJwk.kid, key)
+      }),
+    )
+    return sigKeysMap
+  }
   /**
    * Function that gets private key from config schema and return it as JWK
    */
@@ -266,11 +292,16 @@ export class SGNotifyService {
   async decryptAndVerifyPayload(
     encryptedPayload: string,
   ): Promise<SGNotifyResPayload> {
-    return decryptAndVerifyPayloadStatic(
-      encryptedPayload,
-      this.ecPrivateKey,
-      this.SGNotifyPublicKeySig,
-    )
+    try {
+      return decryptAndVerifyPayloadStatic(
+        encryptedPayload,
+        this.ecPrivateKey,
+        this.SGNotifyPublicKeysSigMap,
+      )
+    } catch (error) {
+      this.logger.error(`Error: ${error}`)
+      throw new ServiceUnavailableException(SGNOTIFY_UNAVAILABLE_MESSAGE)
+    }
   }
 
   /**
@@ -302,14 +333,18 @@ export class SGNotifyService {
 export const decryptAndVerifyPayloadStatic = async (
   encryptedPayload: string,
   ecPrivateKey: Key,
-  publicKey: Key,
+  publicKeysSigMap: Map<string, Key>,
 ) => {
   const { plaintext } = await jose.compactDecrypt(
     encryptedPayload,
     ecPrivateKey,
   )
   const signedJWT = new TextDecoder().decode(plaintext)
-  const { payload } = await jose.jwtVerify(signedJWT, publicKey)
+  const { kid } = jose.decodeProtectedHeader(signedJWT)
+  if (!kid) throw new Error(`kid not found in signedJWT ${signedJWT}.`)
+  const key = publicKeysSigMap.get(kid)
+  if (!key) throw new Error(`Public key for kid ${kid} not found.`)
+  const { payload } = await jose.jwtVerify(signedJWT, key)
   return payload as SGNotifyResPayload
 }
 
