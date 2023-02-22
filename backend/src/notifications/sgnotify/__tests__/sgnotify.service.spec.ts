@@ -76,7 +76,7 @@ describe('SGNotifyService', () => {
   it('should initialize', async () => {
     await service.initialize()
     expect(service['client']).toBeDefined()
-    expect(service['SGNotifyPublicKeySig']).toBeDefined()
+    expect(service['SGNotifyPublicKeysSigMap']).toBeDefined()
     expect(service['SGNotifyPublicKeyEnc']).toBeDefined()
   })
   it('should log error and throw exception if public key endpoint is down', async () => {
