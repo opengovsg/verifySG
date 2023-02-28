@@ -36,7 +36,6 @@ export class NotificationsModule {
   constructor(private sgNotifyService: SGNotifyService) {}
 
   async onModuleInit(): Promise<void> {
-    // TODO: need to reinitialize if sendNotification fails consecutively -> outdated public key
     await this.sgNotifyService.initialize()
   }
 }
