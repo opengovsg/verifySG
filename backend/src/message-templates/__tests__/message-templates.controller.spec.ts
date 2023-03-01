@@ -49,7 +49,7 @@ describe('MessageTemplatesController', () => {
   let controller: MessageTemplatesController
   const mockAuthOfficerGuard = createMock<AuthOfficerGuard>()
   const mockMessageTemplatesService = {
-    getMessageTemplatesByAgencyId: jest.fn((agencyId) => {
+    getActiveMessageTemplatesByAgencyId: jest.fn((agencyId) => {
       if (agencyId === mockOfficerInfoDecoratorValid.officerAgency)
         return Promise.resolve(mockMessageTemplates)
     }),
@@ -75,7 +75,7 @@ describe('MessageTemplatesController', () => {
   })
 
   afterEach(() => {
-    mockMessageTemplatesService.getMessageTemplatesByAgencyId.mockClear()
+    mockMessageTemplatesService.getActiveMessageTemplatesByAgencyId.mockClear()
   })
 
   it('should be defined', () => {
@@ -83,7 +83,7 @@ describe('MessageTemplatesController', () => {
   })
 
   it('should receive mockMessageTemplates', async () => {
-    const messageTemplates = await controller.getAllMessageTemplatesByAgency(
+    const messageTemplates = await controller.getActiveMessageTemplatesByAgency(
       mockOfficerInfoDecoratorValid,
     )
     expect(messageTemplates).toEqual(mockMessageTemplates)

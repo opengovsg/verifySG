@@ -26,11 +26,11 @@ export class MessageTemplatesService {
     })
   }
 
-  async getMessageTemplatesByAgencyId(
+  async getActiveMessageTemplatesByAgencyId(
     agencyId: string,
   ): Promise<MessageTemplateDto[]> {
     const messageTemplates = await this.messageTemplateRepository.find({
-      where: { agency: { id: agencyId } },
+      where: { agency: { id: agencyId }, isActive: true },
       relations: ['agency'],
     })
     return messageTemplates.map(this.mapToDto)

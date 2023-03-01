@@ -45,6 +45,9 @@ export class MessageTemplate {
   })
   agency: Agency
 
+  @Column('boolean', { nullable: false, default: true })
+  isActive: boolean
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date
 

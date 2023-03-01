@@ -16,11 +16,11 @@ export class MessageTemplatesController {
    */
   @Get()
   @UseGuards(AuthOfficerGuard)
-  async getAllMessageTemplatesByAgency(
+  async getActiveMessageTemplatesByAgency(
     @OfficerInfo() officerInfo: OfficerInfoInterface,
   ): Promise<MessageTemplatesResDto> {
     const { officerAgency } = officerInfo
-    return await this.messageTemplatesService.getMessageTemplatesByAgencyId(
+    return await this.messageTemplatesService.getActiveMessageTemplatesByAgencyId(
       officerAgency,
     )
   }
