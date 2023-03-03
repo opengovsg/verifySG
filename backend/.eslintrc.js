@@ -31,6 +31,8 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', ignoreRestSiblings: true },
     ],
+    '@typescript-eslint/promise-function-async': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
     '@typescript-eslint/no-floating-promises': ['error'],
     '@typescript-eslint/member-delimiter-style': [
       'error',
