@@ -39,7 +39,7 @@
     "@sentry/node": "^6.19.7",
     "@sentry/tracing": "^7.0.0",
     "axios": "^0.26.0",
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.1.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.1",
     "connect-typeorm": "2.0.0",
@@ -60,7 +60,7 @@
     "tsconfig-paths": "3.14.1",
     "twilio": "^3.83.3",
     "typeorm": "0.3.7",
-    "typeorm-naming-strategies": "2.0.0",
+    "typeorm-naming-strategies": "4.1.0",
     "winston": "3.3.3"
   },
   "devDependencies": {

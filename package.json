@@ -8,7 +8,7 @@
     "on-frontend-govt": "npm run --prefix frontend-govt",
     "all": "concurrently -c green,blue",
     "docker-dev": "docker-compose -f docker-compose.dev.yml up --build",
-    "postinstall": "npm run all \"npm --prefix backend install\" \"npm --prefix frontend-govt install\" \"npm --prefix shared install\" && node -e \"if (process.env.NODE_ENV === undefined){process.exit(1)}\" || npm run --prefix shared build",
+    "postinstall": "npm run all \"npm --prefix backend install\" \"npm --prefix frontend-govt install\" \"npm --prefix shared install\"",
     "dev": "npm run --prefix shared build && npm run all -- --kill-others \"npm:on-* dev\"",
     "dev:full": "npm run all \"npm run docker-dev\" \"npm run dev\"",
     "lint": "npm run all \"npm:on-* lint\" \"npm run --prefix shared lint\"",
