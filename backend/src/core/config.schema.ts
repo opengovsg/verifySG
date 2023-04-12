@@ -29,7 +29,6 @@ export interface ConfigSchema {
   otp: {
     expiryPeriod: number
     numAllowedAttempts: number
-    numSaltRounds: number
   }
   uniqueParams: {
     defaultExpiryPeriod: number
@@ -184,12 +183,6 @@ export const schema: Schema<ConfigSchema> = {
     numAllowedAttempts: {
       doc: 'Number of allowed attempts',
       env: 'OTP_NUM_ALLOWED_ATTEMPTS',
-      default: 10,
-      format: Number,
-    },
-    numSaltRounds: {
-      doc: 'Number of rounds to hash the OTP + email',
-      env: 'OTP_NUM_SALT_ROUNDS',
       default: 10,
       format: Number,
     },
