@@ -1,0 +1,26 @@
+name: Deploy to staging
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - staging-v2
+
+jobs:
+  deploy:
+    name: Deploy
+    uses: ./.github/workflows/ecs-deploy.yml
+    with:
+      environment: 'stg'
+      aws-account-id: '138263499957'
+      cicd-role: 'arn:aws:iam::138263499957:role/checkwho-stg-github-oidc-role'
+      ecr-repository: 'checkwho-stg'
+      ecs-cluster-name: 'checkwho-stg-ecs'
+      ecs-service-name: 'checkwho-stg-ecs-service'
+      ecs-container-name: 'app'
+      codedeploy-application: 'checkwho-stg-ecs-app'
+      codedeploy-deployment-group: 'checkwho-stg-ecs-dg'
+      release-version: ${{ github.sha }}

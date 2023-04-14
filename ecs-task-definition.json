@@ -1,0 +1,91 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "APP_ENV",
+          "value": "<ENVIRONMENT>"
+        },
+        {
+          "name": "POSTGRES_ENABLE_SSL",
+          "value": "true"
+        },
+        {
+          "name": "REDIS_TLS",
+          "value": "true"
+        },
+        {
+          "name": "REDIS_CLUSTER_MODE",
+          "value": "true"
+        },
+        {
+          "name": "SERVE_WEB_APP_SEPARATELY",
+          "value": "false"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_USERNAME"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_PASSWORD"
+        },
+        {
+          "name": "DB_HOST",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_HOST"
+        },
+        {
+          "name": "DB_NAME",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_NAME"
+        },
+        {
+          "name": "DB_PORT",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_PORT"
+        },
+        {
+          "name": "SESSION_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SESSION_SECRET"
+        },
+        {
+          "name": "POSTMAN_API_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/POSTMAN_API_URL"
+        },
+        {
+          "name": "POSTMAN_API_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/POSTMAN_API_KEY"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "checkwho-<ENVIRONMENT>/ecs/application",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "family": "checkwho-<ENVIRONMENT>-ecs",
+  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/checkwho-<ENVIRONMENT>-ecs-task-exec-role",
+  "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/checkwho-<ENVIRONMENT>-ecs-task-role",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048"
+}
