@@ -10,8 +10,8 @@ FROM node:18-alpine as main
 
 WORKDIR /opt/checkwho
 
-COPY --from=build /opt/checkwho/backend/tsconfig.json ./backend
-COPY --from=build /opt/checkwho/backend/package.json ./backend
+COPY --from=build /opt/checkwho/backend/tsconfig.json ./backend/
+COPY --from=build /opt/checkwho/backend/package.json ./backend/
 COPY --from=build /opt/checkwho/backend/node_modules ./backend/node_modules
 COPY --from=build /opt/checkwho/backend/build ./backend/build
 COPY --from=build /opt/checkwho/frontend-govt/build ./frontend-govt/build
