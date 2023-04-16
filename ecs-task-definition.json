@@ -19,22 +19,6 @@
         {
           "name": "APP_ENV",
           "value": "<ENVIRONMENT>"
-        },
-        {
-          "name": "POSTGRES_ENABLE_SSL",
-          "value": "true"
-        },
-        {
-          "name": "REDIS_TLS",
-          "value": "true"
-        },
-        {
-          "name": "REDIS_CLUSTER_MODE",
-          "value": "true"
-        },
-        {
-          "name": "SERVE_WEB_APP_SEPARATELY",
-          "value": "false"
         }
       ],
       "secrets": [
@@ -69,6 +53,90 @@
         {
           "name": "POSTMAN_API_KEY",
           "valueFrom": "/<ENVIRONMENT>/checkwho/POSTMAN_API_KEY"
+        },
+        {
+          "name": "ADMIN_KEY_HASH",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/ADMIN_KEY_HASH"
+        },
+        {
+          "name": "SGNOTIFY_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_URL"
+        },
+        {
+          "name": "SGNOTIFY_E_SERVICE_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_E_SERVICE_ID"
+        },
+        {
+          "name": "SGNOTIFY_CLIENT_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_CLIENT_SECRET"
+        },
+        {
+          "name": "SGNOTIFY_EC_PRIVATE_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_EC_PRIVATE_KEY"
+        },
+        {
+          "name": "SENTRY_FRONTEND_DSN",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SENTRY_FRONTEND_DSN"
+        },
+        {
+          "name": "SENTRY_BACKEND_DSN",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SENTRY_BACKEND_DSN"
+        },
+        {
+          "name": "GO_API_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/GO_API_URL"
+        },
+        {
+          "name": "GO_API_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/GO_API_KEY"
+        },
+        {
+          "name": "DEFAULT_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "DEFAULT_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "DEFAULT_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "DEFAULT_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_SENDER_ID"
+        },
+        {
+          "name": "OGP_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "OGP_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "OGP_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "OGP_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_SENDER_ID"
+        },
+        {
+          "name": "MOH_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "MOH_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "MOH_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "MOH_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_SENDER_ID"
         }
       ],
       "logConfiguration": {
