@@ -2,7 +2,6 @@ name: Deploy app and run e2e test
 on:
   push:
     branches:
-      - staging
       - master
 
 concurrency: deploy-app-${{ github.ref }}
