@@ -50,10 +50,6 @@ export interface ConfigSchema {
     clientSecret: string
     ecPrivateKey: string
   }
-  sentry: {
-    frontendDsn: string
-    backendDsn: string
-  }
   gogovsg: {
     apiUrl: string
     apiKey: string
@@ -265,20 +261,6 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'Our elliptic curve private key used as part of JOSE implementation',
       env: 'SGNOTIFY_EC_PRIVATE_KEY',
       format: 'required-string',
-      default: '',
-    },
-  },
-  sentry: {
-    frontendDsn: {
-      doc: 'Frontend DSN url for Sentry',
-      env: 'SENTRY_FRONTEND_DSN',
-      format: String,
-      default: '',
-    },
-    backendDsn: {
-      doc: 'Backend DSN url for Sentry',
-      env: 'SENTRY_BACKEND_DSN',
-      format: String,
       default: '',
     },
   },

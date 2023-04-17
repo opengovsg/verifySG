@@ -79,14 +79,6 @@
           "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_EC_PRIVATE_KEY"
         },
         {
-          "name": "SENTRY_FRONTEND_DSN",
-          "valueFrom": "/<ENVIRONMENT>/checkwho/SENTRY_FRONTEND_DSN"
-        },
-        {
-          "name": "SENTRY_BACKEND_DSN",
-          "valueFrom": "/<ENVIRONMENT>/checkwho/SENTRY_BACKEND_DSN"
-        },
-        {
           "name": "GO_API_URL",
           "valueFrom": "/<ENVIRONMENT>/checkwho/GO_API_URL"
         },

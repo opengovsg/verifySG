@@ -8,9 +8,6 @@ import { BrowserRouter } from 'react-router-dom'
 import { DowntimeBanner } from '@components/Banner/DowntimeBanner'
 import { StagingBanner } from '@components/Banner/StagingBanner'
 import { ThemeProvider } from '@opengovsg/design-system-react'
-import * as Sentry from '@sentry/react'
-import { Integrations } from '@sentry/tracing'
-import axios from 'axios'
 
 import AuthProvider from '../contexts/auth/AuthProvider'
 import NotificationDataProvider from '../contexts/notification/NotificationDataProvider'
@@ -18,23 +15,6 @@ import NotificationDataProvider from '../contexts/notification/NotificationDataP
 import { AppRouter } from './AppRouter'
 
 import { theme } from '@/theme'
-import { EnvResDto } from '~shared/types/api'
-
-// If Sentry params are specified, init sentry.
-void axios.get<EnvResDto>('/api/env').then((res) => {
-  const { dsn, env } = res.data
-  if (dsn && env) {
-    Sentry.init({
-      dsn,
-      environment: env,
-      integrations: [
-        new Integrations.BrowserTracing({
-          routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
-        }),
-      ],
-    })
-  }
-})
 
 export const App: React.FC = () => {
   const queryClient = new QueryClient({
