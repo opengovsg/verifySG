@@ -13,6 +13,7 @@ export interface ConfigSchema {
   }
   port: number
   environment: 'development' | 'staging' | 'production' | 'test'
+  appEnv: 'dev' | 'stg' | 'prod' | 'test'
   isDowntime: boolean
   awsRegion: string
   database: {
@@ -92,6 +93,12 @@ export const schema: Schema<ConfigSchema> = {
     env: 'NODE_ENV',
     format: ['development', 'staging', 'production', 'test'],
     default: 'development',
+  },
+  appEnv: {
+    doc: 'The environment that the application is running in',
+    env: 'APP_ENV',
+    format: ['dev', 'stg', 'prod', 'test'],
+    default: 'dev',
   },
   isDowntime: {
     doc: 'Whether CheckWho is experiencing downtime',

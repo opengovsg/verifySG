@@ -13,7 +13,7 @@ export class EnvController {
    */
   @Get()
   async getEnv(): Promise<EnvResDto> {
-    const env = this.config.get('environment')
+    const env = this.config.get('appEnv')
     const isDowntime = this.config.get('isDowntime')
     return { env, isDowntime }
   }
