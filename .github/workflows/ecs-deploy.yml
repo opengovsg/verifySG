@@ -132,3 +132,4 @@ jobs:
           codedeploy-appspec: appspec.json
           codedeploy-application: ${{ inputs.codedeploy-application }}
           codedeploy-deployment-group: ${{ inputs.codedeploy-deployment-group }}
+          wait-for-service-stability: true
