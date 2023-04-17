@@ -67,6 +67,10 @@
           "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_E_SERVICE_ID"
         },
         {
+          "name": "SGNOTIFY_CLIENT_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_CLIENT_ID"
+        },
+        {
           "name": "SGNOTIFY_CLIENT_SECRET",
           "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_CLIENT_SECRET"
         },
