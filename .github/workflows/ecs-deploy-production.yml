@@ -1,30 +1,30 @@
-name: Deploy to staging
+name: Deploy to production
 
 concurrency:
   group: ${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
   push:
     branches:
-      # TODO
-      # - staging
-      - staging-v2
+      # TODO remove staging and add master
+      - staging
+      # - master
 
 jobs:
   deploy:
     name: Deploy
     uses: ./.github/workflows/ecs-deploy.yml
     with:
-      environment: 'stg'
+      environment: 'prod'
       aws-account-id: '138263499957'
       cicd-role: 'arn:aws:iam::138263499957:role/checkwho-prod-github-oidc-role'
-      ecr-repository: 'checkwho-stg'
-      ecs-cluster-name: 'checkwho-stg-ecs'
-      ecs-service-name: 'checkwho-stg-ecs-service'
+      ecr-repository: 'checkwho-prod'
+      ecs-cluster-name: 'checkwho-prod-ecs'
+      ecs-service-name: 'checkwho-prod-ecs-service'
       ecs-container-name: 'app'
-      codedeploy-application: 'checkwho-stg-ecs-app'
-      codedeploy-deployment-group: 'checkwho-stg-ecs-dg'
+      codedeploy-application: 'checkwho-prod-ecs-app'
+      codedeploy-deployment-group: 'checkwho-prod-ecs-dg'
       release-version: ${{ github.sha }}
   e2e:
     name: End-to-end tests
