@@ -17,7 +17,7 @@ jobs:
     with:
       environment: 'stg'
       aws-account-id: '138263499957'
-      cicd-role: 'arn:aws:iam::138263499957:role/checkwho-stg-github-oidc-role'
+      cicd-role: 'arn:aws:iam::138263499957:role/checkwho-prod-github-oidc-role'
       ecr-repository: 'checkwho-stg'
       ecs-cluster-name: 'checkwho-stg-ecs'
       ecs-service-name: 'checkwho-stg-ecs-service'
