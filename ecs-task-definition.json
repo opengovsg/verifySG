@@ -1,0 +1,155 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "APP_ENV",
+          "value": "<ENVIRONMENT>"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_USERNAME"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_PASSWORD"
+        },
+        {
+          "name": "DB_HOST",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_HOST"
+        },
+        {
+          "name": "DB_NAME",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_NAME"
+        },
+        {
+          "name": "DB_PORT",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DB_PORT"
+        },
+        {
+          "name": "SESSION_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SESSION_SECRET"
+        },
+        {
+          "name": "POSTMAN_API_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/POSTMAN_API_URL"
+        },
+        {
+          "name": "POSTMAN_API_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/POSTMAN_API_KEY"
+        },
+        {
+          "name": "ADMIN_KEY_HASH",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/ADMIN_KEY_HASH"
+        },
+        {
+          "name": "SGNOTIFY_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_URL"
+        },
+        {
+          "name": "SGNOTIFY_E_SERVICE_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_E_SERVICE_ID"
+        },
+        {
+          "name": "SGNOTIFY_CLIENT_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_CLIENT_ID"
+        },
+        {
+          "name": "SGNOTIFY_CLIENT_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_CLIENT_SECRET"
+        },
+        {
+          "name": "SGNOTIFY_EC_PRIVATE_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/SGNOTIFY_EC_PRIVATE_KEY"
+        },
+        {
+          "name": "GO_API_URL",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/GO_API_URL"
+        },
+        {
+          "name": "GO_API_KEY",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/GO_API_KEY"
+        },
+        {
+          "name": "DEFAULT_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "DEFAULT_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "DEFAULT_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "DEFAULT_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/DEFAULT_TWILIO_SENDER_ID"
+        },
+        {
+          "name": "OGP_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "OGP_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "OGP_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "OGP_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/OGP_TWILIO_SENDER_ID"
+        },
+        {
+          "name": "MOH_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "MOH_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "MOH_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "MOH_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_SENDER_ID"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "checkwho-<ENVIRONMENT>/ecs/application",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "family": "checkwho-<ENVIRONMENT>-ecs",
+  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/checkwho-<ENVIRONMENT>-ecs-task-exec-role",
+  "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/checkwho-<ENVIRONMENT>-ecs-task-role",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048"
+}

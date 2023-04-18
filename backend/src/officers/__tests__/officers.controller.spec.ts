@@ -32,7 +32,7 @@ describe('OfficersController', () => {
   let controller: OfficersController
   const mockAuthOfficerGuard = createMock<AuthOfficerGuard>()
   const mockOfficersService = {
-    findById: jest.fn((id) => {
+    findById: jest.fn(async (id) => {
       if (id === mockOfficer.id) return Promise.resolve(mockOfficer)
       else throw new NotFoundException('Officer not found')
     }),
@@ -41,7 +41,7 @@ describe('OfficersController', () => {
       // in fact, mapToDto should be refactored out from service (since it's a static method) TODO
       if (officer === mockOfficer) return mockOfficer
     }),
-    updateOfficer: jest.fn((id, _) => {
+    updateOfficer: jest.fn(async (id, _) => {
       if (id === mockOfficer.id) return Promise.resolve()
       else throw new Error(`Officer ${id} not found`)
     }),

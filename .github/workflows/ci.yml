@@ -13,16 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
-
-      - name: Read .nvmrc
-        run: echo NVMRC=`cat .nvmrc` >> $GITHUB_ENV
-
+        uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NVMRC }}
-
+          node-version-file: '.nvmrc'
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -43,7 +38,10 @@ jobs:
         run: npm ci
 
       - name: Lint code
-        run: npm run lint
+        run: npm run lint && echo "✅ Linting passed"
+
+      - name: Build code
+        run: npm run build && echo "✅ Build passed"
 
       - name: Run tests
-        run: npm run test
+        run: npm run test && echo "✅ Tests passed"

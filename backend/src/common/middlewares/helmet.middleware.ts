@@ -13,11 +13,7 @@ export class HelmetMiddleware implements NestMiddleware {
           defaultSrc: ["'self'"],
           baseUri: ["'self'"],
           blockAllMixedContent: [],
-          connectSrc: [
-            "'self'",
-            // for sending sentry event
-            // '*.sentry.io',
-          ],
+          connectSrc: ["'self'"],
           // for google fonts
           fontSrc: ["'self'", 'https://fonts.gstatic.com'],
           frameAncestors: ["'none'"],
@@ -31,12 +27,7 @@ export class HelmetMiddleware implements NestMiddleware {
             'https://fonts.googleapis.com',
           ],
           scriptSrcAttr: ["'none'"],
-          scriptSrc: [
-            "'self'",
-            // sentry cdn (remove if not needed)
-            // 'https://js.sentry-cdn.com',
-            // 'https://browser.sentry-cdn.com',
-          ],
+          scriptSrc: ["'self'"],
           upgradeInsecureRequests: [],
         },
       },

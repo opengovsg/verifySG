@@ -22,7 +22,7 @@ export const StagingBanner: React.FC = (): JSX.Element | null => {
     cacheTime: Infinity,
   })
 
-  return envDto?.env === 'staging' ? (
+  return envDto?.env === 'stg' ? (
     <Banner message={StagingBannerMessage} />
   ) : null
 }

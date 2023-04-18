@@ -13,6 +13,7 @@ export interface ConfigSchema {
   }
   port: number
   environment: 'development' | 'staging' | 'production' | 'test'
+  appEnv: 'dev' | 'stg' | 'prod' | 'test'
   isDowntime: boolean
   awsRegion: string
   database: {
@@ -29,7 +30,6 @@ export interface ConfigSchema {
   otp: {
     expiryPeriod: number
     numAllowedAttempts: number
-    numSaltRounds: number
   }
   uniqueParams: {
     defaultExpiryPeriod: number
@@ -50,10 +50,6 @@ export interface ConfigSchema {
     clientId: string
     clientSecret: string
     ecPrivateKey: string
-  }
-  sentry: {
-    frontendDsn: string
-    backendDsn: string
   }
   gogovsg: {
     apiUrl: string
@@ -97,6 +93,12 @@ export const schema: Schema<ConfigSchema> = {
     env: 'NODE_ENV',
     format: ['development', 'staging', 'production', 'test'],
     default: 'development',
+  },
+  appEnv: {
+    doc: 'The environment that the application is running in',
+    env: 'APP_ENV',
+    format: ['dev', 'stg', 'prod', 'test'],
+    default: 'dev',
   },
   isDowntime: {
     doc: 'Whether CheckWho is experiencing downtime',
@@ -187,12 +189,6 @@ export const schema: Schema<ConfigSchema> = {
       default: 10,
       format: Number,
     },
-    numSaltRounds: {
-      doc: 'Number of rounds to hash the OTP + email',
-      env: 'OTP_NUM_SALT_ROUNDS',
-      default: 10,
-      format: Number,
-    },
   },
   uniqueParams: {
     defaultExpiryPeriod: {
@@ -272,20 +268,6 @@ export const schema: Schema<ConfigSchema> = {
       doc: 'Our elliptic curve private key used as part of JOSE implementation',
       env: 'SGNOTIFY_EC_PRIVATE_KEY',
       format: 'required-string',
-      default: '',
-    },
-  },
-  sentry: {
-    frontendDsn: {
-      doc: 'Frontend DSN url for Sentry',
-      env: 'SENTRY_FRONTEND_DSN',
-      format: String,
-      default: '',
-    },
-    backendDsn: {
-      doc: 'Backend DSN url for Sentry',
-      env: 'SENTRY_BACKEND_DSN',
-      format: String,
       default: '',
     },
   },

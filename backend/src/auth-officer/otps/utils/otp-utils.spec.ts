@@ -22,7 +22,7 @@ export const otpEntityMock: OTP = {
   createdAt: new Date(Date.now() - 5 * ONE_MINUTE_IN_MILLISECONDS),
   email: mockEmailAddress,
   expiredAt: new Date(Date.now() + 10 * ONE_MINUTE_IN_MILLISECONDS),
-  hash: '$2b$10$SMxZF/FO1jftpFULJSJfyuIhnZ.0LVAvFbUQqMdYoiLrAKxNQgBFe',
+  hash: '3e4de2b229f348f9078d03299c956f64',
   id: 1,
   numOfAttempts: 0,
   updatedAt: new Date(Date.now() - 5 * ONE_MINUTE_IN_MILLISECONDS),

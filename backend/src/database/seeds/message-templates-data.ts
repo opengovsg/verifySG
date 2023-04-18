@@ -160,21 +160,6 @@ export const messageTemplatesData: MessageTemplatesData[] = [
   },
   {
     agencyId: 'MOH',
-    key: 'moh-hrp',
-    menu: 'Home Recovery Programme',
-    type: MessageTemplateType.SGNOTIFY,
-    params: {
-      type: MessageTemplateType.SGNOTIFY,
-      templateId:
-        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
-      longMessageParams: {
-        call_details:
-          'This call is regarding your request to appeal into the Home Recovery Programme and will be made in the next 20 minutes.',
-      },
-    },
-  },
-  {
-    agencyId: 'MOH',
     key: 'moh-covid-positive-missed-call',
     menu: 'COVID-19 Positive Missed Call',
     type: MessageTemplateType.SGNOTIFY,

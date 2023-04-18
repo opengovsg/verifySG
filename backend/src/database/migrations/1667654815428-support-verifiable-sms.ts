@@ -50,16 +50,21 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
     const prevMessageTemplates: any[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
-    const insertedTypeInParams = prevMessageTemplates.map((result) => {
-      return {
-        ...result,
-        params: {
-          ...result.params,
-          type: 'SGNOTIFY', // using string instead of enum as we want to refer to this statically rather than dynamically
-        },
-      }
-    })
-    await modifyMessageTemplatesParamsColumn(queryRunner, insertedTypeInParams)
+    if (prevMessageTemplates.length !== 0) {
+      const insertedTypeInParams = prevMessageTemplates.map((result) => {
+        return {
+          ...result,
+          params: {
+            ...result.params,
+            type: 'SGNOTIFY', // using string instead of enum as we want to refer to this statically rather than dynamically
+          },
+        }
+      })
+      await modifyMessageTemplatesParamsColumn(
+        queryRunner,
+        insertedTypeInParams,
+      )
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -67,14 +72,19 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
     const prevMessageTemplates: any[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
-    const removedTypeFromParams = prevMessageTemplates.map((result) => {
-      const { type, ...params } = result.params
-      return {
-        ...result,
-        params,
-      }
-    })
-    await modifyMessageTemplatesParamsColumn(queryRunner, removedTypeFromParams)
+    if (prevMessageTemplates.length !== 0) {
+      const removedTypeFromParams = prevMessageTemplates.map((result) => {
+        const { type, ...params } = result.params
+        return {
+          ...result,
+          params,
+        }
+      })
+      await modifyMessageTemplatesParamsColumn(
+        queryRunner,
+        removedTypeFromParams,
+      )
+    }
 
     await queryRunner.query(`ALTER TABLE "message_template" DROP COLUMN "type"`)
     await queryRunner.query(`DROP TYPE "public"."message_template_type_enum"`)

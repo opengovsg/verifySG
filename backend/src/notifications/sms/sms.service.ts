@@ -98,7 +98,7 @@ export class SMSService {
       })
     // included in SMS
     const embeddedUrl =
-      this.configService.get('environment') === 'production'
+      this.configService.get('appEnv') === 'prod'
         ? `go.gov.sg/${shortUrlRes}`
         : `staging.go.gov.sg/${shortUrlRes}`
 

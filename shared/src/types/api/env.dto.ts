@@ -1,5 +1,4 @@
 export type EnvResDto = {
-  dsn: string
-  env: 'development' | 'staging' | 'production' | 'test'
+  env: 'dev' | 'stg' | 'prod' | 'test'
   isDowntime: boolean
 }

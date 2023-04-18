@@ -1,0 +1,31 @@
+name: Deploy to production
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    uses: ./.github/workflows/ecs-deploy.yml
+    with:
+      environment: 'prod'
+      aws-account-id: '138263499957'
+      cicd-role: 'arn:aws:iam::138263499957:role/checkwho-prod-github-oidc-role'
+      ecr-repository: 'checkwho-prod'
+      ecs-cluster-name: 'checkwho-prod-ecs'
+      ecs-service-name: 'checkwho-prod-ecs-service'
+      ecs-container-name: 'app'
+      codedeploy-application: 'checkwho-prod-ecs-app'
+      codedeploy-deployment-group: 'checkwho-prod-ecs-dg'
+      release-version: ${{ github.sha }}
+  e2e:
+    name: End-to-end tests
+    needs: deploy
+    uses: ./.github/workflows/e2e.yml
+    secrets: inherit

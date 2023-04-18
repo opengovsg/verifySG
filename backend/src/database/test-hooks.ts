@@ -31,8 +31,8 @@ export async function useTestDatabase(
     useFactory: () => ({}),
     dataSourceFactory: async () => datasource,
   }
-  const resetHook = () => resetDatabase(datasource)
-  const closeHook = () => datasource.destroy()
+  const resetHook = async () => resetDatabase(datasource)
+  const closeHook = async () => datasource.destroy()
   return [opts, resetHook, closeHook]
 }
 

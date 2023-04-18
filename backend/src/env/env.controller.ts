@@ -9,13 +9,12 @@ export class EnvController {
   constructor(private config: ConfigService) {}
 
   /**
-   * Endpoint for frontend to call to retrieve frontend Sentry DSN
+   * Endpoint for frontend to call to retrieve env-related information
    */
   @Get()
   async getEnv(): Promise<EnvResDto> {
-    const { frontendDsn } = this.config.get('sentry')
-    const env = this.config.get('environment')
+    const env = this.config.get('appEnv')
     const isDowntime = this.config.get('isDowntime')
-    return { dsn: frontendDsn, env, isDowntime }
+    return { env, isDowntime }
   }
 }
