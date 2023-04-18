@@ -21,5 +21,5 @@ COPY --from=build /opt/checkwho/node_modules ./node_modules
 COPY --from=build /opt/checkwho/package.json ./
 
 EXPOSE 8080
-# USER node
+USER node
 CMD ["npm", "start"]
