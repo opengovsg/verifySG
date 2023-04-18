@@ -7,9 +7,7 @@ concurrency:
 on:
   push:
     branches:
-      # TODO remove staging and add master
-      - staging
-      # - master
+      - master
 
 jobs:
   deploy:
