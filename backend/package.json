@@ -17,6 +17,7 @@
     "pre-commit": "lint-staged",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/database/datasource.ts",
     "tunneldb:staging": "source .env && ssh -i $STAGING_JUMPHOST_KEY -N -L $STAGING_RDS_ENDPOINT $STAGING_BASTION_IP -v",
+    "tunneldb:production": "source .env && ssh -i $PRODUCTION_JUMPHOST_KEY -N -L $PRODUCTION_RDS_ENDPOINT $PRODUCTION_BASTION_IP -v",
     "tunneldb:stg": "source .env && ssh -i $STG_JUMPHOST_KEY -N -L $STG_RDS_ENDPOINT $STG_BASTION_IP -v",
     "tunneldb:prod": "source .env && ssh -i $PROD_JUMPHOST_KEY -N -L $PROD_RDS_ENDPOINT $PROD_BASTION_IP -v",
     "migration:run": "npm run typeorm migration:run",
