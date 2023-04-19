@@ -49,7 +49,7 @@ describe('MessageTemplatesController', () => {
   let controller: MessageTemplatesController
   const mockAuthOfficerGuard = createMock<AuthOfficerGuard>()
   const mockMessageTemplatesService = {
-    getActiveMessageTemplatesByAgencyId: jest.fn((agencyId) => {
+    getActiveMessageTemplatesByAgencyId: jest.fn(async (agencyId) => {
       if (agencyId === mockOfficerInfoDecoratorValid.officerAgency)
         return Promise.resolve(mockMessageTemplates)
     }),
