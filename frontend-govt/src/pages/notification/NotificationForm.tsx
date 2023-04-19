@@ -1,7 +1,5 @@
 import React from 'react'
-import { Control, Controller } from 'react-hook-form'
 import { useQuery } from 'react-query'
-import Select, { SingleValue } from 'react-select'
 import {
   Heading,
   Tab,
@@ -16,11 +14,7 @@ import HeaderContainer from '@/components/HeaderContainer'
 import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
 import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import {
-  MessageTemplateDto,
-  MessageTemplateType,
-  SendNotificationReqDto,
-} from '~shared/types/api'
+import { MessageTemplateDto, MessageTemplateType } from '~shared/types/api'
 
 export interface MessageTemplateOption {
   // shape for React Select options
@@ -113,53 +107,5 @@ export const NotificationForm: React.FC = () => {
         </Tabs>
       </VStack>
     </HeaderContainer>
-  )
-}
-
-interface TemplateSelectionMenuProps {
-  control: Control<SendNotificationReqDto>
-  messageTemplateOptions: MessageTemplateOption[]
-  getMessageTemplateOptionByValue: (
-    target: string,
-  ) => MessageTemplateOption | null
-}
-
-export const TemplateSelectionMenu: React.FC<TemplateSelectionMenuProps> = ({
-  control,
-  messageTemplateOptions,
-  getMessageTemplateOptionByValue,
-}) => {
-  return (
-    <Controller
-      name="msgTemplateKey"
-      control={control}
-      render={({
-        field: {
-          onChange: controllerOnChange,
-          value: controllerValue,
-          ...rest
-        },
-      }) => (
-        <Select
-          {...rest}
-          options={messageTemplateOptions}
-          value={getMessageTemplateOptionByValue(controllerValue)}
-          onChange={(option: SingleValue<MessageTemplateOption>) =>
-            controllerOnChange(option?.value)
-          }
-          // TODO: refactor theme somewhere else
-          theme={(theme) => {
-            return {
-              ...theme,
-              colors: {
-                ...theme.colors,
-                primary: '#1B3C87', // ideally should refer back to theme, rather than hardcoding
-              },
-            }
-          }}
-          placeholder="Type to search"
-        />
-      )}
-    />
   )
 }

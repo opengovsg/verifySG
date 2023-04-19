@@ -1,13 +1,9 @@
 import React from 'react'
 import { Control, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
-import { Box, FormControl, Skeleton, StackItem, VStack } from '@chakra-ui/react'
-import MessagePreview from '@components/MessagePreview'
+import { Box, FormControl, VStack } from '@chakra-ui/react'
 import {
-  Button,
   FormErrorMessage,
-  FormLabel,
-  InlineMessage,
   Input,
   useToast,
 } from '@opengovsg/design-system-react'
@@ -15,9 +11,16 @@ import { NotificationService } from '@services/NotificationService'
 import nric from 'nric'
 
 import {
+  NtfFormButtons,
+  NtfFormLabel,
+  NtfInlineMessage,
+  NtfMessagePreview,
+  NtfTemplateSelectionMenu,
+} from './NotificationFormComponents'
+
+import {
   getMessageTemplateOptionByValue,
   getParamsByMsgTemplateKey,
-  TemplateSelectionMenu,
   useToastOptions,
 } from '@/pages/notification/NotificationForm'
 import {
@@ -128,35 +131,17 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = ({
     setValue('msgTemplateKey', messageTemplateOptions[0].value)
   }
 
+  const inlineMessage =
+    'When you click the ‘Notify call recipient’ button, a Singpass push notification will be sent to the NRIC specified with the content previewed below.'
+
   return (
     <VStack spacing="15px">
-      <InlineMessage
-        variant="info"
-        w="100%"
-        fontSize={['sm', 'sm', 'md', 'md']}
-        useMarkdown
-        // override internal theme style
-        //TODO: shift these into theme folder for cleanup refactor
-        sx={{
-          padding: '8px',
-          display: 'flex',
-          p: '1rem',
-          justifyContent: 'start',
-          color: 'secondary.700',
-          bg: 'primary.200',
-        }}
-      >
-        When you click the ‘Notify call recipient’ button, a Singpass push
-        notification will be sent to the NRIC specified with the content
-        previewed below.
-      </InlineMessage>
+      <NtfInlineMessage message={inlineMessage}></NtfInlineMessage>
       <Box width="100%">
         <form onSubmit={onSubmit}>
           <VStack align="left" spacing={[8, 8, 8, 8]}>
             <FormControl isInvalid={!!errors.nric}>
-              <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                NRIC / FIN
-              </FormLabel>
+              <NtfFormLabel label={'NRIC / FIN'} />
               <Input
                 {...register('nric', {
                   required: 'Please enter a valid NRIC / FIN',
@@ -171,53 +156,21 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = ({
               <FormErrorMessage>{errors.nric?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.msgTemplateKey}>
-              <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                Message Template
-              </FormLabel>
-              <Skeleton isLoaded={!templatesIsLoading}>
-                <TemplateSelectionMenu
-                  control={control as Control<SendNotificationReqDto>}
-                  messageTemplateOptions={messageTemplateOptions}
-                  getMessageTemplateOptionByValue={(value) =>
-                    getMessageTemplateOptionByValue(
-                      value,
-                      messageTemplateOptions,
-                    )
-                  }
-                />
-              </Skeleton>
+              <NtfTemplateSelectionMenu
+                templatesIsLoading={templatesIsLoading}
+                control={control as Control<SendNotificationReqDto>}
+                messageTemplateOptions={messageTemplateOptions}
+                getMessageTemplateOptionByValue={(value) =>
+                  getMessageTemplateOptionByValue(value, messageTemplateOptions)
+                }
+              />
             </FormControl>
-            <StackItem>
-              <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
-                Message Preview
-              </FormLabel>
-              <Skeleton isLoaded={!templatesIsLoading}>
-                <MessagePreview
-                  nric={getValues('nric') ?? ''}
-                  selectedTemplate={templateParams}
-                />
-              </Skeleton>
-            </StackItem>
-            <StackItem>
-              <VStack spacing={[4, 4, 4, 4]}>
-                <Button
-                  type="submit"
-                  isLoading={isMutating}
-                  loadingText="Notifying..."
-                  width="100%"
-                >
-                  Notify call recipient
-                </Button>
-                <Button
-                  width="100%"
-                  variant="link"
-                  onClick={clearInputs}
-                  type="reset"
-                >
-                  Clear details
-                </Button>
-              </VStack>
-            </StackItem>
+            <NtfMessagePreview
+              templatesIsLoading={templatesIsLoading}
+              selectedTemplate={templateParams}
+              nric={getValues('nric') ?? ''}
+            />
+            <NtfFormButtons clearInputs={clearInputs} isMutating={isMutating} />
           </VStack>
         </form>
       </Box>

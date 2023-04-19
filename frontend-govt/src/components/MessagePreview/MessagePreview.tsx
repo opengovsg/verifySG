@@ -6,7 +6,7 @@ import sanitizeHtml from 'sanitize-html'
 
 import { messageContentFactory, SelectedTemplatePreviewParams } from './helpers'
 
-interface MessagePreviewProps {
+export interface MessagePreviewProps {
   selectedTemplate: SelectedTemplatePreviewParams | undefined
   nric?: string
   recipientPhoneNumber?: string
