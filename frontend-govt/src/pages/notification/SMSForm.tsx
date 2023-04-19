@@ -1,6 +1,5 @@
 import React from 'react'
 import { Control, useForm } from 'react-hook-form'
-import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useMutation } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { Box, FormControl, Skeleton, StackItem, VStack } from '@chakra-ui/react'
@@ -22,13 +21,11 @@ import { useNotificationData } from '@/contexts/notification/NotificationDataCon
 import {
   getMessageTemplateOptionByValue,
   getParamsByMsgTemplateKey,
-  MessageTemplateOption,
   TemplateSelectionMenu,
-  useDefaultMessageTemplate,
-  useMessageTemplates,
   useToastOptions,
 } from '@/pages/notification/NotificationForm'
 import {
+  MessageTemplateDto,
   MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationReqSmsDto,
@@ -37,6 +34,8 @@ import {
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface SGNotifyFormProps {
+  templates: MessageTemplateDto[] | undefined
+  templatesIsLoading: boolean
   onSubmit?: (data: SendNotificationReqSmsDto) => void
 }
 
@@ -52,28 +51,6 @@ const useSmsForm = () => {
   const { officerAgency } = useAuth()
   const { setTargetPhoneNumber, setMsgTemplateKey } = useNotificationData()
 
-  const { messageTemplates, isLoading } = useMessageTemplates()
-  useDefaultMessageTemplate(
-    setValue as UseFormSetValue<SendNotificationReqDto>,
-    MessageTemplateType.SMS,
-    messageTemplates,
-    isLoading,
-  )
-  const watchedMessageTemplate = watch('msgTemplateKey')
-
-  const smsMessageTemplateOptions: MessageTemplateOption[] =
-    messageTemplates
-      ?.filter((template) => {
-        return template.type === MessageTemplateType.SMS
-      })
-      .map((messageTemplate) => {
-        return {
-          value: messageTemplate.key,
-          label: messageTemplate.menu,
-        }
-      }) ?? []
-
-  // query hook to mutate data
   const sendNotificationMutation = useMutation(
     NotificationService.sendNotification,
     {
@@ -109,33 +86,25 @@ const useSmsForm = () => {
 
   const onSubmit = handleSubmit(submissionHandler)
 
-  const templateParams = getParamsByMsgTemplateKey<SmsMessageTemplateParams>(
-    watchedMessageTemplate,
-    messageTemplates,
-  )
-
   const clearInputs = () => reset()
 
   return {
     onSubmit,
     clearInputs,
-    templateParams,
     formMethods,
-    messageTemplateOptions: smsMessageTemplateOptions,
-    isLoading,
     getMessageTemplateOptionByValue,
     isMutating: sendNotificationMutation.isLoading,
   }
 }
 
-export const SMSForm: React.FC<SGNotifyFormProps> = () => {
+export const SMSForm: React.FC<SGNotifyFormProps> = ({
+  templates,
+  templatesIsLoading,
+}) => {
   const {
     onSubmit,
     clearInputs,
-    templateParams,
     formMethods,
-    messageTemplateOptions,
-    isLoading,
     getMessageTemplateOptionByValue,
     isMutating,
   } = useSmsForm()
@@ -145,7 +114,29 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
     formState: { errors },
     control,
     getValues,
+    watch,
+    setValue,
   } = formMethods
+
+  const watchedMessageTemplate = watch('msgTemplateKey')
+  const templateParams = getParamsByMsgTemplateKey<SmsMessageTemplateParams>(
+    watchedMessageTemplate,
+    templates,
+  )
+  const messageTemplateOptions =
+    templates?.map((template) => {
+      return {
+        value: template.key,
+        label: template.menu,
+      }
+    }) ?? []
+
+  if (
+    getValues('msgTemplateKey') === undefined &&
+    messageTemplateOptions.length === 1
+  ) {
+    setValue('msgTemplateKey', messageTemplateOptions[0].value)
+  }
 
   return (
     <VStack spacing="15px">
@@ -195,7 +186,7 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                 Message Template
               </FormLabel>
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton isLoaded={!templatesIsLoading}>
                 <TemplateSelectionMenu
                   control={control as Control<SendNotificationReqDto>}
                   messageTemplateOptions={messageTemplateOptions}
@@ -212,7 +203,7 @@ export const SMSForm: React.FC<SGNotifyFormProps> = () => {
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                 Message Preview
               </FormLabel>
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton isLoaded={!templatesIsLoading}>
                 <MessagePreview
                   recipientPhoneNumber={getValues('recipientPhoneNumber') ?? ''}
                   selectedTemplate={templateParams}

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Control, useForm } from 'react-hook-form'
-import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useMutation } from 'react-query'
 import { Box, FormControl, Skeleton, StackItem, VStack } from '@chakra-ui/react'
 import MessagePreview from '@components/MessagePreview'
@@ -18,13 +17,11 @@ import nric from 'nric'
 import {
   getMessageTemplateOptionByValue,
   getParamsByMsgTemplateKey,
-  MessageTemplateOption,
   TemplateSelectionMenu,
-  useDefaultMessageTemplate,
-  useMessageTemplates,
   useToastOptions,
 } from '@/pages/notification/NotificationForm'
 import {
+  MessageTemplateDto,
   MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationReqSGNotifyDto,
@@ -33,6 +30,8 @@ import {
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface SGNotifyFormProps {
+  templates: MessageTemplateDto[] | undefined
+  templatesIsLoading: boolean
   onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
 }
 
@@ -40,32 +39,10 @@ const useSGNotifyForm = () => {
   const formMethods = useForm<SendNotificationReqSGNotifyDto>({
     mode: 'onTouched', // to validate NRIC before submission; default is onSubmit
   })
-  const { watch, reset, setValue, handleSubmit } = formMethods
+  const { reset, setValue, watch, handleSubmit } = formMethods
   setValue('type', MessageTemplateType.SGNOTIFY)
 
   const toast = useToast(useToastOptions)
-
-  const { messageTemplates, isLoading } = useMessageTemplates()
-  useDefaultMessageTemplate(
-    setValue as UseFormSetValue<SendNotificationReqDto>,
-    MessageTemplateType.SGNOTIFY,
-    messageTemplates,
-    isLoading,
-  )
-
-  const watchedMessageTemplate = watch('msgTemplateKey')
-
-  const sgNotifyMessageTemplateOptions: MessageTemplateOption[] =
-    messageTemplates
-      ?.filter((template) => {
-        return template.type === MessageTemplateType.SGNOTIFY
-      })
-      .map((messageTemplate) => {
-        return {
-          value: messageTemplate.key,
-          label: messageTemplate.menu,
-        }
-      }) ?? []
 
   // query hook to mutate data
   const sendNotificationMutation = useMutation(
@@ -98,34 +75,25 @@ const useSGNotifyForm = () => {
 
   const onSubmit = handleSubmit(submissionHandler)
 
-  const templateParams =
-    getParamsByMsgTemplateKey<SGNotifyMessageTemplateParams>(
-      watchedMessageTemplate,
-      messageTemplates,
-    )
-
   const clearInputs = () => reset()
 
   return {
     onSubmit,
     clearInputs,
-    templateParams,
     formMethods,
-    messageTemplateOptions: sgNotifyMessageTemplateOptions,
-    isLoading,
     getMessageTemplateOptionByValue,
     isMutating: sendNotificationMutation.isLoading,
   }
 }
 
-export const SGNotifyForm: React.FC<SGNotifyFormProps> = () => {
+export const SGNotifyForm: React.FC<SGNotifyFormProps> = ({
+  templates,
+  templatesIsLoading,
+}) => {
   const {
     onSubmit,
     clearInputs,
-    templateParams,
     formMethods,
-    messageTemplateOptions,
-    isLoading,
     getMessageTemplateOptionByValue,
     isMutating,
   } = useSGNotifyForm()
@@ -135,7 +103,30 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = () => {
     formState: { errors },
     control,
     getValues,
+    watch,
+    setValue,
   } = formMethods
+
+  const watchedMessageTemplate = watch('msgTemplateKey')
+  const templateParams =
+    getParamsByMsgTemplateKey<SGNotifyMessageTemplateParams>(
+      watchedMessageTemplate,
+      templates,
+    )
+  const messageTemplateOptions =
+    templates?.map((template) => {
+      return {
+        value: template.key,
+        label: template.menu,
+      }
+    }) ?? []
+
+  if (
+    getValues('msgTemplateKey') === undefined &&
+    messageTemplateOptions.length === 1
+  ) {
+    setValue('msgTemplateKey', messageTemplateOptions[0].value)
+  }
 
   return (
     <VStack spacing="15px">
@@ -183,7 +174,7 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = () => {
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                 Message Template
               </FormLabel>
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton isLoaded={!templatesIsLoading}>
                 <TemplateSelectionMenu
                   control={control as Control<SendNotificationReqDto>}
                   messageTemplateOptions={messageTemplateOptions}
@@ -200,7 +191,7 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = () => {
               <FormLabel isRequired fontSize={['md', 'md', 'lg', 'lg']}>
                 Message Preview
               </FormLabel>
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton isLoaded={!templatesIsLoading}>
                 <MessagePreview
                   nric={getValues('nric') ?? ''}
                   selectedTemplate={templateParams}

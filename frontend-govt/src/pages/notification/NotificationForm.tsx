@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Control, Controller } from 'react-hook-form'
-import { UseFormSetValue } from 'react-hook-form/dist/types/form'
 import { useQuery } from 'react-query'
 import Select, { SingleValue } from 'react-select'
 import {
@@ -17,7 +16,11 @@ import HeaderContainer from '@/components/HeaderContainer'
 import { SGNotifyForm } from '@/pages/notification/SGNotifyForm'
 import { SMSForm } from '@/pages/notification/SMSForm'
 import { MessageTemplateService } from '@/services/MessageTemplateService'
-import { MessageTemplateDto, SendNotificationReqDto } from '~shared/types/api'
+import {
+  MessageTemplateDto,
+  MessageTemplateType,
+  SendNotificationReqDto,
+} from '~shared/types/api'
 
 export interface MessageTemplateOption {
   // shape for React Select options
@@ -33,35 +36,6 @@ export const useToastOptions = {
     width: '680px',
     maxWidth: '100%',
   },
-}
-
-export const useDefaultMessageTemplate = (
-  setValue: UseFormSetValue<SendNotificationReqDto>,
-  messageTemplateType: MessageTemplateDto['type'],
-  messageTemplates: MessageTemplateDto[] | undefined,
-  isLoading: boolean,
-) => {
-  // load default value if response only contains a single message template
-  const messageTemplateFiltered = messageTemplates?.filter(
-    (template) => template.type === messageTemplateType,
-  )
-  useEffect(() => {
-    if (!isLoading && messageTemplateFiltered?.length === 1) {
-      setValue('msgTemplateKey', messageTemplateFiltered[0].key)
-    }
-  }, [isLoading, messageTemplates])
-}
-
-export const useMessageTemplates = () => {
-  const { data: messageTemplates, isLoading } = useQuery(
-    ['messageTemplates'], // query key must be in array in React 18
-    MessageTemplateService.getMessageTemplates,
-  )
-
-  return {
-    messageTemplates,
-    isLoading,
-  }
 }
 
 export const getMessageTemplateOptionByValue = (
@@ -88,6 +62,18 @@ export const getParamsByMsgTemplateKey = <T,>(
 }
 
 export const NotificationForm: React.FC = () => {
+  const { data: messageTemplatesRaw, isLoading } = useQuery(
+    ['messageTemplates'], // query key must be in array in React 18
+    MessageTemplateService.getMessageTemplates,
+  )
+  const smsMessageTemplates = messageTemplatesRaw?.filter(
+    (template) => template.type === MessageTemplateType.SMS,
+  )
+
+  const sgNotifyMessageTemplates = messageTemplatesRaw?.filter(
+    (template) => template.type === MessageTemplateType.SGNOTIFY,
+  )
+
   return (
     <HeaderContainer>
       <Heading
@@ -112,10 +98,16 @@ export const NotificationForm: React.FC = () => {
 
           <TabPanels>
             <TabPanel>
-              <SMSForm />
+              <SMSForm
+                templates={smsMessageTemplates}
+                templatesIsLoading={isLoading}
+              />
             </TabPanel>
             <TabPanel>
-              <SGNotifyForm />
+              <SGNotifyForm
+                templates={sgNotifyMessageTemplates}
+                templatesIsLoading={isLoading}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
