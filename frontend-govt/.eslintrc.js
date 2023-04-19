@@ -12,12 +12,7 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
-    ignorePatterns: [
-      'build',
-      'tsconfig.json',
-      '.eslintrc.js',
-      'config-overrides.js',
-    ],
+    ignorePatterns: ['build', 'tsconfig.json', '.eslintrc.js'],
   },
   env: { es6: true, node: true },
   root: true,

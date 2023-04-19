@@ -3,10 +3,12 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -20,6 +22,6 @@
     "strictNullChecks": true,
     "noImplicitAny": true
   },
-  "include": ["src", ".eslintrc.js", "config-overrides.js"],
+  "include": ["src", ".eslintrc.js", "vite.config.ts"],
   "exclude": ["node_modules", "old"]
 }
