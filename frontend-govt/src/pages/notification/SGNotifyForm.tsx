@@ -38,6 +38,7 @@ interface SGNotifyFormProps {
   onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
 }
 
+// todo: overlap with useSmsForm, to abstract one day (blocked by weird typing in react-hook-form)
 const useSGNotifyForm = () => {
   const formMethods = useForm<SendNotificationReqSGNotifyDto>({
     mode: 'onTouched', // to validate NRIC before submission; default is onSubmit

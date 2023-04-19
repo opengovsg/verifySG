@@ -41,6 +41,7 @@ interface SGNotifyFormProps {
   onSubmit?: (data: SendNotificationReqSmsDto) => void
 }
 
+// todo: overlap with useSGNotifyForm, to abstract one day (blocked by weird typing in react-hook-form)
 const useSmsForm = () => {
   const formMethods = useForm<SendNotificationReqSmsDto>({
     mode: 'onTouched', // to validate phone number before submission
