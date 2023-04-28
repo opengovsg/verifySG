@@ -31,11 +31,10 @@ import {
   MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationReqSmsDto,
-  SmsMessageTemplateParams,
 } from '~shared/types/api'
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
-interface SGNotifyFormProps {
+interface SmsFormProps {
   templates: MessageTemplateDto[] | undefined
   templatesIsLoading: boolean
   onSubmit?: (data: SendNotificationReqSmsDto) => void
@@ -100,7 +99,7 @@ const useSmsForm = () => {
   }
 }
 
-export const SMSForm: React.FC<SGNotifyFormProps> = ({
+export const SMSForm: React.FC<SmsFormProps> = ({
   templates,
   templatesIsLoading,
 }) => {
@@ -122,7 +121,7 @@ export const SMSForm: React.FC<SGNotifyFormProps> = ({
   } = formMethods
 
   const watchedMessageTemplate = watch('msgTemplateKey')
-  const templateParams = getParamsByMsgTemplateKey<SmsMessageTemplateParams>(
+  const templateParams = getParamsByMsgTemplateKey(
     watchedMessageTemplate,
     templates,
   )

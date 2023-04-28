@@ -28,7 +28,6 @@ import {
   MessageTemplateType,
   SendNotificationReqDto,
   SendNotificationReqSGNotifyDto,
-  SGNotifyMessageTemplateParams,
 } from '~shared/types/api'
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
@@ -112,11 +111,10 @@ export const SGNotifyForm: React.FC<SGNotifyFormProps> = ({
   } = formMethods
 
   const watchedMessageTemplate = watch('msgTemplateKey')
-  const templateParams =
-    getParamsByMsgTemplateKey<SGNotifyMessageTemplateParams>(
-      watchedMessageTemplate,
-      templates,
-    )
+  const templateParams = getParamsByMsgTemplateKey(
+    watchedMessageTemplate,
+    templates,
+  )
   const messageTemplateOptions =
     templates?.map((template) => {
       return {
