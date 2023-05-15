@@ -133,6 +133,22 @@
         {
           "name": "MOH_TWILIO_SENDER_ID",
           "valueFrom": "/<ENVIRONMENT>/checkwho/MOH_TWILIO_SENDER_ID"
+        },
+        {
+          "name": "MOM_TWILIO_ACCOUNT_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOM_TWILIO_ACCOUNT_SID"
+        },
+        {
+          "name": "MOM_TWILIO_API_KEY_SID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOM_TWILIO_API_KEY_SID"
+        },
+        {
+          "name": "MOM_TWILIO_API_KEY_SECRET",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOM_TWILIO_API_KEY_SECRET"
+        },
+        {
+          "name": "MOM_TWILIO_SENDER_ID",
+          "valueFrom": "/<ENVIRONMENT>/checkwho/MOM_TWILIO_SENDER_ID"
         }
       ],
       "logConfiguration": {
