@@ -38,7 +38,7 @@ you may choose to investigate this IP to address further.</p>`
     await this.mailerService.sendMail(subject, htmlBody, email)
   }
 
-  async verifyOtp(email: string, otp: string): Promise<Officer | undefined> {
+  async verifyOtp(email: string, otp: string): Promise<Officer> {
     email = normalizeEmail(email)
     const verificationResult = await this.otpService.verifyOtp(email, otp)
     switch (verificationResult) {

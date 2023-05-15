@@ -35,7 +35,7 @@ import {
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface SmsFormProps {
-  templates: MessageTemplateDto[] | undefined
+  templates: MessageTemplateDto[]
   templatesIsLoading: boolean
   onSubmit?: (data: SendNotificationReqSmsDto) => void
 }

@@ -32,7 +32,7 @@ import {
 import { DEFAULT_ERROR_MESSAGE } from '~shared/utils'
 
 interface SGNotifyFormProps {
-  templates: MessageTemplateDto[] | undefined
+  templates: MessageTemplateDto[]
   templatesIsLoading: boolean
   onSubmit?: (data: SendNotificationReqSGNotifyDto) => void
 }
