@@ -373,21 +373,25 @@ export const schema: Schema<ConfigSchema> = {
       accountSid: {
         doc: 'MOM Twilio account SID',
         env: 'MOM_TWILIO_ACCOUNT_SID',
+        format: 'required-string',
         default: '',
       },
       apiKeySid: {
         doc: 'MOM Twilio API key SID',
         env: 'MOM_TWILIO_API_KEY_SID',
+        format: 'required-string',
         default: '',
       },
       apiKeySecret: {
         doc: 'MOM Twilio API key secret',
         env: 'MOM_TWILIO_API_KEY_SECRET',
+        format: 'required-string',
         default: '',
       },
       senderId: {
         doc: 'MOM Twilio sender ID',
         env: 'MOM_TWILIO_SENDER_ID',
+        format: 'required-string',
         default: '',
       },
     },
