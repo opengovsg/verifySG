@@ -1,8 +1,15 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
+interface MessageTemplate {
+  id: string
+  params: {
+    type: string
+    [key: string]: string
+  }
+}
 const modifyMessageTemplatesParamsColumn = async (
   queryRunner: QueryRunner,
-  messageTemplates: any[],
+  messageTemplates: MessageTemplate[],
 ) => {
   return await queryRunner.query(
     `INSERT INTO "message_template" (id, key, menu, params, created_at, updated_at, agency_id, type)
@@ -47,7 +54,7 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
     // we are adding a new (duplicative) type key into params:
     // 1. so that we have discriminating union when destructuring params
     // 2. because TypeORM cannot look at two columns (MessageTemplate.type and MessageTemplate.params) at the same time
-    const prevMessageTemplates: any[] = await queryRunner.query(
+    const prevMessageTemplates: MessageTemplate[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
     if (prevMessageTemplates.length !== 0) {
@@ -69,7 +76,7 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // for down migration, remove type from params
-    const prevMessageTemplates: any[] = await queryRunner.query(
+    const prevMessageTemplates: MessageTemplate[] = await queryRunner.query(
       `SELECT * FROM "message_template" FOR UPDATE`,
     )
     if (prevMessageTemplates.length !== 0) {
@@ -78,7 +85,7 @@ export class supportVerifiableSms1667654815428 implements MigrationInterface {
         return {
           ...result,
           params,
-        }
+        } as MessageTemplate
       })
       await modifyMessageTemplatesParamsColumn(
         queryRunner,

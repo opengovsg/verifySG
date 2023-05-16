@@ -53,11 +53,9 @@ export class AuthOfficerController {
   ): Promise<void> {
     const { email, otp } = body
     const officer = await this.authOfficerService.verifyOtp(email, otp)
-    if (officer) {
-      req.session.officerId = officer.id
-      req.session.officerEmail = officer.email
-      req.session.officerAgency = officer.agency.id
-    }
+    req.session.officerId = officer.id
+    req.session.officerEmail = officer.email
+    req.session.officerAgency = officer.agency.id
   }
 
   @Get('whoami')

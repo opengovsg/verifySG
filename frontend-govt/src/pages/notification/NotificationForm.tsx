@@ -42,17 +42,17 @@ export const getMessageTemplateOptionByValue = (
   return option ?? null
 }
 
-export const getParamsByMsgTemplateKey = <T,>(
+export const getParamsByMsgTemplateKey = (
   msgTemplateKey: string,
-  messageTemplates: MessageTemplateDto[] | undefined,
-): T | undefined => {
+  messageTemplates: MessageTemplateDto[],
+) => {
   if (!msgTemplateKey || !messageTemplates) return
 
   const messageTemplate = messageTemplates.find(
     (template) => template.key === msgTemplateKey,
   )
   if (!messageTemplate || !messageTemplate.params) return
-  return messageTemplate.params as unknown as T
+  return messageTemplate.params
 }
 
 export const NotificationForm: React.FC = () => {
@@ -60,13 +60,17 @@ export const NotificationForm: React.FC = () => {
     ['messageTemplates'], // query key must be in array in React 18
     MessageTemplateService.getMessageTemplates,
   )
-  const smsMessageTemplates = messageTemplatesRaw?.filter(
-    (template) => template.type === MessageTemplateType.SMS,
-  )
+  const smsMessageTemplates = messageTemplatesRaw
+    ? messageTemplatesRaw.filter(
+        (template) => template.type === MessageTemplateType.SMS,
+      )
+    : []
 
-  const sgNotifyMessageTemplates = messageTemplatesRaw?.filter(
-    (template) => template.type === MessageTemplateType.SGNOTIFY,
-  )
+  const sgNotifyMessageTemplates = messageTemplatesRaw
+    ? messageTemplatesRaw.filter(
+        (template) => template.type === MessageTemplateType.SGNOTIFY,
+      )
+    : []
 
   return (
     <HeaderContainer>
