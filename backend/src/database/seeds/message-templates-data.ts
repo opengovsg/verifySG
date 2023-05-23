@@ -263,4 +263,53 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'MSF',
+    key: 'msf-mscsl-home-visit',
+    menu: 'MS/CSL Outreach Team - Home Visit',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'uniqueUrl',
+        'agencyName',
+      ],
+      message:
+        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, is a member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section.\n\nYou may verify this message by visiting {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'MSF',
+    key: 'msf-mscsl-call',
+    menu: 'MS/CSL Outreach Team - Phone Call',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'uniqueUrl',
+        'agencyName',
+      ],
+      message:
+        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section will be calling you shortly.\n\nThis call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their name and designation, ensuring that it matches the information provided in this message. You may also verify this message by visiting {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'MSF',
+    key: 'msf-mscsl-call-sgnotify',
+    menu: 'MS/CSL Outreach Team - Phone Call',
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          'This call is regarding the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS). You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+      },
+    },
+  },
 ]
