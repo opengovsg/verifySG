@@ -265,8 +265,8 @@ export const messageTemplatesData: MessageTemplatesData[] = [
   },
   {
     agencyId: 'MSF',
-    key: 'msf-mscsl-home-visit',
-    menu: 'MS/CSL Outreach Team - Home Visit',
+    key: 'msf-mslcsl-home-visit',
+    menu: 'MSL/CSL Outreach Team - Home Visit',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
@@ -277,13 +277,13 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'agencyName',
       ],
       message:
-        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, is a member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section.\n\nYou may verify this message by visiting {{uniqueUrl}}.',
+        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, is a member of the MediShield Life / CareShield Life Additional Premium Support (MSL/CSL APS) Outreach Section.\n\nYou may verify this message by visiting {{uniqueUrl}}.',
     },
   },
   {
     agencyId: 'MSF',
-    key: 'msf-mscsl-call',
-    menu: 'MS/CSL Outreach Team - Phone Call',
+    key: 'msf-mslcsl-call',
+    menu: 'MSL/CSL Outreach Team - Phone Call',
     type: MessageTemplateType.SMS,
     params: {
       type: MessageTemplateType.SMS,
@@ -294,13 +294,13 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'agencyName',
       ],
       message:
-        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section will be calling you shortly.\n\nThis call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their name and designation, ensuring that it matches the information provided in this message. You may also verify this message by visiting {{uniqueUrl}}.',
+        'Dear Sir/Madam,\n\nThis is to verify {{officerName}}, {{officerPosition}} at {{agencyName}}, member of the MediShield Life / CareShield Life Additional Premium Support (MSL/CSL APS) Outreach Section will be calling you shortly.\n\nThis call will be made in the next 10 minutes. You may verify the caller’s identity by asking for their name and designation, ensuring that it matches the information provided in this message. You may also verify this message by visiting {{uniqueUrl}}.',
     },
   },
   {
     agencyId: 'MSF',
-    key: 'msf-mscsl-call-sgnotify',
-    menu: 'MS/CSL Outreach Team - Phone Call',
+    key: 'msf-mslcsl-call-sgnotify',
+    menu: 'MSL/CSL Outreach Team - Phone Call',
     type: MessageTemplateType.SGNOTIFY,
     params: {
       type: MessageTemplateType.SGNOTIFY,
@@ -308,7 +308,7 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
       longMessageParams: {
         call_details:
-          'This call is regarding the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS). You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
+          'This call is regarding the MediShield Life / CareShield Life Additional Premium Support (MSL/CSL APS). You may verify the caller’s identity using the <u>name</u> and <u>designation</u> provided in this message.',
       },
     },
   },
