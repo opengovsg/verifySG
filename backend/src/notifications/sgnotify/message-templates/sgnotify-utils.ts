@@ -138,6 +138,18 @@ export const generateNewSGNotifyParams = async (
         },
       })
       break
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT:
+      Object.assign(sgNotifyParams, {
+        ...genericSGNotifyParams,
+        templateId,
+        title,
+        shortMessage,
+        params: {
+          ...genericSGNotifyParams.params,
+          visit_details: longMessageParams.visit_details,
+        },
+      })
+      break
     default:
       // strictly speaking untrue; we wish to avoid supporting specific templates as far as possible
       // also, in terms of throwing error, this would've been caught in the above sgNotifyTitle and sgNotifyShortMessage functions
@@ -154,39 +166,82 @@ export const convertParamsToNotificationRequestPayload = (
 ): SGNotifyNotificationRequestPayload => {
   const { agencyLogoUrl, agencyShortName, templateId, params, title, nric } =
     sgNotifyParams
-  // this destructuring is untyped, be careful!
-  const {
-    agency,
-    masked_nric,
-    officer_name,
-    position,
-    call_details,
-    callback_details,
-  } = params
-  const notificationRequest = Object.assign(new SGNotifyNotificationRequest(), {
-    category: 'MESSAGES',
-    channel_mode: 'SPM',
-    delivery: 'IMMEDIATE',
-    priority: 'HIGH',
-    sender_logo_small: agencyLogoUrl,
-    sender_name: agencyShortName,
-    template_layout: [
-      {
-        template_id: templateId,
-        template_input: {
-          agency,
-          masked_nric,
-          officer_name,
-          position,
-          call_details,
-          callback_details,
+  switch (templateId) {
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL: {
+      // this destructuring is untyped, be careful!
+      const {
+        agency,
+        masked_nric,
+        officer_name,
+        position,
+        call_details,
+        callback_details,
+      } = params
+      const notificationRequest = Object.assign(
+        new SGNotifyNotificationRequest(),
+        {
+          category: 'MESSAGES',
+          channel_mode: 'SPM',
+          delivery: 'IMMEDIATE',
+          priority: 'HIGH',
+          sender_logo_small: agencyLogoUrl,
+          sender_name: agencyShortName,
+          template_layout: [
+            {
+              template_id: templateId,
+              template_input: {
+                agency,
+                masked_nric,
+                officer_name,
+                position,
+                call_details,
+                callback_details,
+              },
+            },
+          ],
+          title,
+          uin: nric,
         },
-      },
-    ],
-    title,
-    uin: nric,
-  })
-  return {
-    notification_req: notificationRequest,
+      )
+      return {
+        notification_req: notificationRequest,
+      }
+    }
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT: {
+      // this destructuring is untyped, be careful!
+      const { agency, masked_nric, officer_name, position, visit_details } =
+        params
+      const notificationRequest = Object.assign(
+        new SGNotifyNotificationRequest(),
+        {
+          category: 'MESSAGES',
+          channel_mode: 'SPM',
+          delivery: 'IMMEDIATE',
+          priority: 'HIGH',
+          sender_logo_small: agencyLogoUrl,
+          sender_name: agencyShortName,
+          template_layout: [
+            {
+              template_id: templateId,
+              template_input: {
+                agency,
+                masked_nric,
+                officer_name,
+                position,
+                visit_details,
+              },
+            },
+          ],
+          title,
+          uin: nric,
+        },
+      )
+      return {
+        notification_req: notificationRequest,
+      }
+    }
+    default:
+      throw new Error(`Unsupported SGNotify templateId: ${templateId}`)
   }
 }

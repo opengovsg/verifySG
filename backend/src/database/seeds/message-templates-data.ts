@@ -129,6 +129,20 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     },
   },
   {
+    agencyId: 'MSF',
+    key: 'msf-house-visit',
+    menu: 'House Visit',
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
+      templateId: SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT,
+      longMessageParams: {
+        visit_details:
+          'This officer is a member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section.  You may verify the caller’s identity by asking for their name and designation, ensuring that it matches the information provided in this message.',
+      },
+    },
+  },
+  {
     agencyId: 'ECDA',
     key: 'ecda-generic',
     menu: 'Generic',
