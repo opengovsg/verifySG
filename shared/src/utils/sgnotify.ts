@@ -3,6 +3,7 @@ export enum SGNotifyMessageTemplateId {
   GENERIC_NOTIFICATION_DURING_PHONE_CALL = 'GOVTECH-CHECKWHO-GEN-02',
   SPF_POLICE_REPORT_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-01',
   GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL = 'GOVTECH-CHECKWHO-GT-01',
+  GENERIC_NOTIFICATION_HOUSE_VISIT = 'GOVTECH-CHECKWHO-VISIT-01',
 }
 
 export const sgNotifyTitle = (
@@ -13,10 +14,8 @@ export const sgNotifyTitle = (
       return 'Upcoming Phone Call'
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
       return 'Verify your phone call'
-    // case SGNotifyMessageTemplateId.SPF_POLICE_REPORT_NOTIFICATION_BEFORE_PHONE_CALL:
-    //   return 'Upcoming Phone Call'
-    // case SGNotifyMessageTemplateId.GOVTECH_FEEDBACK_NOTIFICATION_BEFORE_PHONE_CALL:
-    //   return 'Upcoming Phone Call'
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT:
+      return 'Upcoming House Visit'
     default:
       throw new Error(`Unsupported templateId: ${templateId}`)
   }
@@ -31,6 +30,8 @@ export const sgNotifyShortMessage = (
       return `You are currently on a call with a public officer from ${agencyShortName}`
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return `A public officer from ${agencyShortName} will be calling you shortly.`
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT:
+      return `A public officer from ${agencyShortName} will be visiting you shortly.`
     default:
       throw new Error(`Unsupported templateId: ${templateId}`)
   }
@@ -53,6 +54,8 @@ export const standardOpening = (
       return `This message is to verify that you are currently speaking to <u>${name}</u>, <u>${position}</u> from ${agencyName}.`
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL:
       return `<u>${name}</u>, <u>${position}</u> at ${agencyName} will be calling you shortly.`
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT:
+      return `<u>${name}</u>, <u>${position}</u> at ${agencyName} will be visiting you shortly.`
     default:
       throw new Error(`Unknown templateId: ${templateId}`)
   }
@@ -60,7 +63,7 @@ export const standardOpening = (
 
 // only used on frontend's message preview
 // potentially can be used with generateNewSGNotifyParams on backend in a future refactoring)
-export const generateCallDetails = (
+export const getDetailsFromLongMessageParams = (
   templateId: SGNotifyMessageTemplateId,
   longMessageParams: Record<string, string>,
 ): string => {
@@ -70,6 +73,8 @@ export const generateCallDetails = (
       return longMessageParams.call_details
     case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_DURING_PHONE_CALL:
       return longMessageParams.call_details
+    case SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT:
+      return longMessageParams.visit_details
     default:
       throw new Error(`Unknown templateId: ${templateId}`)
   }

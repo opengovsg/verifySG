@@ -20,8 +20,9 @@ Each message template contains the following attributes:
 
 The following templates have been approved by the CMG team:
 
-- `GOVTECH-CHECKWHO-GEN-01`: this is the generic template for notify MOPs _before_ phone calls.
+- `GOVTECH-CHECKWHO-GEN-01`: this is the generic template for notifying MOPs _before_ phone calls.
 - `GOVTECH-CHECKWHO-GEN-02`: this is the generic template for notifying MOPs _during_ phone calls.
+- `GOVTECH-CHECKWHO-VISIT-01`: this is the generic template for notifying MOPs _before_ house visits.
 - `GOVTECH-CHECKWHO-01`: this is the SPF police report-specific template.
 - `GOVTECH-CHECKWHO-GT-01`: this is the GovTech feedback-specific template.
 
@@ -50,6 +51,10 @@ A public officer from &lt;agency&gt; will be calling you shortly.
 #### HTML-enabled
 
 Yes
+
+### SG-Notify Classification
+
+For Action
 
 #### Example API Call
 
@@ -144,6 +149,10 @@ We would like to seek your feedback.
 
 Yes
 
+#### SG-Notify Classification
+
+For Action
+
 #### Example API Call
 
 ```
@@ -189,6 +198,10 @@ This message is to verify that you are currently speaking to <officer_name>, <po
 
 Yes
 
+#### SG-Notify Classification
+
+For Action
+
 #### Example API Call
 
 ```
@@ -212,6 +225,55 @@ template_layout: [
 
 TODO
 
+### Template ID: `GOVTECH-CHECKWHO-VISIT-01`
+
+#### Title
+
+Upcoming House Visit
+
+#### Short Message
+
+A public officer from &lt;agency&gt; will be visiting you shortly.
+
+#### Long Message
+
+> Dear Sir/Madam <masked_NRIC>,
+>
+> <officer_name>, &lt;position&gt; at &lt;agency&gt; will be visiting you shortly.
+>
+> <visit_details>
+
+#### HTML-enabled
+
+Yes
+
+### SG-Notify Classification
+
+For Action
+
+#### Example API Call
+
+```
+template_layout: [
+  {
+    template_id: "GOVTECH-CHECKWHO-GEN-01",
+    template_input: {
+      masked_nric: "(SXXXX862G)",
+      officer_name: "<u>Zi Xiang</u>",
+      position: "<u>Product Manager</u>",
+      agency: "OGP",
+      visit_details: "This visit is to conduct a short feedback interview.",
+    },
+  },
+],
+```
+
+#### Screenshots
+
+TODO include short message screenshot after it has been changed to "For Action".
+
+<img src="./screenshots/house-visit.png" alt='generic house visit' width='500'>
+
 ## Copy below for new template
 
 ### Template ID: ``
@@ -225,6 +287,8 @@ TODO
 #### HTML-enabled
 
 #### Example API Call
+
+#### SG-Notify Classification
 
 #### Screenshots
 

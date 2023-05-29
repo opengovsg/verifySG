@@ -5,7 +5,7 @@ import {
 } from '~shared/types/api'
 import { maskNric } from '~shared/utils/nric'
 import {
-  generateCallDetails,
+  getDetailsFromLongMessageParams,
   salutations,
   sgNotifyTitle,
   standardOpening,
@@ -90,7 +90,7 @@ const generateSGNotifyMessagePreview = (
   <br><br>
   ${standardOpening(templateId, officerName, officerPosition, agencyName)}
   <br><br>
-  ${generateCallDetails(templateId, longMessageParams)}`
+  ${getDetailsFromLongMessageParams(templateId, longMessageParams)}`
 }
 
 const generateSmsMessagePreview = (

@@ -129,6 +129,20 @@ export const messageTemplatesData: MessageTemplatesData[] = [
     },
   },
   {
+    agencyId: 'MSF',
+    key: 'msf-house-visit',
+    menu: 'House Visit',
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
+      templateId: SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_HOUSE_VISIT,
+      longMessageParams: {
+        visit_details:
+          'This officer is a member of the MediShield Life / CareShield Life Additional Premium Support (MSL/ CSL APS) Outreach Section.  You may verify the caller’s identity by asking for their name and designation, ensuring that it matches the information provided in this message.',
+      },
+    },
+  },
+  {
     agencyId: 'ECDA',
     key: 'ecda-generic',
     menu: 'Generic',
@@ -261,6 +275,18 @@ export const messageTemplatesData: MessageTemplatesData[] = [
       requiredParams: ['uniqueUrl'],
       message:
         'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'MOH',
+    key: 'moh-cmcc-utd',
+    menu: 'CMCC UTD',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: ['uniqueUrl'],
+      message:
+        'Dear Sir/Madam,\n\nThis is the MOH Vaccination Contact Centre. This is to inform you that a Ministry of Health call agent will be contacting you within the next 4 hours. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.\n\n(MOH Vaccination Contact Centre is part of the Crisis Strategy and Operations Group. URL: https://www.moh.gov.sg/covid-19/vaccination)',
     },
   },
 ]
