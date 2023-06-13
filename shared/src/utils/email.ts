@@ -14,7 +14,7 @@ export const SG_GOVT_EMAIL_REGEX =
  */
 export function normalizeEmail(email: string): string {
   const normalizedEmail = email.toLowerCase().trim()
-  if (!normalizedEmail.match(SG_GOVT_EMAIL_REGEX))
+  if (!normalizedEmail.match(SG_GOVT_EMAIL_REGEX) && !isCure53Email(email))
     throw new Error(`Invalid email '${email}'`)
   return normalizedEmail
 }
@@ -31,6 +31,10 @@ export function parseEmailDomain(email: string): string {
 
 export const isGovtEmail = (inputEmail: string): boolean => {
   return !!inputEmail.match(SG_GOVT_EMAIL_REGEX)
+}
+
+export const isCure53Email = (inputEmail: string): boolean => {
+  return inputEmail.endsWith('@cure53.de')
 }
 
 export const INVALID_GOV_SG_EMAIL =

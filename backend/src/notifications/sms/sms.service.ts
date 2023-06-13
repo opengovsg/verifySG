@@ -29,7 +29,15 @@ export interface SMSParams {
   numSegments: string | null
 }
 
-export const supportedAgencies = ['OGP', 'MOM', 'MOH', 'PSD', 'WSG', 'SSG']
+export const supportedAgencies = [
+  'OGP',
+  'MOM',
+  'MOH',
+  'PSD',
+  'WSG',
+  'SSG',
+  'C53',
+]
 
 @Injectable()
 export class SMSService {
