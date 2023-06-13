@@ -47,4 +47,10 @@ export const agenciesData: AgencyData[] = [
     logoUrl: 'https://file.go.gov.sg/checkwho-mas-logo.png',
     emailDomains: ['mas.gov.sg'],
   },
+  {
+    id: 'C53',
+    name: 'Cure53',
+    logoUrl: 'https://file.go.gov.sg/cure53-logo.png',
+    emailDomains: ['cure53.de'],
+  },
 ]

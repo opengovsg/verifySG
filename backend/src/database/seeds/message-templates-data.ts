@@ -263,4 +263,36 @@ export const messageTemplatesData: MessageTemplatesData[] = [
         'Dear Sir/Madam,\n\nThis is the MOH Vaccination Team. This is to inform you that a Ministry of Health call agent will be contacting you within the next 6 hours regarding vaccination matters from your call query. Please expect a call from the following hotline number: 6995 9199.\n\nYou can verify this message by visiting this link: {{uniqueUrl}}.',
     },
   },
+  {
+    agencyId: 'C53',
+    key: 'c53-test-sms',
+    menu: 'Test SMS',
+    type: MessageTemplateType.SMS,
+    params: {
+      type: MessageTemplateType.SMS,
+      requiredParams: [
+        'officerName',
+        'officerPosition',
+        'agencyName',
+        'uniqueUrl',
+      ],
+      message:
+        'Dear Sir/Madam,\n\n{{officerName}}, {{officerPosition}} at {{agencyName}} had tried to reach you earlier.\n\nWe want to follow up on your or your family member’s application to a government scheme or request to update your household details. Please return our call between 8:30am and 6pm, Mon to Fri excluding PH.\n\nYou can verify this message by visiting {{uniqueUrl}}.',
+    },
+  },
+  {
+    agencyId: 'C53',
+    key: 'c53-case-review',
+    menu: 'Assistance for Case Review',
+    type: MessageTemplateType.SGNOTIFY,
+    params: {
+      type: MessageTemplateType.SGNOTIFY,
+      templateId:
+        SGNotifyMessageTemplateId.GENERIC_NOTIFICATION_BEFORE_PHONE_CALL,
+      longMessageParams: {
+        call_details:
+          "The purpose of this call is to seek your assistance on a matter that you may be acquainted with.<br><br>This call will be made in the next 10 minutes and you may verify the caller's identity using the name provided in this message.",
+      },
+    },
+  },
 ]

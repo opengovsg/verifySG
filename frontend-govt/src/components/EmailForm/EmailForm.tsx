@@ -12,6 +12,7 @@ import { AuthService } from '@services/AuthService'
 
 import {
   INVALID_GOV_SG_EMAIL,
+  isCure53Email,
   isGovtEmail,
   normalizeEmail,
 } from '~shared/utils'
@@ -37,7 +38,7 @@ export const EmailForm: React.FC<EmailFormProps> = ({ onSubmit }) => {
   const { email } = watch()
 
   const validateGovtEmail = useCallback((value: string) => {
-    return isGovtEmail(value) || INVALID_GOV_SG_EMAIL
+    return isGovtEmail(value) || isCure53Email(value) || INVALID_GOV_SG_EMAIL
   }, [])
 
   // login form handlers
